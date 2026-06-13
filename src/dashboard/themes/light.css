@@ -1,0 +1,10 @@
+/* =========================================
+   TUI Premium Light Theme
+========================================= */
+
+div[data-testid="metric-container"] {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    border: 1px solid #E5E7EB;
+}

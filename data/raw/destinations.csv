@@ -1,0 +1,21 @@
+﻿destination_id,destination_name,region,destination_type,beach_score,culture_score,nature_score,nightlife_score,family_friendly_score,avg_price_per_day
+D001,Mallorca,Balearic Islands,Beach,10,7,8,8,9,145
+D002,Ibiza,Balearic Islands,Beach,10,6,6,10,5,190
+D003,Menorca,Balearic Islands,Beach,9,6,9,4,10,135
+D004,Tenerife,Canary Islands,Mixed,9,7,9,7,9,140
+D005,Gran Canaria,Canary Islands,Mixed,9,6,8,7,8,135
+D006,Lanzarote,Canary Islands,Nature,8,5,10,5,8,125
+D007,Costa del Sol,Andalusia,Beach,9,6,6,8,8,130
+D008,Marbella,Andalusia,Beach,8,7,6,9,7,210
+D009,Malaga,Andalusia,City,7,8,6,8,7,120
+D010,Valencia,Valencian Community,City,7,9,6,7,8,115
+D011,Alicante,Valencian Community,Beach,8,6,5,7,8,110
+D012,Benidorm,Valencian Community,Beach,8,4,4,8,9,95
+D013,Barcelona,Catalonia,City,6,10,5,8,7,170
+D014,Madrid,Community of Madrid,City,2,10,4,8,6,160
+D015,Seville,Andalusia,City,1,10,4,7,7,125
+D016,Granada,Andalusia,City,1,10,7,5,7,120
+D017,Bilbao,Basque Country,City,3,8,7,5,6,140
+D018,San Sebastian,Basque Country,Mixed,7,8,8,6,7,175
+D019,Picos de Europa,Asturias,Nature,1,5,10,1,8,90
+D020,Sierra Nevada,Andalusia,Nature,1,5,10,3,8,105

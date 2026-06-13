@@ -1,0 +1,241 @@
+﻿destination_id,month,congestion_score,congestion_level
+D001,1,25,Low
+D001,2,25,Low
+D001,3,35,Moderate
+D001,4,50,Moderate
+D001,5,65,High
+D001,6,80,High
+D001,7,95,Very High
+D001,8,100,Very High
+D001,9,75,High
+D001,10,55,Moderate
+D001,11,35,Moderate
+D001,12,30,Low
+D002,1,25,Low
+D002,2,25,Low
+D002,3,35,Moderate
+D002,4,50,Moderate
+D002,5,65,High
+D002,6,80,High
+D002,7,95,Very High
+D002,8,100,Very High
+D002,9,75,High
+D002,10,55,Moderate
+D002,11,35,Moderate
+D002,12,30,Low
+D003,1,25,Low
+D003,2,25,Low
+D003,3,35,Moderate
+D003,4,50,Moderate
+D003,5,65,High
+D003,6,80,High
+D003,7,95,Very High
+D003,8,100,Very High
+D003,9,75,High
+D003,10,55,Moderate
+D003,11,35,Moderate
+D003,12,30,Low
+D007,1,25,Low
+D007,2,25,Low
+D007,3,35,Moderate
+D007,4,50,Moderate
+D007,5,65,High
+D007,6,80,High
+D007,7,95,Very High
+D007,8,100,Very High
+D007,9,75,High
+D007,10,55,Moderate
+D007,11,35,Moderate
+D007,12,30,Low
+D008,1,25,Low
+D008,2,25,Low
+D008,3,35,Moderate
+D008,4,50,Moderate
+D008,5,65,High
+D008,6,80,High
+D008,7,95,Very High
+D008,8,100,Very High
+D008,9,75,High
+D008,10,55,Moderate
+D008,11,35,Moderate
+D008,12,30,Low
+D011,1,25,Low
+D011,2,25,Low
+D011,3,35,Moderate
+D011,4,50,Moderate
+D011,5,65,High
+D011,6,80,High
+D011,7,95,Very High
+D011,8,100,Very High
+D011,9,75,High
+D011,10,55,Moderate
+D011,11,35,Moderate
+D011,12,30,Low
+D012,1,25,Low
+D012,2,25,Low
+D012,3,35,Moderate
+D012,4,50,Moderate
+D012,5,65,High
+D012,6,80,High
+D012,7,95,Very High
+D012,8,100,Very High
+D012,9,75,High
+D012,10,55,Moderate
+D012,11,35,Moderate
+D012,12,30,Low
+D004,1,65,High
+D004,2,70,High
+D004,3,65,High
+D004,4,60,Moderate
+D004,5,65,High
+D004,6,75,High
+D004,7,85,Very High
+D004,8,90,Very High
+D004,9,80,High
+D004,10,75,High
+D004,11,70,High
+D004,12,80,High
+D005,1,65,High
+D005,2,70,High
+D005,3,65,High
+D005,4,60,Moderate
+D005,5,65,High
+D005,6,75,High
+D005,7,85,Very High
+D005,8,90,Very High
+D005,9,80,High
+D005,10,75,High
+D005,11,70,High
+D005,12,80,High
+D006,1,65,High
+D006,2,70,High
+D006,3,65,High
+D006,4,60,Moderate
+D006,5,65,High
+D006,6,75,High
+D006,7,85,Very High
+D006,8,90,Very High
+D006,9,80,High
+D006,10,75,High
+D006,11,70,High
+D006,12,80,High
+D009,1,60,Moderate
+D009,2,60,Moderate
+D009,3,70,High
+D009,4,85,Very High
+D009,5,90,Very High
+D009,6,80,High
+D009,7,65,High
+D009,8,60,Moderate
+D009,9,75,High
+D009,10,85,Very High
+D009,11,70,High
+D009,12,75,High
+D010,1,60,Moderate
+D010,2,60,Moderate
+D010,3,70,High
+D010,4,85,Very High
+D010,5,90,Very High
+D010,6,80,High
+D010,7,65,High
+D010,8,60,Moderate
+D010,9,75,High
+D010,10,85,Very High
+D010,11,70,High
+D010,12,75,High
+D013,1,60,Moderate
+D013,2,60,Moderate
+D013,3,70,High
+D013,4,85,Very High
+D013,5,90,Very High
+D013,6,80,High
+D013,7,65,High
+D013,8,60,Moderate
+D013,9,75,High
+D013,10,85,Very High
+D013,11,70,High
+D013,12,75,High
+D014,1,60,Moderate
+D014,2,60,Moderate
+D014,3,70,High
+D014,4,85,Very High
+D014,5,90,Very High
+D014,6,80,High
+D014,7,65,High
+D014,8,60,Moderate
+D014,9,75,High
+D014,10,85,Very High
+D014,11,70,High
+D014,12,75,High
+D015,1,60,Moderate
+D015,2,60,Moderate
+D015,3,70,High
+D015,4,85,Very High
+D015,5,90,Very High
+D015,6,80,High
+D015,7,65,High
+D015,8,60,Moderate
+D015,9,75,High
+D015,10,85,Very High
+D015,11,70,High
+D015,12,75,High
+D016,1,60,Moderate
+D016,2,60,Moderate
+D016,3,70,High
+D016,4,85,Very High
+D016,5,90,Very High
+D016,6,80,High
+D016,7,65,High
+D016,8,60,Moderate
+D016,9,75,High
+D016,10,85,Very High
+D016,11,70,High
+D016,12,75,High
+D017,1,60,Moderate
+D017,2,60,Moderate
+D017,3,70,High
+D017,4,85,Very High
+D017,5,90,Very High
+D017,6,80,High
+D017,7,65,High
+D017,8,60,Moderate
+D017,9,75,High
+D017,10,85,Very High
+D017,11,70,High
+D017,12,75,High
+D018,1,60,Moderate
+D018,2,60,Moderate
+D018,3,70,High
+D018,4,85,Very High
+D018,5,90,Very High
+D018,6,80,High
+D018,7,65,High
+D018,8,60,Moderate
+D018,9,75,High
+D018,10,85,Very High
+D018,11,70,High
+D018,12,75,High
+D019,1,15,Low
+D019,2,15,Low
+D019,3,20,Low
+D019,4,35,Moderate
+D019,5,55,Moderate
+D019,6,70,High
+D019,7,85,Very High
+D019,8,90,Very High
+D019,9,75,High
+D019,10,45,Moderate
+D019,11,25,Low
+D019,12,20,Low
+D020,1,15,Low
+D020,2,15,Low
+D020,3,20,Low
+D020,4,35,Moderate
+D020,5,55,Moderate
+D020,6,70,High
+D020,7,85,Very High
+D020,8,90,Very High
+D020,9,75,High
+D020,10,45,Moderate
+D020,11,25,Low
+D020,12,20,Low
