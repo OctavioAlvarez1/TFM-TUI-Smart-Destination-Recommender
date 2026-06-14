@@ -15,6 +15,7 @@ Octavio Alvarez
 """
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.models import (
     RecommendationRequest
@@ -29,8 +30,29 @@ app = FastAPI(
     version="1.0"
 )
 
+# =====================================================
+# CORS Configuration
+# =====================================================
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# =====================================================
+# Recommendation Engine
+# =====================================================
+
 engine = RecommendationEngine()
 
+# =====================================================
+# Endpoints
+# =====================================================
 
 @app.get("/")
 def root():
