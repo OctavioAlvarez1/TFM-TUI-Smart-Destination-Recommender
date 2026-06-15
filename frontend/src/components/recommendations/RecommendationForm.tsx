@@ -6,90 +6,182 @@ import {
   MenuItem,
   TextField,
   Paper,
+  Typography,
+  Grid,
 } from "@mui/material";
 
-import { getRecommendations } from "../../api/recommendationApi";
+interface RecommendationFormProps {
+  onSubmit: (
+    userId: string,
+    month: number,
+    topN: number
+  ) => void;
+}
 
-const RecommendationForm = () => {
-  const [userId, setUserId] = useState("U001");
-  const [month, setMonth] = useState(7);
-  const [topN, setTopN] = useState(5);
+const RecommendationForm = ({
+  onSubmit,
+}: RecommendationFormProps) => {
+  const [userId, setUserId] =
+    useState("U001");
 
-  const handleSubmit = async () => {
-    try {
-      const data = await getRecommendations(
-        userId,
-        month,
-        topN
-      );
+  const [month, setMonth] =
+    useState(7);
 
-      console.log("API Response:");
-      console.log(data);
-    } catch (error) {
-      console.error(
-        "Error fetching recommendations:",
-        error
-      );
-    }
+  const [topN, setTopN] =
+    useState(5);
+
+  const handleSubmit = () => {
+    onSubmit(
+      userId,
+      month,
+      topN
+    );
   };
 
   return (
     <Paper
-      elevation={3}
+      elevation={0}
       sx={{
-        p: 4,
-        mt: 4,
+        p: 5,
+        mb: 6,
+        borderRadius: 5,
+        border: "1px solid",
+        borderColor: "divider",
+        backdropFilter: "blur(12px)",
       }}
     >
-      <Box
-        display="flex"
-        gap={2}
-        alignItems="center"
-        flexWrap="wrap"
+      <Typography
+        variant="h4"
+        fontWeight={700}
+        gutterBottom
       >
-        <TextField
-          label="User ID"
-          value={userId}
-          onChange={(e) =>
-            setUserId(e.target.value)
-          }
-        />
+        Plan Your Next Journey
+      </Typography>
 
-        <TextField
-          select
-          label="Month"
-          value={month}
-          onChange={(e) =>
-            setMonth(Number(e.target.value))
-          }
+      <Typography
+        variant="body1"
+        color="text.secondary"
+        sx={{ mb: 4 }}
+      >
+        Generate AI-powered destination
+        recommendations based on traveler
+        preferences, sustainability metrics
+        and congestion awareness.
+      </Typography>
+
+      <Grid
+        container
+        spacing={3}
+      >
+        <Grid
+          size={{
+            xs: 12,
+            md: 3,
+          }}
         >
-          {[...Array(12)].map((_, index) => (
-            <MenuItem
-              key={index + 1}
-              value={index + 1}
+          <TextField
+            fullWidth
+            label="Traveler Profile"
+            value={userId}
+            onChange={(e) =>
+              setUserId(
+                e.target.value
+              )
+            }
+          />
+        </Grid>
+
+        <Grid
+          size={{
+            xs: 12,
+            md: 3,
+          }}
+        >
+          <TextField
+            fullWidth
+            select
+            label="Travel Month"
+            value={month}
+            onChange={(e) =>
+              setMonth(
+                Number(
+                  e.target.value
+                )
+              )
+            }
+          >
+            {[...Array(12)].map(
+              (_, index) => (
+                <MenuItem
+                  key={
+                    index + 1
+                  }
+                  value={
+                    index + 1
+                  }
+                >
+                  {index + 1}
+                </MenuItem>
+              )
+            )}
+          </TextField>
+        </Grid>
+
+        <Grid
+          size={{
+            xs: 12,
+            md: 3,
+          }}
+        >
+          <TextField
+            fullWidth
+            label="Destinations"
+            type="number"
+            value={topN}
+            onChange={(e) =>
+              setTopN(
+                Number(
+                  e.target.value
+                )
+              )
+            }
+          />
+        </Grid>
+
+        <Grid
+          size={{
+            xs: 12,
+            md: 3,
+          }}
+        >
+          <Box
+            sx={{
+              height: "100%",
+              display: "flex",
+              alignItems:
+                "center",
+            }}
+          >
+            <Button
+              fullWidth
+              variant="contained"
+              size="large"
+              onClick={
+                handleSubmit
+              }
+              sx={{
+                height: 56,
+                borderRadius: 3,
+                fontWeight: 700,
+                fontSize:
+                  "1rem",
+              }}
             >
-              {index + 1}
-            </MenuItem>
-          ))}
-        </TextField>
-
-        <TextField
-          label="Top Recommendations"
-          type="number"
-          value={topN}
-          onChange={(e) =>
-            setTopN(Number(e.target.value))
-          }
-        />
-
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleSubmit}
-        >
-          Generate Recommendations
-        </Button>
-      </Box>
+              Explore Destinations
+            </Button>
+          </Box>
+        </Grid>
+      </Grid>
     </Paper>
   );
 };

@@ -12,6 +12,9 @@ const lightTheme = createTheme({
       main: "#0288D1",
     },
   },
+    typography: {
+    fontFamily: "Inter, sans-serif",
+  }
 });
 
 export default lightTheme;

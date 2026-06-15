@@ -5,17 +5,21 @@ const darkTheme = createTheme({
     mode: "dark",
 
     primary: {
-      main: "#00C853",
+      main: "#0EA5E9",
     },
 
     secondary: {
-      main: "#4FC3F7",
+      main: "#38BDF8",
     },
 
     background: {
-      default: "#121212",
-      paper: "#1E1E1E",
+      default: "#0B1220",
+      paper: "#111827",
     },
+  },
+
+  typography: {
+    fontFamily: "Inter, sans-serif",
   },
 });
 
