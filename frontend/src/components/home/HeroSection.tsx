@@ -13,84 +13,146 @@ const HeroSection = () => {
         position: "relative",
 
         height: {
-          xs: "70vh",
-          md: "68vh",
+          xs: "58vh",
+          md: "60vh",
+        },
+
+        minHeight: {
+          xs: 500,
+          md: 560,
         },
 
         display: "flex",
 
         alignItems: "center",
 
+        overflow: "hidden",
+
         backgroundImage: `
           linear-gradient(
-            rgba(0,0,0,0.45),
-            rgba(0,0,0,0.55)
+            rgba(0,0,0,0.40),
+            rgba(0,0,0,0.48)
           ),
           url(${heroImage})
         `,
 
         backgroundSize: "cover",
 
-        backgroundPosition: "center",
+        backgroundPosition: "center center",
 
         backgroundRepeat: "no-repeat",
+
+        "&::before": {
+          content: '""',
+
+          position: "absolute",
+
+          inset: 0,
+
+          background: `
+            radial-gradient(
+              circle at 20% 30%,
+              rgba(56,189,248,.06),
+              transparent 35%
+            )
+          `,
+
+          pointerEvents: "none",
+        },
       }}
     >
-      <Container maxWidth="xl">
+      <Container
+        maxWidth="xl"
+        sx={{
+          position: "relative",
+          zIndex: 2,
+        }}
+      >
         <Box
           sx={{
-            maxWidth: 650,
+            maxWidth: 850,
 
-            pt: 6,
+            mt: {
+              xs: 1,
+              md: 2,
+            },
           }}
         >
+          {/* EYEBROW */}
+
           <Typography
             sx={{
+              display: "inline-flex",
+
+              alignItems: "center",
+
+              px: 3,
+
+              py: 1.2,
+
+              borderRadius: "999px",
+
               color: "#38BDF8",
 
-              fontWeight: 600,
-
-              letterSpacing: 6,
+              fontWeight: 700,
 
               textTransform: "uppercase",
 
+              letterSpacing: "0.25em",
+
               mb: 3,
 
-              fontSize: ".9rem",
+              fontSize: ".85rem",
+
+              border:
+                "1px solid rgba(255,255,255,.15)",
+
+              background:
+                "rgba(255,255,255,.06)",
+
+              backdropFilter: "blur(10px)",
             }}
           >
             AI-POWERED SUSTAINABLE TOURISM
           </Typography>
 
+          {/* TITLE */}
+
           <Typography
             sx={{
               color: "#FFFFFF",
 
-              fontWeight: 800,
+              fontWeight: 900,
 
-              lineHeight: .95,
+              lineHeight: 0.95,
 
               mb: 3,
 
+              textShadow:
+                "0 12px 40px rgba(0,0,0,.35)",
+
               fontSize: {
-                xs: "3.8rem",
-                md: "5rem",
+                xs: "3rem",
+                sm: "3.8rem",
+                md: "4.5rem",
               },
             }}
           >
-            Discover Better
-            <br />
-            Destinations
+            Discover Better Destinations
           </Typography>
+
+          {/* SUBTITLE */}
 
           <Typography
             sx={{
               color:
                 "rgba(255,255,255,.92)",
 
-              maxWidth: 580,
+              maxWidth: 700,
 
-              lineHeight: 1.7,
+              lineHeight: 1.75,
+
+              fontWeight: 400,
 
               fontSize: {
                 xs: "1rem",
@@ -98,11 +160,10 @@ const HeroSection = () => {
               },
             }}
           >
-            Explore destinations that
-            balance traveler satisfaction,
-            sustainability performance and
-            congestion management through
-            intelligent recommendations.
+            Explore destinations that balance
+            traveler satisfaction, sustainability
+            performance and congestion management
+            through intelligent recommendations.
           </Typography>
         </Box>
       </Container>

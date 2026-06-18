@@ -70,12 +70,20 @@ const Home = () => {
 
       <HeroSection />
 
+      {/* SEARCH BAR FLOATING */}
+
       <Container
         maxWidth="xl"
         sx={{
-          mt: -8,
           position: "relative",
-          zIndex: 20,
+
+          zIndex: 100,
+
+          mt: {
+            xs: "-80px",
+            md: "-100px",
+            lg: "-120px",
+          },
         }}
       >
         <SearchBarHero
@@ -89,16 +97,42 @@ const Home = () => {
             handleGenerateRecommendations
           }
         />
+      </Container>
 
-        <Box mt={10}>
-          <FeatureSection />
-        </Box>
+      {/* MAIN CONTENT */}
 
-        <Box mt={10}>
+      <Container
+        maxWidth="xl"
+        sx={{
+          mt: {
+            xs: 6,
+            md: 8,
+          },
+
+          mb: 12,
+        }}
+      >
+        <FeatureSection />
+
+        <Box
+          sx={{
+            mt: {
+              xs: 8,
+              md: 10,
+            },
+          }}
+        >
           <DestinationShowcase />
         </Box>
 
-        <Box mt={8}>
+        <Box
+          sx={{
+            mt: {
+              xs: 8,
+              md: 10,
+            },
+          }}
+        >
           {loading ? (
             <LoadingSkeleton />
           ) : recommendations.length === 0 ? (
@@ -111,7 +145,7 @@ const Home = () => {
                 }
               />
 
-              <Box mt={4}>
+              <Box mt={5}>
                 <RecommendationGrid
                   recommendations={
                     recommendations
