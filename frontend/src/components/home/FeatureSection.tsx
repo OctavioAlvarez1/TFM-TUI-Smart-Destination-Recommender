@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import {
   Box,
   Card,
@@ -66,71 +67,78 @@ const FeatureSection = () => {
       }}
     >
       <Container maxWidth="xl">
-        <Typography
-          sx={{
-            color: "#2563EB",
-
-            fontWeight: 700,
-
-            fontSize: ".85rem",
-
-            letterSpacing: ".25em",
-
-            textTransform: "uppercase",
-
-            mb: 2,
-          }}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
         >
-          Built For Smart Travelers
-        </Typography>
+          <Typography
+            sx={{
+              color: "#2563EB",
 
-        <Typography
-          sx={{
-            fontSize: {
-              xs: "2.25rem",
-              md: "3rem",
-            },
+              fontWeight: 700,
 
-            fontWeight: 800,
+              fontSize: ".85rem",
 
-            color: "#0F172A",
+              letterSpacing: ".25em",
 
-            lineHeight: 1.1,
+              textTransform: "uppercase",
 
-            maxWidth: 850,
+              mb: 2,
+            }}
+          >
+            Built For Smart Travelers
+          </Typography>
 
-            mb: 2,
-          }}
-        >
-          AI-Powered. Sustainable.
-          Personalized.
-        </Typography>
+          <Typography
+            sx={{
+              fontSize: {
+                xs: "2.25rem",
+                md: "3rem",
+              },
 
-        <Typography
-          sx={{
-            color: "#64748B",
+              fontWeight: 800,
 
-            fontSize: {
-              xs: "1rem",
-              md: "1.1rem",
-            },
+              color: "text.primary",
 
-            maxWidth: 720,
+              lineHeight: 1.1,
 
-            lineHeight: 1.8,
+              maxWidth: 850,
 
-            mb: 6,
-          }}
-        >
-          Horizon combines artificial intelligence,
-          sustainability metrics and traveler insights
-          to recommend destinations that create
-          better outcomes for travelers and local
-          communities.
-        </Typography>
+              mb: 2,
+            }}
+          >
+            AI-Powered. Sustainable.
+            Personalized.
+          </Typography>
+
+          <Typography
+            sx={{
+              color: "text.secondary",
+
+              fontSize: {
+                xs: "1rem",
+                md: "1.1rem",
+              },
+
+              maxWidth: 720,
+
+              lineHeight: 1.8,
+
+              mb: 6,
+            }}
+          >
+            Horizon combines artificial intelligence,
+            sustainability metrics and traveler insights
+            to recommend destinations that create
+            better outcomes for travelers and local
+            communities.
+          </Typography>
+        </motion.div>
 
         <Grid container spacing={3}>
-          {features.map((feature) => (
+          {features.map((feature, index) => (
             <Grid
               key={feature.title}
               size={{
@@ -139,121 +147,133 @@ const FeatureSection = () => {
                 lg: 3,
               }}
             >
-              <Card
-                elevation={0}
-                sx={{
-                  height: "100%",
+              <motion.div
+                initial={{ opacity: 0, y: 44 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.1,
+                  ease: [0.4, 0, 0.2, 1],
+                }}
+                style={{ height: "100%" }}
+              >
+                <Card
+                  elevation={0}
+                  sx={{
+                    height: "100%",
 
-                  borderRadius: "28px",
-
-                  background:
-                    "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%)",
-
-                  border:
-                    "1px solid rgba(226,232,240,.8)",
-
-                  overflow: "hidden",
-
-                  position: "relative",
-
-                  transition:
-                    "all .35s ease",
-
-                  "&::before": {
-                    content: '""',
-
-                    position: "absolute",
-
-                    top: 0,
-
-                    left: 0,
-
-                    width: "100%",
-
-                    height: 4,
+                    borderRadius: "28px",
 
                     background:
-                      "linear-gradient(90deg,#38BDF8,#2563EB)",
-
-                    opacity: 0,
-
-                    transition:
-                      "all .3s ease",
-                  },
-
-                  "&:hover": {
-                    transform:
-                      "translateY(-8px)",
-
-                    boxShadow:
-                      "0 24px 50px rgba(15,23,42,.08)",
+                      "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%)",
 
                     border:
-                      "1px solid rgba(37,99,235,.15)",
+                      "1px solid rgba(226,232,240,.8)",
+
+                    overflow: "hidden",
+
+                    position: "relative",
+
+                    transition:
+                      "all .35s ease",
 
                     "&::before": {
-                      opacity: 1,
-                    },
-                  },
-                }}
-              >
-                <CardContent
-                  sx={{
-                    p: 4,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 72,
+                      content: '""',
 
-                      height: 72,
+                      position: "absolute",
 
-                      borderRadius: "22px",
+                      top: 0,
+
+                      left: 0,
+
+                      width: "100%",
+
+                      height: 4,
 
                       background:
-                        "rgba(37,99,235,.08)",
+                        "linear-gradient(90deg,#38BDF8,#2563EB)",
 
-                      color: "#2563EB",
+                      opacity: 0,
 
-                      display: "flex",
+                      transition:
+                        "all .3s ease",
+                    },
 
-                      alignItems: "center",
+                    "&:hover": {
+                      transform:
+                        "translateY(-8px)",
 
-                      justifyContent: "center",
+                      boxShadow:
+                        "0 24px 50px rgba(15,23,42,.08)",
 
-                      mb: 3,
-                    }}
-                  >
-                    {feature.icon}
-                  </Box>
+                      border:
+                        "1px solid rgba(37,99,235,.15)",
 
-                  <Typography
+                      "&::before": {
+                        opacity: 1,
+                      },
+                    },
+                  }}
+                >
+                  <CardContent
                     sx={{
-                      fontWeight: 700,
-
-                      fontSize: "1.15rem",
-
-                      color: "#0F172A",
-
-                      mb: 2,
+                      p: 4,
                     }}
                   >
-                    {feature.title}
-                  </Typography>
+                    <Box
+                      sx={{
+                        width: 72,
 
-                  <Typography
-                    sx={{
-                      color: "#64748B",
+                        height: 72,
 
-                      lineHeight: 1.8,
+                        borderRadius: "22px",
 
-                      fontSize: ".95rem",
-                    }}
-                  >
-                    {feature.description}
-                  </Typography>
-                </CardContent>
-              </Card>
+                        background:
+                          "rgba(37,99,235,.08)",
+
+                        color: "#2563EB",
+
+                        display: "flex",
+
+                        alignItems: "center",
+
+                        justifyContent: "center",
+
+                        mb: 3,
+                      }}
+                    >
+                      {feature.icon}
+                    </Box>
+
+                    <Typography
+                      sx={{
+                        fontWeight: 700,
+
+                        fontSize: "1.15rem",
+
+                        color: "#0F172A",
+
+                        mb: 2,
+                      }}
+                    >
+                      {feature.title}
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        color: "#64748B",
+
+                        lineHeight: 1.8,
+
+                        fontSize: ".95rem",
+                      }}
+                    >
+                      {feature.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </motion.div>
             </Grid>
           ))}
         </Grid>

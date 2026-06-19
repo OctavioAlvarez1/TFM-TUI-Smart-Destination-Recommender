@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import Grid from "@mui/material/Grid";
 
 import RecommendationCard from "./RecommendationCard";
@@ -18,22 +19,25 @@ const RecommendationGrid = ({
       sx={{ mt: 1 }}
     >
       {recommendations.map(
-        (recommendation) => (
+        (recommendation, index) => (
           <Grid
-            key={
-              recommendation.destination_id
-            }
-            size={{
-              xs: 12,
-              sm: 6,
-              lg: 4,
-            }}
+            key={recommendation.destination_id}
+            size={{ xs: 12 }}
           >
-            <RecommendationCard
-              recommendation={
-                recommendation
-              }
-            />
+            <motion.div
+              initial={{ opacity: 0, y: 44 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.55,
+                delay: index * 0.1,
+                ease: "easeOut",
+              }}
+              style={{ height: "100%" }}
+            >
+              <RecommendationCard
+                recommendation={recommendation}
+              />
+            </motion.div>
           </Grid>
         )
       )}

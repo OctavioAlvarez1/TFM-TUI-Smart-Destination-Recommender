@@ -98,52 +98,50 @@ const Header = () => {
             gap: 3,
           }}
         >
-          <Button
-            onMouseEnter={() =>
-              setMegaOpen(true)
-            }
-            sx={{
-              color: "#FFFFFF",
-              fontSize: ".78rem",
-              fontWeight: 500,
-              textTransform: "uppercase",
-            }}
-          >
-            Destinations
-          </Button>
+          {[
+            { label: "Destinations", onMouseEnter: () => setMegaOpen(true) },
+            { label: "Insights" },
+            { label: "Analytics" },
+            { label: "About" },
+          ].map(({ label, onMouseEnter }) => (
+            <Button
+              key={label}
+              onMouseEnter={onMouseEnter}
+              sx={{
+                color: "#FFFFFF",
+                fontSize: ".78rem",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                position: "relative",
+                pb: "6px",
+                borderRadius: 0,
 
-          <Button
-            sx={{
-              color: "#FFFFFF",
-              fontSize: ".78rem",
-              fontWeight: 500,
-              textTransform: "uppercase",
-            }}
-          >
-            Insights
-          </Button>
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: 0,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: 0,
+                  height: "2px",
+                  borderRadius: "999px",
+                  background: "#38BDF8",
+                  transition: "width .25s ease",
+                },
 
-          <Button
-            sx={{
-              color: "#FFFFFF",
-              fontSize: ".78rem",
-              fontWeight: 500,
-              textTransform: "uppercase",
-            }}
-          >
-            Analytics
-          </Button>
+                "&:hover::after": {
+                  width: "100%",
+                },
 
-          <Button
-            sx={{
-              color: "#FFFFFF",
-              fontSize: ".78rem",
-              fontWeight: 500,
-              textTransform: "uppercase",
-            }}
-          >
-            About
-          </Button>
+                "&:hover": {
+                  background: "transparent",
+                  color: "#38BDF8",
+                },
+              }}
+            >
+              {label}
+            </Button>
+          ))}
         </Box>
 
         <IconButton

@@ -1,8 +1,12 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 import {
   Container,
   Box,
+  Typography,
+  Chip,
+  Stack,
 } from "@mui/material";
 
 import Header from "../components/layout/Header";
@@ -18,6 +22,7 @@ import KpiDashboard from "../components/dashboard/KpiDashboard";
 
 import EmptyState from "../components/common/EmptyState";
 import LoadingSkeleton from "../components/common/LoadingSkeleton";
+import Footer from "../components/layout/Footer";
 
 import { getRecommendations } from "../api/recommendationApi";
 
@@ -145,17 +150,71 @@ const Home = () => {
                 }
               />
 
-              <Box mt={5}>
-                <RecommendationGrid
-                  recommendations={
-                    recommendations
-                  }
-                />
-              </Box>
+              {/* RESULTS HEADER */}
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.35, ease: "easeOut" }}
+              >
+                <Box sx={{ mb: 5 }}>
+                  <Stack
+                    direction="row"
+                    sx={{ alignItems: "center", gap: 2, flexWrap: "wrap", mb: 1.5 }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: { xs: "1.75rem", md: "2.25rem" },
+                        fontWeight: 800,
+                        color: "text.primary",
+                        lineHeight: 1.1,
+                      }}
+                    >
+                      Your Top Recommendations
+                    </Typography>
+                    <Chip
+                      label={`${recommendations.length} results`}
+                      size="small"
+                      sx={{
+                        fontWeight: 700,
+                        bgcolor: "rgba(37,99,235,.08)",
+                        color: "#2563EB",
+                        border: "1px solid rgba(37,99,235,.15)",
+                      }}
+                    />
+                  </Stack>
+
+                  <Typography
+                    sx={{
+                      color: "text.secondary",
+                      fontSize: ".95rem",
+                    }}
+                  >
+                    Showing{" "}
+                    <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
+                      {recommendations.length} destinations
+                    </Box>{" "}
+                    for profile{" "}
+                    <Box component="span" sx={{ fontWeight: 700, color: "#2563EB" }}>
+                      {userId}
+                    </Box>{" "}
+                    ·{" "}
+                    <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
+                      {new Date(2024, month - 1).toLocaleString("en", { month: "long" })}
+                    </Box>{" "}
+                    · ranked by AI match score
+                  </Typography>
+                </Box>
+              </motion.div>
+
+              <RecommendationGrid
+                recommendations={recommendations}
+              />
             </>
           )}
         </Box>
       </Container>
+
+      <Footer />
     </>
   );
 };

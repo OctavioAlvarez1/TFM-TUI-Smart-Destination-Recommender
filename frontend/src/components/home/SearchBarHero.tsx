@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import {
   Paper,
   Box,
@@ -69,6 +70,15 @@ const SearchBarHero = ({
   };
 
   return (
+    <motion.div
+      initial={{ opacity: 0, y: 48 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.75,
+        delay: 0.55,
+        ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
+      }}
+    >
     <Paper
       elevation={0}
       sx={{
@@ -476,6 +486,7 @@ const SearchBarHero = ({
         </Box>
       </Box>
     </Paper>
+    </motion.div>
   );
 };
 
