@@ -1,19 +1,7 @@
 """
-=====================================================
-TUI Smart Destination Recommender
-Confidence Engine
-=====================================================
-
-Purpose
--------
-Calculate recommendation confidence scores.
-
-Confidence indicates how reliable a recommendation
-is based on available signals.
-
-Author
-------
-Octavio Alvarez
+Recommendation confidence calculator.
+Combines: 50% preference match + 30% popularity + 20% sustainability.
+Outputs a 0-100 confidence score indicating how well the destination fits the traveler.
 """
 
 class ConfidenceEngine:

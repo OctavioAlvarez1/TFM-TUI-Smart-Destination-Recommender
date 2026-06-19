@@ -1,3 +1,7 @@
+// Features overview section on the Home page.
+// Renders four feature cards: Sustainability Intelligence, Traveler Satisfaction,
+// Congestion Analytics and AI Recommendation Engine.
+// Dark-mode aware card backgrounds.
 import { motion } from "framer-motion";
 import {
   Box,
@@ -6,6 +10,7 @@ import {
   Container,
   Grid,
   Typography,
+  useTheme,
 } from "@mui/material";
 
 import TravelExploreRoundedIcon from "@mui/icons-material/TravelExploreRounded";
@@ -57,6 +62,9 @@ const features = [
 ];
 
 const FeatureSection = () => {
+  const theme = useTheme();
+  const dark = theme.palette.mode === "dark";
+
   return (
     <Box
       sx={{
@@ -165,11 +173,12 @@ const FeatureSection = () => {
 
                     borderRadius: "28px",
 
-                    background:
-                      "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%)",
+                    background: dark
+                      ? "linear-gradient(180deg, #1E293B 0%, #111827 100%)"
+                      : "linear-gradient(180deg,#FFFFFF 0%,#F8FAFC 100%)",
 
-                    border:
-                      "1px solid rgba(226,232,240,.8)",
+                    border: "1px solid",
+                    borderColor: "divider",
 
                     overflow: "hidden",
 
@@ -204,11 +213,12 @@ const FeatureSection = () => {
                       transform:
                         "translateY(-8px)",
 
-                      boxShadow:
-                        "0 24px 50px rgba(15,23,42,.08)",
+                      boxShadow: dark
+                        ? "0 24px 50px rgba(0,0,0,.35)"
+                        : "0 24px 50px rgba(15,23,42,.08)",
 
                       border:
-                        "1px solid rgba(37,99,235,.15)",
+                        "1px solid rgba(37,99,235,.30)",
 
                       "&::before": {
                         opacity: 1,
@@ -229,8 +239,9 @@ const FeatureSection = () => {
 
                         borderRadius: "22px",
 
-                        background:
-                          "rgba(37,99,235,.08)",
+                        background: dark
+                          ? "rgba(37,99,235,.18)"
+                          : "rgba(37,99,235,.08)",
 
                         color: "#2563EB",
 
@@ -252,7 +263,7 @@ const FeatureSection = () => {
 
                         fontSize: "1.15rem",
 
-                        color: "#0F172A",
+                        color: "text.primary",
 
                         mb: 2,
                       }}
@@ -262,7 +273,7 @@ const FeatureSection = () => {
 
                     <Typography
                       sx={{
-                        color: "#64748B",
+                        color: "text.secondary",
 
                         lineHeight: 1.8,
 

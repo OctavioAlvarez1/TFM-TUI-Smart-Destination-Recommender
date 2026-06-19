@@ -1,3 +1,7 @@
+// Main Destinations page.
+// Renders the SearchBarHero input form and the RecommendationGrid results.
+// Manages recommendation fetch state, loading/error handling and demand redistribution banner.
+// Passes the selected month and results up to App for cross-page sharing.
 import { useState } from "react";
 import { motion } from "framer-motion";
 
@@ -139,7 +143,7 @@ const Home = ({ month, setMonth, recommendations, setRecommendations }: HomeProp
                   </Box>
 
                   <Box sx={{ flex: 1, minWidth: 200 }}>
-                    <Typography sx={{ fontSize: ".88rem", color: "#0F172A", lineHeight: 1.6 }}>
+                    <Typography sx={{ fontSize: ".88rem", color: "text.primary", lineHeight: 1.6 }}>
                       <Box component="span" sx={{ fontWeight: 700 }}>
                         Demand Redistribution Active
                       </Box>

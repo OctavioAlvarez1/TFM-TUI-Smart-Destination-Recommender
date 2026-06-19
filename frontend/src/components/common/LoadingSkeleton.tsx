@@ -39,14 +39,14 @@ const LoadingSkeleton = () => {
                 height={50}
               />
 
-              <Box mt={2}>
+              <Box sx={{ mt: 2 }}>
                 <Skeleton
                   width="40%"
                   height={60}
                 />
               </Box>
 
-              <Box mt={3}>
+              <Box sx={{ mt: 3 }}>
                 <Skeleton
                   width="90%"
                   height={30}

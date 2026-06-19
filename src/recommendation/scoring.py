@@ -1,47 +1,8 @@
 """
-=====================================================
-TUI Smart Destination Recommender
-Scoring Engine
-=====================================================
-
-Purpose
--------
-Calculate recommendation scores for candidate
-destinations.
-
-Scoring Components
-------------------
-- Preference Score
-- Sustainability Score
-- Popularity Score
-- Congestion Adjustment
-
-Business Rules
---------------
-- Sustainability boost
-- Sustainability penalty
-- Congestion boost
-- Congestion penalty
-
-Formula
--------
-Final Score =
-(0.45 × Preference Score)
-+
-(0.25 × Sustainability Score)
-+
-(0.15 × Popularity Score)
-+
-(0.15 × Congestion Adjustment)
-
-Author
-------
-Octavio Alvarez
-
-Project
--------
-TUI Smart Destination Recommender
-AI-Powered Sustainable Tourism Recommendation System
+Final scoring formula.
+Computes: 0.45 × Preference + 0.25 × Sustainability + 0.15 × Popularity + 0.15 × Congestion.
+Applies business rules: Sustainability > 85 → +5%; < 50 → −10%.
+                        Congestion   < 40 → +5%; > 80 → −10%.
 """
 
 

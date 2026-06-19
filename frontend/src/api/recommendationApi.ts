@@ -1,3 +1,6 @@
+// Axios HTTP client for the FastAPI backend (localhost:8000).
+// getRecommendations(request) — POSTs to /recommendations, returns ranked destination list.
+// getUserProfile(userId) — GETs /users/{userId}, returns traveler profile for SearchBar chips.
 import axios from "axios";
 
 const API_URL = "http://localhost:8000";

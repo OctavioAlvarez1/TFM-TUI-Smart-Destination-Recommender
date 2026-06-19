@@ -1,33 +1,7 @@
 """
-=====================================================
-TUI Smart Destination Recommender
-Recommendation Engine
-=====================================================
-
-Purpose
--------
-Generate personalized destination recommendations
-based on user preferences, sustainability metrics,
-destination popularity and congestion levels.
-
-Responsibilities
-----------------
-- Load user profile
-- Evaluate all destinations
-- Calculate recommendation scores
-- Calculate recommendation confidence
-- Generate recommendation explanations
-- Rank destinations
-- Return Top-N recommendations
-
-Author
-------
-Octavio Alvarez
-
-Project
--------
-TUI Smart Destination Recommender
-AI-Powered Sustainable Tourism Recommendation System
+Main recommendation orchestrator.
+Calls all sub-engines (Scoring, Popularity, Sustainability, Congestion, Confidence,
+Explainability) in sequence, merges results and returns a ranked destination list.
 """
 
 from src.data.data_loader import DataLoader

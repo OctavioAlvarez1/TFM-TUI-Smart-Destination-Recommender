@@ -4,7 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-TUI Smart Destination Recommender is a full-stack AI system that recommends sustainable travel destinations. It combines a Python recommendation engine (FastAPI + Streamlit) with a React/TypeScript frontend.
+**Horizon** is a full-stack AI system that recommends sustainable travel destinations in Spain. It addresses over-tourism concentration (85% of visitors go to 10% of destinations) by using a weighted scoring formula to surface less-saturated, more sustainable alternatives.
+
+- **Backend**: Python · FastAPI · pandas (recommendation engine + REST API)
+- **Frontend**: React 19 · TypeScript · Vite · Material UI v9 (dark/light mode SPA)
+- **Data**: 5 CSV files + open data from INE (EOH) and FRONTUR
 
 ## Commands
 
@@ -14,7 +18,7 @@ TUI Smart Destination Recommender is a full-stack AI system that recommends sust
 # Start FastAPI server (from project root)
 python -m uvicorn src.api.app:app --reload --port 8000
 
-# Start Streamlit dashboard
+# Start Streamlit dashboard (separate process, optional)
 streamlit run src/dashboard/app.py
 
 # Run all tests
@@ -25,6 +29,9 @@ python -m pytest tests/test_recommendation_engine.py -v
 
 # Install Python dependencies
 pip install -r requirements.txt
+
+# Refresh open data from INE/FRONTUR APIs
+python data/scripts/fetch_open_data.py
 ```
 
 ### Frontend
@@ -42,59 +49,111 @@ npm run preview   # Preview production build
 
 ### Backend — `src/`
 
-The recommendation engine is a pipeline of independent scoring modules all orchestrated by `RecommendationEngine`:
+Independent scoring modules orchestrated by `RecommendationEngine`:
 
 ```
 src/
-├── api/app.py              # FastAPI entry point (POST /recommendations, GET /health)
-├── dashboard/app.py        # Streamlit UI (separate process, read-only view)
-├── config/settings.py      # Paths to the 5 raw CSV files (resolved via pathlib)
-├── data/loader.py          # Loads and merges all CSV datasets
-├── recommendation/         # Core scoring modules
-│   ├── engine.py           # Orchestrator — calls all sub-engines, returns ranked list
-│   ├── popularity.py       # 70% booking volume + 30% ratings
-│   ├── sustainability.py   # Classifies: Excellent/Good/Moderate/Poor
-│   ├── congestion.py       # Monthly overtourism penalties
-│   └── scoring.py          # Preference matching against user profile
-├── explainability/         # Human-readable explanation generation
+├── api/
+│   ├── app.py              # FastAPI entry point — POST /recommendations, GET /health, GET /users/:id
+│   └── models.py           # Pydantic request/response models
+├── config/settings.py      # Absolute paths to all 5 CSVs (pathlib — no hardcoding)
+├── data/data_loader.py     # Centralised CSV → DataFrame access layer
+├── recommendation/
+│   ├── recommendation_engine.py  # Orchestrator — calls all sub-engines, returns ranked list
+│   ├── scoring.py          # Final weighted formula + business rule boosts/penalties
+│   ├── popularity.py       # 70% booking volume + 30% average rating → 0-100
+│   ├── sustainability.py   # Classifies Excellent/Good/Moderate/Poor, applies boosts
+│   ├── congestion.py       # Monthly INE data → congestion score, applies redistribution penalty
+│   ├── confidence.py       # 0.50×pref + 0.30×pop + 0.20×sust → confidence score
+│   └── explainability.py   # Plain-language explanation strings per recommendation
+├── dashboard/app.py        # Streamlit UI (separate process, read-only)
 └── utils/                  # Shared helpers
 ```
 
-**Final scoring formula** (in `recommendation/engine.py`):
+**Scoring formula** (`recommendation/scoring.py`):
 ```
 Final Score = 0.45 × Preference + 0.25 × Sustainability + 0.15 × Popularity + 0.15 × Congestion
 ```
 
-Business rules applied on top:
-- Sustainability > 85 → +5% boost; Sustainability < 50 → −10% penalty
-- Congestion < 40 → +5% boost; Congestion > 80 → −10% penalty
+Business rules (multiplicative):
+- Sustainability > 85 → ×1.05 (+5%); Sustainability < 50 → ×0.90 (−10%)
+- Congestion < 40 → ×1.05 (+5%); Congestion > 80 → ×0.90 (−10% redistribution trigger)
 
 ### Data — `data/raw/`
 
-Five CSV files are the only data store (no database):
-- `destinations.csv` — 20 destinations with attribute scores (beach, culture, nature, nightlife, family, price)
-- `users.csv` — 100 synthetic users (travel_style, budget_level, sustainability_preference)
-- `bookings_history.csv` — ~1000 bookings for popularity calculation
+No database — all state is in 5 CSV files:
+- `destinations.csv` — 20 destinations: beach/culture/nature/nightlife/family/price attributes
+- `users.csv` — 100 synthetic GDPR-compliant traveler profiles
+- `bookings_history.csv` — ~1,000 bookings for popularity calculation
 - `sustainability_scores.csv` — carbon, local business, public transport, overall scores
-- `congestion_scores.csv` — monthly congestion levels per destination
+- `congestion_scores.csv` — 12 monthly congestion values per destination (from INE EOH)
+
+Open data in `data/enriched/`:
+- `frontur_ccaa.csv` — FRONTUR international arrivals by CCAA
+- `ine_eoh_monthly.csv` — INE hotel occupancy monthly by province
 
 ### Frontend — `frontend/src/`
 
-Single-page React app calling the FastAPI backend:
+Single-page app with page-state router (no React Router):
 
 ```
 frontend/src/
-├── main.tsx            # React entry point
-├── App.tsx             # Root component with ThemeProvider
-├── pages/Home.tsx      # Main page (recommendation form + results)
-├── api/                # Axios client pointing to localhost:8000
-├── components/         # Layout, charts, dashboard cards, common UI
-├── theme/              # MUI theme configuration (dark/light)
-└── types/              # TypeScript interfaces matching API response shape
+├── App.tsx                 # Root — manages page, activeMonth and recommendations state
+├── pages/
+│   ├── Home.tsx            # Search form + recommendation results + KPI dashboard
+│   ├── Insights.tsx        # Congestion map, Low Season Optimizer, heatmap, redistribution scenarios
+│   ├── Analytics.tsx       # Governance dashboard — penalised destinations, status breakdown, table
+│   └── About.tsx           # Project context, scoring formula, architecture, project scope
+├── api/recommendationApi.ts # Axios client → localhost:8000
+├── components/
+│   ├── home/               # SearchBarHero, FeatureSection, HeroSection, DestinationShowcase
+│   ├── recommendations/    # RecommendationCard, Grid, Badges (Sustainability/Confidence/Congestion)
+│   ├── map/DestinationMap.tsx  # Leaflet map — switches tile layer between light_all/dark_all
+│   ├── dashboard/KpiDashboard.tsx  # Summary metrics after a search
+│   ├── layout/             # Header, Footer, MainLayout, MegaMenu
+│   └── common/             # ThemeToggle, LoadingSpinner, EmptyState, ErrorMessage
+├── theme/
+│   ├── ThemeProvider.tsx   # Dark/light context + localStorage persistence
+│   ├── darkTheme.ts        # background.default:#0B1220, background.paper:#111827
+│   └── lightTheme.ts       # Standard MUI light palette
+└── types/recommendation.ts # TypeScript interfaces matching API response shape
 ```
 
-The frontend expects the FastAPI server at `http://localhost:8000`. CORS is configured for `localhost:5173`.
+Frontend expects FastAPI at `http://localhost:8000`. CORS allows `localhost:5173`.
 
 ### Tests — `tests/`
 
-One test file per backend module (pytest). Tests use the actual CSV data from `data/raw/` via `settings.py` — no mocking of data access. Run from the project root so `src/config/settings.py` resolves paths correctly.
+One pytest file per backend module. Tests use real CSV data from `data/raw/` — no mocking.  
+Always run from the **project root** so `src/config/settings.py` resolves paths correctly.
+
+## Key Patterns
+
+### MUI v9 — Dark Mode
+
+All color values must use MUI theme tokens in `sx` props (not hardcoded hex):
+- Text: `color: "text.primary"` / `color: "text.secondary"` (never `#0F172A` / `#64748B`)
+- Borders: `border: "1px solid"` + `borderColor: "divider"` (never `rgba(226,232,240,.8)`)
+- Dynamic backgrounds: use `useTheme()` hook → `const dark = theme.palette.mode === "dark"`
+- Inline `style` (not `sx`): must use conditional — `dark ? "#F1F5F9" : "#0F172A"`
+- `InputProps` is deprecated in v9 → use `slotProps={{ input: {...}, htmlInput: {...} }}`
+
+### Map Tiles
+
+`DestinationMap.tsx` switches CartoCDN tile URL based on `dark`:
+- Light: `light_all/{z}/{x}/{y}{r}.png`
+- Dark: `dark_all/{z}/{x}/{y}{r}.png`
+
+### State Sharing
+
+`activeMonth` and `recommendations` live in `App.tsx` and flow down as props. The Insights page uses both to highlight the user's searched destinations on the map and heatmap.
+
+### AEMET API Key
+
+Must **only** be set as environment variable `AEMET_API_KEY`. Never hardcode in any file or commit to the repository.
+
+## Documentation
+
+- `docs/USER_MANUAL.md` — end-user guide (how to use the app, score interpretation, troubleshooting)
+- `docs/ARCHITECTURE.md` — system architecture, 5-layer design, data flow
+- `docs/API_REFERENCE.md` — full REST API spec with examples
+- `data/README_SOURCES.md` — open data sources and refresh instructions

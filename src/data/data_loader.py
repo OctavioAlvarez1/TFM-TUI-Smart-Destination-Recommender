@@ -1,30 +1,7 @@
 """
-=====================================================
-TUI Smart Destination Recommender
-Data Loader Module
-=====================================================
-
-Purpose
--------
-Centralized data access layer responsible for loading
-all project datasets.
-
-Responsibilities
-----------------
-- Load destinations data
-- Load users data
-- Load booking history
-- Load sustainability scores
-- Load congestion scores
-
-Author
-------
-Octavio Alvarez
-
-Project
--------
-TUI Smart Destination Recommender
-AI-Powered Sustainable Tourism Recommendation System
+Data access layer.
+Static methods to load each CSV into a pandas DataFrame.
+All modules should go through DataLoader instead of reading CSVs directly.
 """
 
 import pandas as pd

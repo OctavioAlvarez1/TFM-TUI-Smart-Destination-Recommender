@@ -1,6 +1,10 @@
+// Interactive Leaflet map of Spain's 20 monitored destinations.
+// Circle markers are sized and coloured by congestion level for the selected month.
+// Switches between CartoCDN light_all and dark_all tile layers based on theme.
+// Recommended destinations (if a search was run) are highlighted at full opacity.
 import { useEffect } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from "react-leaflet";
-import { Box, Typography, Chip } from "@mui/material";
+import { Box, Typography, Chip, useTheme } from "@mui/material";
 import L from "leaflet";
 
 // Fix default marker icon paths broken by Vite bundling
@@ -104,22 +108,27 @@ interface DestinationMapProps {
 }
 
 const DestinationMap = ({ activeMonth, recommendedIds }: DestinationMapProps) => {
+  const theme = useTheme();
+  const dark = theme.palette.mode === "dark";
   const month = activeMonth ?? 7;
 
   return (
-    <Box sx={{ borderRadius: "20px", overflow: "hidden", border: "1px solid rgba(226,232,240,.8)" }}>
+    <Box sx={{ borderRadius: "20px", overflow: "hidden", border: "1px solid", borderColor: "divider" }}>
       {/* Map */}
       <MapContainer
         center={[40.0, -3.5]}
         zoom={5}
-        style={{ height: 480, width: "100%", background: "#F1F5F9" }}
+        style={{ height: 480, width: "100%", background: dark ? "#1E293B" : "#F1F5F9" }}
         zoomControl={true}
         scrollWheelZoom={false}
       >
         <FitBounds />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          url={dark
+            ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          }
         />
 
         {DESTINATIONS.map((dest) => {
@@ -145,10 +154,10 @@ const DestinationMap = ({ activeMonth, recommendedIds }: DestinationMapProps) =>
             >
               <Popup>
                 <Box sx={{ minWidth: 160, p: 0.5 }}>
-                  <Typography sx={{ fontWeight: 800, fontSize: ".9rem", color: "#0F172A", mb: 0.5 }}>
+                  <Typography sx={{ fontWeight: 800, fontSize: ".9rem", color: "text.primary", mb: 0.5 }}>
                     {dest.name}
                   </Typography>
-                  <Typography sx={{ fontSize: ".75rem", color: "#64748B", mb: 1 }}>
+                  <Typography sx={{ fontSize: ".75rem", color: "text.secondary", mb: 1 }}>
                     {dest.region}
                   </Typography>
                   <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", mb: 0.75 }}>
@@ -163,7 +172,7 @@ const DestinationMap = ({ activeMonth, recommendedIds }: DestinationMapProps) =>
                       sx={{ fontSize: ".65rem", fontWeight: 700, height: 18, bgcolor: `${col.fill}22`, color: col.fill }}
                     />
                   </Box>
-                  <Typography sx={{ fontSize: ".78rem", color: "#0F172A", fontWeight: 700 }}>
+                  <Typography sx={{ fontSize: ".78rem", color: "text.primary", fontWeight: 700 }}>
                     Congestion score: <span style={{ color: col.fill }}>{score}</span>/100
                   </Typography>
                   {isRec && recommendedIds && recommendedIds.length > 0 && (
@@ -183,10 +192,12 @@ const DestinationMap = ({ activeMonth, recommendedIds }: DestinationMapProps) =>
         sx={{
           display: "flex", alignItems: "center", flexWrap: "wrap",
           gap: 2, px: 2.5, py: 1.5,
-          bgcolor: "#F8FAFC", borderTop: "1px solid rgba(226,232,240,.8)",
+          bgcolor: "background.paper",
+          borderTop: "1px solid",
+          borderTopColor: "divider",
         }}
       >
-        <Typography sx={{ fontSize: ".72rem", fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: ".1em" }}>
+        <Typography sx={{ fontSize: ".72rem", fontWeight: 700, color: "text.secondary", textTransform: "uppercase", letterSpacing: ".1em" }}>
           Congestion
         </Typography>
         {[
@@ -197,10 +208,10 @@ const DestinationMap = ({ activeMonth, recommendedIds }: DestinationMapProps) =>
         ].map((l) => (
           <Box key={l.label} sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
             <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: l.color }} />
-            <Typography sx={{ fontSize: ".7rem", color: "#475569" }}>{l.label}</Typography>
+            <Typography sx={{ fontSize: ".7rem", color: "text.secondary" }}>{l.label}</Typography>
           </Box>
         ))}
-        <Typography sx={{ fontSize: ".7rem", color: "#94A3B8", ml: "auto" }}>
+        <Typography sx={{ fontSize: ".7rem", color: "text.secondary", ml: "auto" }}>
           Circle size ∝ congestion intensity · OpenStreetMap tiles
         </Typography>
       </Box>

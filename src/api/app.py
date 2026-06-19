@@ -1,17 +1,7 @@
 """
-=====================================================
-TUI Smart Destination Recommender
-REST API
-=====================================================
-
-Purpose
--------
-Expose recommendation services
-through FastAPI endpoints.
-
-Author
-------
-Octavio Alvarez
+FastAPI application entry point.
+Exposes POST /recommendations and GET /health endpoints.
+CORS configured for localhost:5173 (React frontend).
 """
 
 from fastapi import FastAPI

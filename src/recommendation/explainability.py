@@ -1,20 +1,7 @@
 """
-Explainability Engine
-
-Purpose
--------
-Generate human-readable explanations for destination recommendations.
-
-This module converts recommendation signals into transparent
-explanations that can be displayed to travelers and executives.
-
-Supports:
-- Preference explanations
-- Sustainability explanations
-- Congestion explanations
-- Popularity explanations
-
-Author: TUI Smart Destination Recommender
+Human-readable explanation generator.
+Produces a list of plain-language strings for each recommendation,
+explaining the preference match, sustainability impact, congestion status and popularity.
 """
 
 from typing import List

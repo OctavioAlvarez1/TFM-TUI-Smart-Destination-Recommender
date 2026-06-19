@@ -1,16 +1,7 @@
 """
-=====================================================
-API Models
-=====================================================
-
-Purpose
--------
-Pydantic models for API requests
-and responses.
-
-Author
-------
-Octavio Alvarez
+Pydantic request/response models for the recommendations API.
+Defines RecommendationRequest (user_id, month, top_n) and
+RecommendationResponse (ranked list of scored destinations).
 """
 
 from pydantic import BaseModel

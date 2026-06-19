@@ -1,3 +1,7 @@
+// About page — project context and methodology.
+// Covers: the over-tourism challenge, scoring formula with animated weight bars,
+// 5-layer system architecture, project scope (in-scope Reto 2 vs out-of-scope retos),
+// and institutional context (UCM TFM + TUI Care Foundation).
 import { motion } from "framer-motion";
 import {
   Box,
@@ -6,6 +10,8 @@ import {
   Grid,
   Divider,
   Stack,
+  Chip,
+  useTheme,
 } from "@mui/material";
 
 import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
@@ -14,6 +20,8 @@ import PsychologyRoundedIcon from "@mui/icons-material/PsychologyRounded";
 import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
 import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import PublicRoundedIcon from "@mui/icons-material/PublicRounded";
+import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import RadioButtonUncheckedRoundedIcon from "@mui/icons-material/RadioButtonUncheckedRounded";
 
 import Footer from "../components/layout/Footer";
 
@@ -31,10 +39,10 @@ const FormulaBar = ({
   >
     <Box sx={{ mb: 2 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
-        <Typography sx={{ fontWeight: 700, color: "#0F172A", fontSize: ".9rem" }}>{label}</Typography>
+        <Typography sx={{ fontWeight: 700, color: "text.primary", fontSize: ".9rem" }}>{label}</Typography>
         <Typography sx={{ fontWeight: 900, color, fontSize: ".9rem" }}>{(weight * 100).toFixed(0)}%</Typography>
       </Box>
-      <Box sx={{ height: 10, borderRadius: "999px", bgcolor: "rgba(0,0,0,.06)", overflow: "hidden" }}>
+      <Box sx={{ height: 10, borderRadius: "999px", bgcolor: "rgba(128,128,128,.12)", overflow: "hidden" }}>
         <motion.div
           initial={{ width: 0 }}
           whileInView={{ width: `${weight * 100}%` }}
@@ -52,7 +60,10 @@ const LayerCard = ({
   num, title, desc, color, delay,
 }: {
   num: string; title: string; desc: string; color: string; delay: number;
-}) => (
+}) => {
+  const theme = useTheme();
+  const dark = theme.palette.mode === "dark";
+  return (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -63,8 +74,11 @@ const LayerCard = ({
       sx={{
         display: "flex", gap: 2.5, p: 2.5,
         borderRadius: "16px",
-        border: "1px solid rgba(226,232,240,.8)",
-        background: `linear-gradient(145deg, ${color}06 0%, ${color}0D 100%)`,
+        border: "1px solid",
+        borderColor: "divider",
+        background: dark
+          ? `linear-gradient(145deg, ${color}12 0%, ${color}1A 100%)`
+          : `linear-gradient(145deg, ${color}06 0%, ${color}0D 100%)`,
         height: "100%",
       }}
     >
@@ -79,15 +93,19 @@ const LayerCard = ({
         {num}
       </Box>
       <Box>
-        <Typography sx={{ fontWeight: 700, color: "#0F172A", fontSize: ".9rem", mb: 0.5 }}>{title}</Typography>
-        <Typography sx={{ fontSize: ".82rem", color: "#64748B", lineHeight: 1.65 }}>{desc}</Typography>
+        <Typography sx={{ fontWeight: 700, color: "text.primary", fontSize: ".9rem", mb: 0.5 }}>{title}</Typography>
+        <Typography sx={{ fontSize: ".82rem", color: "text.secondary", lineHeight: 1.65 }}>{desc}</Typography>
       </Box>
     </Box>
   </motion.div>
-);
+  );
+};
 
 // ── Main ──────────────────────────────────────────────────
-const About = () => (
+const About = () => {
+  const theme = useTheme();
+  const dark = theme.palette.mode === "dark";
+  return (
   <>
     {/* PAGE HEADER */}
     <Box
@@ -150,7 +168,7 @@ const About = () => (
     <Container maxWidth="xl" sx={{ py: { xs: 8, md: 10 } }}>
 
       {/* THE CHALLENGE */}
-      <Grid container spacing={{ xs: 6, md: 10 }} sx={{ mb: 10 }} alignItems="center">
+      <Grid container spacing={{ xs: 6, md: 10 }} sx={{ mb: 10, alignItems: "center" }}>
         <Grid size={{ xs: 12, md: 6 }}>
           <motion.div
             initial={{ opacity: 0, x: -24 }}
@@ -161,16 +179,16 @@ const About = () => (
             <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
               The Challenge
             </Typography>
-            <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "#0F172A", lineHeight: 1.1, mb: 3 }}>
-              Reto 2: AI Recommendation Engine & Demand Redistribution
+            <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "text.primary", lineHeight: 1.1, mb: 3 }}>
+              Challenge 2: AI Recommendation Engine & Demand Redistribution
             </Typography>
-            <Typography sx={{ color: "#64748B", lineHeight: 1.9, mb: 2.5, fontSize: ".95rem" }}>
+            <Typography sx={{ color: "text.secondary", lineHeight: 1.9, mb: 2.5, fontSize: ".95rem" }}>
               Most recommendation systems are designed to maximize user satisfaction by showing what's most
               likely to please you. This works well for selling more — but it causes 1,000,000 people to end
               up visiting the same places, creating overcrowding, infrastructure saturation and economic leakage.
             </Typography>
-            <Typography sx={{ color: "#64748B", lineHeight: 1.9, fontSize: ".95rem" }}>
-              <Box component="span" sx={{ fontWeight: 700, color: "#0F172A" }}>The question Horizon answers:</Box>{" "}
+            <Typography sx={{ color: "text.secondary", lineHeight: 1.9, fontSize: ".95rem" }}>
+              <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>The question Horizon answers:</Box>{" "}
               Can we use artificial intelligence to recommend attractive experiences for the traveler
               while simultaneously distributing tourism demand more sustainably across Spain's territory?
             </Typography>
@@ -195,16 +213,17 @@ const About = () => (
                   <Box
                     sx={{
                       p: 2.5, borderRadius: "16px",
-                      border: "1px solid rgba(226,232,240,.8)",
+                      border: "1px solid",
+                    borderColor: "divider",
                       background: `linear-gradient(145deg, ${card.color}06 0%, ${card.color}10 100%)`,
                       height: "100%",
                     }}
                   >
                     <Box sx={{ color: card.color, mb: 1.5 }}>{card.icon}</Box>
-                    <Typography sx={{ fontWeight: 700, color: "#0F172A", fontSize: ".88rem", mb: 0.5 }}>
+                    <Typography sx={{ fontWeight: 700, color: "text.primary", fontSize: ".88rem", mb: 0.5 }}>
                       {card.title}
                     </Typography>
-                    <Typography sx={{ fontSize: ".78rem", color: "#64748B", lineHeight: 1.65 }}>
+                    <Typography sx={{ fontSize: ".78rem", color: "text.secondary", lineHeight: 1.65 }}>
                       {card.desc}
                     </Typography>
                   </Box>
@@ -218,7 +237,7 @@ const About = () => (
       <Divider sx={{ mb: 10 }} />
 
       {/* SCORING FORMULA */}
-      <Grid container spacing={{ xs: 6, md: 10 }} sx={{ mb: 10 }} alignItems="center">
+      <Grid container spacing={{ xs: 6, md: 10 }} sx={{ mb: 10, alignItems: "center" }}>
         <Grid size={{ xs: 12, md: 5 }}>
           <motion.div
             initial={{ opacity: 0, x: -24 }}
@@ -229,10 +248,10 @@ const About = () => (
             <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
               AI Scoring Formula
             </Typography>
-            <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 800, color: "#0F172A", lineHeight: 1.1, mb: 2.5 }}>
+            <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 800, color: "text.primary", lineHeight: 1.1, mb: 2.5 }}>
               How Horizon Scores Each Destination
             </Typography>
-            <Typography sx={{ color: "#64748B", lineHeight: 1.9, mb: 3, fontSize: ".9rem" }}>
+            <Typography sx={{ color: "text.secondary", lineHeight: 1.9, mb: 3, fontSize: ".9rem" }}>
               Every recommendation is computed by combining four independent scoring modules,
               each measuring a different dimension of destination quality. Sustainability criteria
               receive a significant weight to incentivize greener choices.
@@ -269,8 +288,8 @@ const About = () => (
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <Box sx={{ p: { xs: 3, md: 4 }, borderRadius: "24px", border: "1px solid rgba(226,232,240,.8)", bgcolor: "#FAFBFF" }}>
-              <Typography sx={{ fontWeight: 700, color: "#0F172A", mb: 3, fontSize: "1rem" }}>
+            <Box sx={{ p: { xs: 3, md: 4 }, borderRadius: "24px", border: "1px solid", borderColor: "divider", background: dark ? "linear-gradient(160deg, #1E293B 0%, #111827 100%)" : "#FAFBFF" }}>
+              <Typography sx={{ fontWeight: 700, color: "text.primary", mb: 3, fontSize: "1rem" }}>
                 Score Weight Distribution
               </Typography>
               <FormulaBar label="Preference Match" weight={0.45} color="#6366F1" delay={0} />
@@ -289,7 +308,7 @@ const About = () => (
                 ].map((item, i) => (
                   <Box key={i} sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
                     <Box sx={{ color: item.color, mt: 0.2, flexShrink: 0 }}>{item.icon}</Box>
-                    <Typography sx={{ fontSize: ".8rem", color: "#64748B", lineHeight: 1.65 }}>{item.text}</Typography>
+                    <Typography sx={{ fontSize: ".8rem", color: "text.secondary", lineHeight: 1.65 }}>{item.text}</Typography>
                   </Box>
                 ))}
               </Stack>
@@ -310,10 +329,10 @@ const About = () => (
         <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
           System Architecture
         </Typography>
-        <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "#0F172A", lineHeight: 1.1, mb: 1.5 }}>
+        <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "text.primary", lineHeight: 1.1, mb: 1.5 }}>
           5-Layer Pipeline
         </Typography>
-        <Typography sx={{ color: "#64748B", fontSize: ".95rem", lineHeight: 1.8, maxWidth: 680, mb: 6 }}>
+        <Typography sx={{ color: "text.secondary", fontSize: ".95rem", lineHeight: 1.8, maxWidth: 680, mb: 6 }}>
           Horizon is built as a layered system, each layer handling a specific responsibility —
           from raw data ingestion to governance and monitoring.
         </Typography>
@@ -332,10 +351,112 @@ const About = () => (
           </Grid>
         ))}
       </Grid>
+      <Divider sx={{ mb: 10 }} />
+
+      {/* PROJECT SCOPE */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
+          Project Scope
+        </Typography>
+        <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "text.primary", lineHeight: 1.1, mb: 1.5 }}>
+          What This TFM Covers — and What It Doesn't
+        </Typography>
+        <Typography sx={{ color: "text.secondary", fontSize: ".95rem", lineHeight: 1.8, maxWidth: 720, mb: 6 }}>
+          Future Shapers Spain is a multi-reto challenge. Horizon is scoped to <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>Reto 2</Box> — AI recommendation engine and demand redistribution. Other retos are handled by separate teams and are out of scope for this project.
+        </Typography>
+      </motion.div>
+
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {/* In scope */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <Box sx={{ p: 3.5, borderRadius: "20px", border: "1px solid rgba(16,185,129,.2)", bgcolor: "rgba(16,185,129,.03)", height: "100%" }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+                <Box sx={{ width: 36, height: 36, borderRadius: "10px", bgcolor: "rgba(16,185,129,.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <CheckCircleOutlineRoundedIcon sx={{ color: "#10B981", fontSize: 20 }} />
+                </Box>
+                <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1rem" }}>
+                  In Scope — Reto 2
+                </Typography>
+              </Box>
+              <Stack spacing={1.5}>
+                {[
+                  "AI-powered destination recommendation engine (FastAPI + scoring pipeline)",
+                  "Demand redistribution via congestion penalties and sustainability weights",
+                  "Low-season boost — best months to visit based on INE congestion data",
+                  "Open data integration: INE EOH (hotel travelers), FRONTUR (international), AEMET (climate normals)",
+                  "Interactive georreferenced map with real-time month/congestion overlay",
+                  "User profile matching (travel style, budget, sustainability preference)",
+                  "Explainability layer — human-readable reasoning for each recommendation",
+                  "React dashboard with sustainability KPIs and congestion heatmap",
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
+                    <CheckCircleOutlineRoundedIcon sx={{ fontSize: 15, color: "#10B981", mt: 0.2, flexShrink: 0 }} />
+                    <Typography sx={{ fontSize: ".82rem", color: "text.secondary", lineHeight: 1.65 }}>{item}</Typography>
+                  </Box>
+                ))}
+              </Stack>
+            </Box>
+          </motion.div>
+        </Grid>
+
+        {/* Out of scope */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.08, ease: "easeOut" }}
+          >
+            <Box sx={{ p: 3.5, borderRadius: "20px", border: "1px solid rgba(100,116,139,.15)", bgcolor: "rgba(100,116,139,.03)", height: "100%" }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+                <Box sx={{ width: 36, height: 36, borderRadius: "10px", bgcolor: "rgba(100,116,139,.10)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <RadioButtonUncheckedRoundedIcon sx={{ color: "text.secondary", fontSize: 20 }} />
+                </Box>
+                <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1rem" }}>
+                  Out of Scope — Other Retos
+                </Typography>
+              </Box>
+              <Stack spacing={1.5}>
+                {[
+                  { text: "Sentiment analysis & traveler review processing — scoped to Reto 1 (NLP & social listening)", reto: "Reto 1" },
+                  { text: "Transport time & multimodal route optimization — scoped to Reto 4 (mobility layer)", reto: "Reto 4" },
+                  { text: "Real-time IoT sensor feeds and live crowd detection — infrastructure handled by Reto 3", reto: "Reto 3" },
+                  { text: "Conversational booking assistant & chatbot interface — Reto 4 personalization layer", reto: "Reto 4" },
+                ].map((item, i) => (
+                  <Box key={i} sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
+                    <RadioButtonUncheckedRoundedIcon sx={{ fontSize: 15, color: "#94A3B8", mt: 0.2, flexShrink: 0 }} />
+                    <Box>
+                      <Typography sx={{ fontSize: ".82rem", color: "text.secondary", lineHeight: 1.65 }}>{item.text}</Typography>
+                      <Chip label={item.reto} size="small" sx={{ mt: 0.5, height: 18, fontSize: ".65rem", fontWeight: 700, bgcolor: "rgba(100,116,139,.10)", color: "text.secondary", border: "1px solid rgba(100,116,139,.18)" }} />
+                    </Box>
+                  </Box>
+                ))}
+              </Stack>
+              <Box sx={{ mt: 3, p: 2, borderRadius: "12px", bgcolor: "rgba(37,99,235,.04)", border: "1px solid rgba(37,99,235,.10)" }}>
+                <Typography sx={{ fontSize: ".78rem", color: "#2563EB", lineHeight: 1.7 }}>
+                  These are listed in the TFM document as <Box component="span" sx={{ fontWeight: 700 }}>desirable future data sources</Box>, not as deliverables of this reto. Horizon's scope is intentionally focused on Reto 2 to deliver a complete, production-ready AI engine.
+                </Typography>
+              </Box>
+            </Box>
+          </motion.div>
+        </Grid>
+      </Grid>
     </Container>
 
     <Footer />
   </>
-);
+  );
+};
 
 export default About;

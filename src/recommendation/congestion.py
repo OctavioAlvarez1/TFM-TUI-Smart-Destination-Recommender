@@ -1,28 +1,8 @@
 """
-=====================================================
-TUI Smart Destination Recommender
-Congestion Engine
-=====================================================
-
-Purpose
--------
-Manage destination congestion metrics and apply
-business rules related to overtourism management.
-
-Responsibilities
-----------------
-- Retrieve monthly congestion scores
-- Classify congestion levels
-- Apply congestion business rules
-
-Author
-------
-Octavio Alvarez
-
-Project
--------
-TUI Smart Destination Recommender
-AI-Powered Sustainable Tourism Recommendation System
+Congestion scoring engine.
+Reads monthly congestion levels from congestion_scores.csv (derived from INE EOH data).
+Returns a 0-100 congestion score for the requested travel month;
+destinations scoring > 80 receive a −10% redistribution penalty.
 """
 
 

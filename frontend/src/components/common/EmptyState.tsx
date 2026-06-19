@@ -22,8 +22,8 @@ const EmptyState = () => {
 
       <Typography
         variant="h4"
-        fontWeight={600}
         gutterBottom
+        sx={{ fontWeight: 600 }}
       >
         Ready to Discover Sustainable
         Destinations?

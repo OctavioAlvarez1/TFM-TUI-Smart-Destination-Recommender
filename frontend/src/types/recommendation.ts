@@ -1,3 +1,6 @@
+// TypeScript interfaces for the recommendation API response.
+// Recommendation — single destination result with all scores and explanations.
+// UserProfile — traveler profile returned by GET /users/{userId}.
 export interface Recommendation {
   destination_id: string;
 

@@ -162,16 +162,18 @@ Esto es de categoría mandatoria desde el principio.
 Los participantes del año pasado **agarraron datos de Booking u otras plataformas similares.**
 → Nota: España tiene regulación importante con tratamiento de datos y hay multas grandes. Booking/Airbnb no tienen APIs abiertas — sus ToS prohíben scraping. Usar datos sintéticos como emulación + fuentes open data oficiales es el enfoque correcto y seguro.
 
-### 5.5 Fuentes Open Data Recomendadas para Reto 2
+### 5.5 Fuentes Open Data
 
-| Fuente | Dato | URL |
-|--------|------|-----|
-| INE — Encuesta Ocupación Hotelera | Pernoctaciones y ocupación mensual por destino/provincia | ine.es |
-| FRONTUR (via INE) | Llegadas turistas internacionales por mes y origen | ine.es |
-| AEMET Open Data | Datos meteorológicos por provincia (afecta temporalidad) | opendata.aemet.es |
-| datos.gob.es | Portal open data Gobierno de España — estadísticas turísticas | datos.gob.es |
-| Eurostat | Estadísticas turismo UE para contexto comparativo | ec.europa.eu/eurostat |
-| OpenStreetMap / Overpass API | Densidad de alojamientos, puntos de interés por zona | overpass-api.de |
+| Fuente | Dato | Estado |
+|--------|------|--------|
+| INE — Encuesta Ocupación Hotelera | Pernoctaciones y ocupación mensual por destino/provincia | ✅ Integrado — `fetch_open_data.py` |
+| FRONTUR (via INE) | Llegadas turistas internacionales por mes y origen | ✅ Integrado — `fetch_open_data.py` |
+| AEMET Open Data | Datos meteorológicos por provincia (afecta temporalidad) | ✅ Disponible — requiere `AEMET_API_KEY` env var |
+| datos.gob.es | Portal open data Gobierno de España | No integrado |
+| Eurostat | Estadísticas turismo UE | No integrado |
+| OpenStreetMap / Overpass API | Densidad de alojamientos, POIs por zona | No integrado |
+
+**Seguridad:** La clave AEMET nunca debe hardcodearse. Usar exclusivamente `export AEMET_API_KEY=...`.
 
 ---
 
@@ -200,33 +202,87 @@ Dashboard de ejemplo que muestran en el documento:
 - **No es solo académico** — TUI quiere soluciones reales que puedan servir a empresas
 - **No es solo tecnología** — requiere impacto demostrable en redistribución de demanda
 - El entregable debería poder pasarse al **Departamento de Innovación o al Departamento de Datos de TUI**
+- **Retos 1, 3 y 4 están fuera del alcance** — el sistema se enfoca exclusivamente en Reto 2
 
 ---
 
-## 8. Gap Analysis: Lo que tenemos vs lo que piden
+## 8. Estado Actual del Sistema (junio 2026)
 
-### ✅ Implementado
-- Fórmula de scoring exacta (0.45/0.25/0.15/0.15)
-- Business rules (boost/penalty)
-- 5 datasets sintéticos del spec
-- FastAPI backend con endpoint de recomendaciones
-- Explainability por recomendación
-- KPI dashboard (sustainability, confidence, congestion, top destination)
-- Frontend React con ranking de destinos
-- Tests del engine
+### ✅ Backend
 
-### ⚠️ Gaps Identificados
-1. **Redistribución invisible**: La UI no comunica que Horizon está redirigiendo activamente al usuario desde destinos saturados. Es el núcleo del Reto 2 y no se ve.
-2. **Sin datos abiertos reales**: Solo datos sintéticos. El doc pide maximizar open data.
-3. **Sin visualización de impacto territorial**: El doc pide "herramientas para visualizar y simular el impacto de las recomendaciones sobre el territorio".
-4. **Perfil de usuario limitado**: Solo se ve el ID (U001). El sistema tiene travel_style, budget_level, sustainability_preference que podrían mostrarse.
-5. **Sin estacionalidad visible**: Los datos de congestión son mensuales pero no se visualiza la diferencia temporal (julio vs noviembre).
-6. **Sin métricas de redistribución**: No hay forma de ver cuánta demanda estaría siendo redistribuida.
-7. **Menú sin contenido**: Insights, Analytics, About no tienen páginas.
+| Módulo | Archivo | Estado |
+|--------|---------|--------|
+| FastAPI server | `src/api/app.py` | ✅ Completo |
+| Pydantic models | `src/api/models.py` | ✅ Completo |
+| Recommendation engine (orchestrator) | `src/recommendation/recommendation_engine.py` | ✅ Completo |
+| Preference scoring | `src/recommendation/scoring.py` | ✅ Completo |
+| Sustainability engine | `src/recommendation/sustainability.py` | ✅ Completo |
+| Popularity engine | `src/recommendation/popularity.py` | ✅ Completo |
+| Congestion engine | `src/recommendation/congestion.py` | ✅ Completo |
+| Confidence calculator | `src/recommendation/confidence.py` | ✅ Completo |
+| Explainability generator | `src/explainability/explainability.py` | ✅ Completo |
+| Data loader | `src/data/data_loader.py` | ✅ Completo |
+| Open data fetch script | `data/scripts/fetch_open_data.py` | ✅ INE + FRONTUR + AEMET |
+| Streamlit alternative UI | `src/dashboard/app.py` | ✅ Completo |
+| Pytest suite | `tests/` | ✅ Un archivo por módulo |
 
-### 🎯 Prioridades para completar el TFM
-1. **Insights**: Gráfico de congestión mensual por destino — hace visible el problema que resuelve el sistema
-2. **Analytics / Dashboard**: Métricas de impacto del sistema (Layer 5: Governance del doc)
-3. **About**: Contexto del proyecto (TUI Care Foundation, SDG 8.9, UCM, el problema)
-4. **Integrar datos INE**: Enriquecer congestion_scores con datos reales de ocupación hotelera
-5. **Comunicar redistribución en la UI**: Añadir messaging que explique que Horizon redistribuye demanda
+### ✅ Frontend (React 19 + TypeScript + MUI v9)
+
+| Página / Componente | Descripción | Estado |
+|---------------------|-------------|--------|
+| **Destinations (Home)** | Búsqueda, ranking de recomendaciones, KPI dashboard con redistribución banner | ✅ Completo |
+| **Insights** | Mapa de España (Leaflet), Low Season Optimizer, heatmap mensual, escenarios redistribución | ✅ Completo |
+| **Analytics** | Dashboard de gobernanza — destinos penalizados por mes, distribución julio, tabla filtreable | ✅ Completo |
+| **About** | Contexto del proyecto, fórmula de scoring animada, arquitectura de 5 capas, scope | ✅ Completo |
+| Dark / Light mode | Toggle en header, persiste en localStorage, aplicado a todos los componentes | ✅ Completo |
+| Mapa interactivo | Leaflet + CartoCDN (tiles cambian con dark/light mode) | ✅ Completo |
+| Recommendation cards | Score breakdown, badges de sustainability/confidence/congestion, best months chips | ✅ Completo |
+
+### ✅ Documentación
+
+| Archivo | Contenido |
+|---------|-----------|
+| `README.md` | Quick start, estructura del proyecto, API reference, SDG 8.9 alignment |
+| `CLAUDE.md` | Guía para Claude Code — comandos, arquitectura, patrones MUI v9 dark mode |
+| `docs/PROJECT_CONTEXT.md` | Este archivo — contexto del reto y estado completo del sistema |
+| `docs/ARCHITECTURE.md` | Arquitectura completa con diagramas ASCII, 5 capas, data flow end-to-end |
+| `docs/API_REFERENCE.md` | Spec completo de los 3 endpoints REST con ejemplos cURL/JS/Python |
+| `docs/USER_MANUAL.md` | Manual de usuario completo — 10 secciones, guía de scores, troubleshooting |
+
+---
+
+## 9. Implementación de las 5 Capas (mapeada al código)
+
+| Capa | Nombre | Implementación en Horizon |
+|------|--------|--------------------------|
+| **L1** | Unified Ingestion | `data/raw/` CSVs + `fetch_open_data.py` → INE EOH (tabla 49371) + FRONTUR (tabla 23988) |
+| **L2** | Prediction Engine | `src/recommendation/` — 5 módulos de scoring + confidence + explainability |
+| **L3** | Intervention Triggers | Congestion penalty (>80 → −10%) y boost (<40 → +5%) en `scoring.py` |
+| **L4** | Personalization | Preference scoring + explicaciones en lenguaje natural por recomendación |
+| **L5** | Governance | Página Analytics — destinos penalizados por mes, tabla de estado, KPIs del sistema |
+
+---
+
+## 10. Gap Analysis Actualizado
+
+### ✅ Gaps originales — todos resueltos
+
+| Gap original | Solución implementada |
+|---|---|
+| Redistribución invisible en la UI | Banner de redistribución en Home + Analytics page + escenarios en Insights |
+| Solo datos sintéticos | INE EOH + FRONTUR integrados via `fetch_open_data.py` |
+| Sin visualización territorial | Mapa Leaflet + heatmap mensual + Low Season Optimizer en Insights |
+| Perfil de usuario no visible | Chips en SearchBar muestran travel_style, budget, eco preference, país, edad |
+| Sin estacionalidad visible | Heatmap 12 meses × 20 destinos + Low Season cards con delta de congestión |
+| Sin métricas de redistribución | Analytics: destinos penalizados por mes + breakdown de estado |
+| Menú sin contenido | 4 páginas completamente implementadas |
+
+### ⚠️ Fuera del alcance de Reto 2
+- Datos de reseñas / sentimiento → Reto 1
+- Mapas de accesibilidad / movilidad → Reto 4
+- Dashboard georreferenciado tipo Power BI → Reto 3
+
+### 🔧 Posibles mejoras post-TFM
+- Ejecutar `fetch_open_data.py` con `AEMET_API_KEY` para refinar estacionalidad por clima
+- Expandir de 20 a más destinos añadiendo filas a los CSV
+- Añadir filtros de travel_style y budget directamente en la búsqueda

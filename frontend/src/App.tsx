@@ -1,3 +1,7 @@
+// Root application component.
+// Manages global state: current page, active month, and recommendations list.
+// Handles navigation between Home, Insights, Analytics and About pages.
+// Wraps everything in ThemeProvider for dark/light mode support.
 import { useState } from "react";
 
 import Header from "./components/layout/Header";

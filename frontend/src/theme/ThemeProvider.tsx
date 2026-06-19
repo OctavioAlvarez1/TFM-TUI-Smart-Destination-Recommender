@@ -1,3 +1,6 @@
+// MUI theme context provider.
+// Stores dark/light mode preference in localStorage for persistence across sessions.
+// Exposes useDarkMode() hook for toggle access throughout the component tree.
 import {
   createContext,
   useContext,

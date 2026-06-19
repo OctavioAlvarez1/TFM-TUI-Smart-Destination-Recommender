@@ -1,31 +1,7 @@
 """
-=====================================================
-TUI Smart Destination Recommender
-Popularity Engine
-=====================================================
-
-Purpose
--------
-Calculate destination popularity scores based on
-historical booking activity and user ratings.
-
-Popularity Components
----------------------
-- Booking volume
-- Average rating
-
-Output
-------
-Popularity score normalized between 0 and 100.
-
-Author
-------
-Octavio Alvarez
-
-Project
--------
-TUI Smart Destination Recommender
-AI-Powered Sustainable Tourism Recommendation System
+Popularity scoring engine.
+Derives a 0-100 score per destination from booking history:
+70% booking volume + 30% average user rating.
 """
 
 import pandas as pd

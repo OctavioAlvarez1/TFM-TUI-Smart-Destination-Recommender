@@ -1,28 +1,8 @@
 """
-=====================================================
-TUI Smart Destination Recommender
-Sustainability Engine
-=====================================================
-
-Purpose
--------
-Manage sustainability metrics and business rules
-for destination recommendations.
-
-Responsibilities
-----------------
-- Retrieve sustainability scores
-- Classify sustainability performance
-- Apply sustainability business rules
-
-Author
-------
-Octavio Alvarez
-
-Project
--------
-TUI Smart Destination Recommender
-AI-Powered Sustainable Tourism Recommendation System
+Sustainability classification engine.
+Reads sustainability_scores.csv and classifies each destination as
+Excellent / Good / Moderate / Poor based on carbon, local-business,
+public-transport and overall metrics.
 """
 
 

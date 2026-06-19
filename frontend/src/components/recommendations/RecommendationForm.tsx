@@ -52,8 +52,8 @@ const RecommendationForm = ({
     >
       <Typography
         variant="h4"
-        fontWeight={700}
         gutterBottom
+        sx={{ fontWeight: 700 }}
       >
         Plan Your Next Journey
       </Typography>

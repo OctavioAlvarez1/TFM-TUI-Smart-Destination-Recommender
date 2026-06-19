@@ -1,35 +1,10 @@
 #!/usr/bin/env python3
 """
-fetch_open_data.py
-==================
-Replaces synthetic CSVs with real open data from Spanish official sources.
-
-Sources
--------
-  INE EOH   — Encuesta de Ocupación Hotelera, Tabla 49371
-              Viajeros mensuales por provincia (sin autenticación)
-              https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736177015
-
-  FRONTUR   — Movimientos Turísticos en Fronteras, Tabla 23988
-              Turistas internacionales por Comunidad Autónoma (sin autenticación)
-              https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176996
-
-  AEMET     — Open Data, Climatologías Normales 30 años (requiere clave gratuita)
-              Registro en: https://opendata.aemet.es/centrodedescargas/altaUsuario
-              Pasar clave como: AEMET_API_KEY=<tu_clave> python fetch_open_data.py
-
-Outputs
--------
-  data/raw/congestion_scores.csv     ← Reemplazado con datos INE EOH reales
-  data/raw/sustainability_scores.csv ← Enriquecido con fracción internacional FRONTUR
-  data/enriched/ine_eoh_monthly.csv  ← Datos crudos INE por provincia
-  data/enriched/frontur_ccaa.csv     ← Datos crudos FRONTUR por CCAA
-  data/enriched/aemet_climate.csv    ← Normales climáticas (si se proporcionó API key)
-
-Usage
------
-  python data/scripts/fetch_open_data.py
-  AEMET_API_KEY=xxx python data/scripts/fetch_open_data.py
+Open data refresh script.
+Fetches updated hotel occupancy data from INE (Table 49371) and
+international arrivals from FRONTUR (Table 23988) via the INE JSON API.
+Optionally fetches AEMET climate normals if AEMET_API_KEY env var is set.
+Run manually to refresh data/raw/congestion_scores.csv and data/enriched/*.csv.
 """
 
 import os
@@ -359,20 +334,21 @@ def fetch_frontur_international_fraction() -> dict[str, float]:
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Mapping: province → representative AEMET station ID (indicativo)
+# Verified from AEMET's station catalogue (indicativo codes)
 AEMET_STATIONS = {
-    "Illes Balears":           "B228",   # Palma de Mallorca aeropuerto
-    "Santa Cruz de Tenerife":  "C449C",  # Tenerife Sur aeropuerto
-    "Las Palmas":              "C029O",  # Gran Canaria aeropuerto
+    "Illes Balears":           "B278",   # Palma de Mallorca / Son San Joan
+    "Santa Cruz de Tenerife":  "C449C",  # Tenerife Sur
+    "Las Palmas":              "C249I",  # Gran Canaria aeropuerto
     "Málaga":                  "6155A",  # Málaga aeropuerto
-    "Valencia":                "8416",   # Valencia aeropuerto
+    "Valencia":                "8293X",  # Valencia centro
     "Alicante":                "7031",   # Alicante aeropuerto
-    "Barcelona":               "0076",   # Barcelona aeropuerto
-    "Madrid":                  "3195",   # Madrid Barajas
+    "Barcelona":               "0201D",  # Barcelona aeropuerto
+    "Madrid":                  "3195",   # Madrid Retiro
     "Sevilla":                 "5783",   # Sevilla aeropuerto
-    "Granada":                 "5530E",  # Granada aeropuerto
+    "Granada":                 "5514",   # Granada aeropuerto
     "Bizkaia":                 "1082",   # Bilbao aeropuerto
-    "Gipuzkoa":                "1024E",  # San Sebastián aeropuerto
-    "Asturias":                "1212E",  # Asturias aeropuerto (Oviedo)
+    "Gipuzkoa":                "1024E",  # San Sebastián Igueldo
+    "Asturias":                "1249I",  # Asturias aeropuerto
 }
 
 
@@ -388,43 +364,55 @@ def fetch_aemet_climate() -> pd.DataFrame | None:
         return None
 
     print(f"\n[3] AEMET — Normales climáticas 30 años (clave: ...{AEMET_KEY[-6:]})")
+    # AEMET requires api_key as query param AND in headers
     headers = {"api_key": AEMET_KEY}
+    params  = {"api_key": AEMET_KEY}
     records = []
 
     for province, station_id in AEMET_STATIONS.items():
-        url = f"{AEMET_BASE}/climatologias/normales30/estacion/{station_id}"
-        try:
-            r = requests.get(url, headers=headers, timeout=20)
-            if r.status_code == 401:
-                print(f"  ✗ AEMET: API key inválida")
-                return None
-            if r.status_code != 200:
-                print(f"  ✗ AEMET: error {r.status_code} para {station_id}")
+        # Try normales30 first, then normalesClimatologicos as fallback
+        urls_to_try = [
+            f"{AEMET_BASE}/climatologias/normales30/estacion/{station_id}",
+            f"{AEMET_BASE}/climatologias/normalesClimatologicos/estacion/{station_id}",
+        ]
+        station_data = None
+        for url in urls_to_try:
+            try:
+                r = requests.get(url, headers=headers, params=params, timeout=20)
+                if r.status_code == 401:
+                    print(f"  ✗ AEMET: API key inválida")
+                    return None
+                if r.status_code != 200:
+                    continue
+                rj = r.json()
+                data_url = rj.get("datos")
+                if not data_url:
+                    continue
+                r2 = requests.get(data_url, headers=headers, params=params, timeout=20)
+                if r2.status_code == 200:
+                    station_data = r2.json()
+                    break
+            except Exception as e:
+                print(f"  ✗ Error para {station_id}: {e}")
                 continue
 
-            data_url = r.json().get("datos")
-            if not data_url:
-                continue
+        if not station_data:
+            print(f"  ! {province} ({station_id}): sin datos en ningún endpoint")
+            continue
 
-            r2 = requests.get(data_url, headers=headers, timeout=20)
-            station_data = r2.json()
+        for month_data in station_data:
+            records.append({
+                "province":       province,
+                "station_id":     station_id,
+                "month":          int(month_data.get("mes", 0)),
+                "temp_media_c":   float(month_data.get("tm_med", 0) or 0),
+                "temp_max_c":     float(month_data.get("tm_max", 0) or 0),
+                "precip_mm":      float(month_data.get("p_mes", 0) or 0),
+                "sol_horas":      float(month_data.get("inso", 0) or 0),
+            })
 
-            for month_data in station_data:
-                records.append({
-                    "province":       province,
-                    "station_id":     station_id,
-                    "month":          int(month_data.get("mes", 0)),
-                    "temp_media_c":   float(month_data.get("tm_med", 0) or 0),
-                    "temp_max_c":     float(month_data.get("tm_max", 0) or 0),
-                    "precip_mm":      float(month_data.get("p_mes", 0) or 0),
-                    "sol_horas":      float(month_data.get("inso", 0) or 0),
-                })
-
-            print(f"  ✓ {province} ({station_id}): {len(station_data)} meses de normales climáticas")
-            time.sleep(0.3)  # AEMET rate limit
-
-        except Exception as e:
-            print(f"  ✗ Error para {station_id}: {e}")
+        print(f"  ✓ {province} ({station_id}): {len(station_data)} meses de normales climáticas")
+        time.sleep(0.3)  # AEMET rate limit
 
     if not records:
         return None

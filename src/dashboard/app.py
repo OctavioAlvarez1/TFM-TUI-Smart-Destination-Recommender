@@ -1,28 +1,7 @@
 """
-=====================================================
-TUI Smart Destination Recommender
-Executive Dashboard
-=====================================================
-
-Purpose
--------
-Interactive dashboard for generating and
-visualizing sustainable destination
-recommendations.
-
-Features
---------
-- User selection
-- Travel month selection
-- Top-N recommendations
-- KPI dashboard
-- User profile overview
-- Explainable AI output
-- Recommendation visualizations
-
-Author
-------
-Octavio Alvarez
+Streamlit alternative dashboard.
+Read-only view of the recommendation engine — runs as a separate process
+(streamlit run src/dashboard/app.py) independently of the FastAPI server.
 """
 
 import os

@@ -1,3 +1,7 @@
+// Hero search bar component with three input fields:
+// Traveler Profile (user ID), Travel Month (dropdown) and number of Destinations.
+// Auto-fetches the user profile to display travel-style/budget/sustainability chips.
+// Fully dark-mode aware — backgrounds, borders and text adapt to the active theme.
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
@@ -8,6 +12,7 @@ import {
   MenuItem,
   Button,
   Chip,
+  useTheme,
 } from "@mui/material";
 
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -72,6 +77,8 @@ const SearchBarHero = ({
   setTopN,
   onSearch,
 }: SearchBarHeroProps) => {
+  const theme = useTheme();
+  const dark = theme.palette.mode === "dark";
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -127,11 +134,12 @@ const SearchBarHero = ({
           md: 3.5,
         },
 
-        background:
-          "rgba(255,255,255,0.98)",
+        background: dark
+          ? "rgba(17,24,39,0.97)"
+          : "rgba(255,255,255,0.98)",
 
-        border:
-          "1px solid rgba(255,255,255,.75)",
+        border: "1px solid",
+        borderColor: "divider",
 
         backdropFilter:
           "blur(28px)",
@@ -186,8 +194,10 @@ const SearchBarHero = ({
             py: 1.5,
 
             borderRight: {
-              lg:
-                "1px solid rgba(15,23,42,.08)",
+              lg: "1px solid",
+            },
+            borderRightColor: {
+              lg: "divider",
             },
           }}
         >
@@ -199,8 +209,9 @@ const SearchBarHero = ({
 
               borderRadius: "50%",
 
-              background:
-                "rgba(37,99,235,.06)",
+              background: dark
+                ? "rgba(37,99,235,.12)"
+                : "rgba(37,99,235,.06)",
 
               display: "flex",
 
@@ -221,7 +232,7 @@ const SearchBarHero = ({
           <Box sx={{ flex: 1 }}>
             <Typography
               sx={{
-                color: "#64748B",
+                color: "text.secondary",
                 fontWeight: 600,
                 fontSize: ".9rem",
                 mb: 0.75,
@@ -235,12 +246,10 @@ const SearchBarHero = ({
               variant="standard"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
-              InputProps={{ disableUnderline: true }}
-              sx={{
-                "& .MuiInputBase-input": {
-                  fontSize: "1.3rem",
-                  fontWeight: 700,
-                  color: "#0F172A",
+              slotProps={{
+                input: { disableUnderline: true },
+                htmlInput: {
+                  style: { fontSize: "1.3rem", fontWeight: 700, color: dark ? "#F1F5F9" : "#0F172A" },
                 },
               }}
             />
@@ -284,7 +293,7 @@ const SearchBarHero = ({
                   sx={{
                     fontSize: ".68rem", fontWeight: 600, height: 20,
                     bgcolor: "rgba(100,116,139,.08)",
-                    color: "#64748B",
+                    color: "text.secondary",
                     border: "1px solid rgba(100,116,139,.15)",
                   }}
                 />
@@ -308,8 +317,10 @@ const SearchBarHero = ({
             py: 1.5,
 
             borderRight: {
-              lg:
-                "1px solid rgba(15,23,42,.08)",
+              lg: "1px solid",
+            },
+            borderRightColor: {
+              lg: "divider",
             },
           }}
         >
@@ -321,8 +332,9 @@ const SearchBarHero = ({
 
               borderRadius: "50%",
 
-              background:
-                "rgba(37,99,235,.06)",
+              background: dark
+                ? "rgba(37,99,235,.12)"
+                : "rgba(37,99,235,.06)",
 
               display: "flex",
 
@@ -343,7 +355,7 @@ const SearchBarHero = ({
           <Box sx={{ flex: 1 }}>
             <Typography
               sx={{
-                color: "#64748B",
+                color: "text.secondary",
 
                 fontWeight: 600,
 
@@ -367,20 +379,11 @@ const SearchBarHero = ({
                   )
                 )
               }
-              InputProps={{
-                disableUnderline: true,
-              }}
-              sx={{
-                "& .MuiInputBase-input":
-                  {
-                    fontSize:
-                      "1.3rem",
-
-                    fontWeight: 700,
-
-                    color:
-                      "#0F172A",
-                  },
+              slotProps={{
+                input: { disableUnderline: true },
+                htmlInput: {
+                  style: { fontSize: "1.3rem", fontWeight: 700, color: dark ? "#F1F5F9" : "#0F172A" },
+                },
               }}
             >
               {months.map(
@@ -423,8 +426,9 @@ const SearchBarHero = ({
 
               borderRadius: "50%",
 
-              background:
-                "rgba(37,99,235,.06)",
+              background: dark
+                ? "rgba(37,99,235,.12)"
+                : "rgba(37,99,235,.06)",
 
               display: "flex",
 
@@ -445,7 +449,7 @@ const SearchBarHero = ({
           <Box sx={{ flex: 1 }}>
             <Typography
               sx={{
-                color: "#64748B",
+                color: "text.secondary",
 
                 fontWeight: 600,
 
@@ -465,23 +469,12 @@ const SearchBarHero = ({
               onChange={
                 handleTopNChange
               }
-              inputProps={{
-                min: 1,
-              }}
-              InputProps={{
-                disableUnderline: true,
-              }}
-              sx={{
-                "& .MuiInputBase-input":
-                  {
-                    fontSize:
-                      "1.3rem",
-
-                    fontWeight: 700,
-
-                    color:
-                      "#0F172A",
-                  },
+              slotProps={{
+                input: { disableUnderline: true },
+                htmlInput: {
+                  min: 1,
+                  style: { fontSize: "1.3rem", fontWeight: 700, color: dark ? "#F1F5F9" : "#0F172A" },
+                },
               }}
             />
           </Box>

@@ -1,3 +1,7 @@
+// Insights page — Spain's tourism concentration problem.
+// Displays: stats header, Spain congestion map, Low Season Optimizer cards,
+// monthly congestion heatmap (INE EOH data), and redistribution scenario comparisons.
+// Accepts optional recommendations prop to highlight the user's specific results.
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -7,6 +11,7 @@ import {
   Chip,
   Stack,
   Grid,
+  useTheme,
 } from "@mui/material";
 
 import TrendingDownRoundedIcon from "@mui/icons-material/TrendingDownRounded";
@@ -15,6 +20,7 @@ import EuroRoundedIcon from "@mui/icons-material/EuroRounded";
 import WbSunnyRoundedIcon from "@mui/icons-material/WbSunnyRounded";
 import SpaRoundedIcon from "@mui/icons-material/SpaRounded";
 import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
+import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 
 import Footer from "../components/layout/Footer";
 import DestinationMap from "../components/map/DestinationMap";
@@ -107,10 +113,10 @@ const StatCard = ({
       >
         {icon}
       </Box>
-      <Typography sx={{ fontSize: "2.2rem", fontWeight: 900, color: "#0F172A", lineHeight: 1, mb: 0.5 }}>
+      <Typography sx={{ fontSize: "2.2rem", fontWeight: 900, color: "text.primary", lineHeight: 1, mb: 0.5 }}>
         {value}
       </Typography>
-      <Typography sx={{ fontSize: ".85rem", color: "#64748B", fontWeight: 500, lineHeight: 1.5 }}>
+      <Typography sx={{ fontSize: ".85rem", color: "text.secondary", fontWeight: 500, lineHeight: 1.5 }}>
         {label}
       </Typography>
     </Box>
@@ -154,8 +160,8 @@ const CongestionHeatmap = ({
                 "&:hover": {
                   bgcolor: isActive
                     ? undefined
-                    : "rgba(0,0,0,.04)",
-                  border: isActive ? undefined : "1px solid rgba(0,0,0,.08)",
+                    : "rgba(128,128,128,.08)",
+                  border: isActive ? undefined : "1px solid rgba(128,128,128,.15)",
                 },
               }}
             >
@@ -193,7 +199,7 @@ const CongestionHeatmap = ({
             {/* Destination label */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, pr: 1 }}>
               <Box>
-                <Typography sx={{ fontSize: ".8rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.2 }}>
+                <Typography sx={{ fontSize: ".8rem", fontWeight: 700, color: "text.primary", lineHeight: 1.2 }}>
                   {dest.name}
                 </Typography>
                 <Typography sx={{ fontSize: ".68rem", color: "#94A3B8" }}>
@@ -268,12 +274,12 @@ const CongestionHeatmap = ({
         ].map((l) => (
           <Box key={l.label} sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
             <Box sx={{ width: 14, height: 14, borderRadius: "4px", bgcolor: l.bg, border: `1px solid ${l.text}44` }} />
-            <Typography sx={{ fontSize: ".72rem", color: "#64748B" }}>{l.label}</Typography>
+            <Typography sx={{ fontSize: ".72rem", color: "text.secondary" }}>{l.label}</Typography>
           </Box>
         ))}
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, ml: 1 }}>
           <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: "#991B1B" }} />
-          <Typography sx={{ fontSize: ".72rem", color: "#64748B" }}>Penalty trigger dot</Typography>
+          <Typography sx={{ fontSize: ".72rem", color: "text.secondary" }}>Penalty trigger dot</Typography>
         </Box>
       </Box>
     </Box>
@@ -286,6 +292,8 @@ const ScenarioCard = ({
 }: {
   from: string; to: string; monthLabel: string; fromScore: number; toScore: number; delay: number;
 }) => {
+  const theme = useTheme();
+  const dark = theme.palette.mode === "dark";
   const fromS = cellStyle(fromScore);
   const toS = cellStyle(toScore);
   return (
@@ -298,8 +306,11 @@ const ScenarioCard = ({
       <Box
         sx={{
           borderRadius: "20px",
-          border: "1px solid rgba(226,232,240,.8)",
-          background: "linear-gradient(160deg, #FAFBFF 0%, #F5F8FF 100%)",
+          border: "1px solid",
+          borderColor: "divider",
+          background: dark
+            ? "linear-gradient(160deg, #1E293B 0%, #111827 100%)"
+            : "linear-gradient(160deg, #FAFBFF 0%, #F5F8FF 100%)",
           p: 3,
           height: "100%",
         }}
@@ -313,7 +324,7 @@ const ScenarioCard = ({
           <Typography sx={{ fontSize: ".68rem", fontWeight: 600, color: fromS.text, mb: 0.25, textTransform: "uppercase", letterSpacing: ".1em" }}>
             ✗ Over-saturated
           </Typography>
-          <Typography sx={{ fontWeight: 800, color: "#0F172A", fontSize: "1rem" }}>{from}</Typography>
+          <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1rem" }}>{from}</Typography>
           <Typography sx={{ fontSize: ".75rem", color: fromS.text, fontWeight: 700 }}>
             Congestion: {fromScore} — {levelLabel(fromScore)}
           </Typography>
@@ -328,10 +339,100 @@ const ScenarioCard = ({
           <Typography sx={{ fontSize: ".68rem", fontWeight: 600, color: toS.text, mb: 0.25, textTransform: "uppercase", letterSpacing: ".1em" }}>
             ✓ Horizon recommends
           </Typography>
-          <Typography sx={{ fontWeight: 800, color: "#0F172A", fontSize: "1rem" }}>{to}</Typography>
+          <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1rem" }}>{to}</Typography>
           <Typography sx={{ fontSize: ".75rem", color: toS.text, fontWeight: 700 }}>
             Congestion: {toScore} — {levelLabel(toScore)}
           </Typography>
+        </Box>
+      </Box>
+    </motion.div>
+  );
+};
+
+// ── Low Season Optimizer helpers ─────────────────────────
+const getPeakMonth = (monthly: number[]): { name: string; score: number } => {
+  const idx = monthly.reduce((best, v, i) => (v > monthly[best] ? i : best), 0);
+  return { name: MONTHS[idx], score: Math.min(100, monthly[idx]) };
+};
+
+const getBestOffPeak = (monthly: number[], count = 2): Array<{ name: string; score: number }> =>
+  monthly
+    .map((v, i) => ({ name: MONTHS[i], score: Math.min(100, v) }))
+    .sort((a, b) => a.score - b.score)
+    .slice(0, count);
+
+// ── Low Season card ───────────────────────────────────────
+const LowSeasonCard = ({ dest, delay }: { dest: HeatmapDest; delay: number }) => {
+  const theme = useTheme();
+  const dark = theme.palette.mode === "dark";
+  const peak = getPeakMonth(dest.monthly);
+  const offPeak = getBestOffPeak(dest.monthly);
+  const drop = Math.round(((peak.score - offPeak[0].score) / peak.score) * 100);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.45, delay, ease: "easeOut" }}
+    >
+      <Box
+        sx={{
+          borderRadius: "18px",
+          border: "1px solid",
+          borderColor: "divider",
+          background: dark
+            ? "linear-gradient(160deg, #1E293B 0%, #111827 100%)"
+            : "linear-gradient(160deg, #FAFBFF 0%, #F5F8FF 100%)",
+          p: 2.5,
+          height: "100%",
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
+          <Box>
+            <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: ".95rem", lineHeight: 1.2 }}>
+              {dest.name}
+            </Typography>
+            <Typography sx={{ fontSize: ".72rem", color: "#94A3B8" }}>{dest.region}</Typography>
+          </Box>
+          <Chip
+            label={`-${drop}% congestion`}
+            size="small"
+            icon={<TrendingUpRoundedIcon style={{ fontSize: 12, transform: "rotate(180deg)" }} />}
+            sx={{
+              height: 22, fontSize: ".68rem", fontWeight: 700,
+              bgcolor: "rgba(16,185,129,.1)", color: "#059669",
+              border: "1px solid rgba(16,185,129,.2)",
+            }}
+          />
+        </Box>
+
+        {/* Peak */}
+        <Box sx={{ p: 1.5, borderRadius: "10px", bgcolor: "#FEE2E2", border: "1px solid #FECACA", mb: 1 }}>
+          <Typography sx={{ fontSize: ".66rem", fontWeight: 700, color: "#991B1B", textTransform: "uppercase", letterSpacing: ".08em", mb: 0.25 }}>
+            Peak — avoid
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Typography sx={{ fontWeight: 800, color: "#7F1D1D", fontSize: ".88rem" }}>{peak.name}</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#991B1B", fontSize: ".82rem" }}>
+              {peak.score}/100
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Best months */}
+        <Box sx={{ p: 1.5, borderRadius: "10px", bgcolor: "#DCFCE7", border: "1px solid #BBF7D0" }}>
+          <Typography sx={{ fontSize: ".66rem", fontWeight: 700, color: "#166534", textTransform: "uppercase", letterSpacing: ".08em", mb: 0.5 }}>
+            Low season — recommended
+          </Typography>
+          <Box sx={{ display: "flex", gap: 0.75 }}>
+            {offPeak.map((m) => (
+              <Box key={m.name} sx={{ flex: 1, textAlign: "center", p: 0.75, borderRadius: "8px", bgcolor: "rgba(22,163,74,.1)" }}>
+                <Typography sx={{ fontWeight: 800, color: "#15803D", fontSize: ".85rem" }}>{m.name}</Typography>
+                <Typography sx={{ fontWeight: 600, color: "#166534", fontSize: ".72rem" }}>{m.score}/100</Typography>
+              </Box>
+            ))}
+          </Box>
         </Box>
       </Box>
     </motion.div>
@@ -345,6 +446,8 @@ interface InsightsProps {
 
 // ── Main page ────────────────────────────────────────────
 const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => {
+  const theme = useTheme();
+  const dark = theme.palette.mode === "dark";
   const [activeMonth, setActiveMonth] = useState<number | null>(initialMonth);
 
   const penalized = activeMonth ? PENALIZED_BY_MONTH[activeMonth] : 0;
@@ -469,10 +572,10 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
           </Typography>
           <Box sx={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 2, mb: 3 }}>
             <Box>
-              <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "#0F172A", lineHeight: 1.1, mb: 0.5 }}>
+              <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "text.primary", lineHeight: 1.1, mb: 0.5 }}>
                 Spain Congestion Map
               </Typography>
-              <Typography sx={{ color: "#64748B", fontSize: ".95rem", lineHeight: 1.7, maxWidth: 600 }}>
+              <Typography sx={{ color: "text.secondary", fontSize: ".95rem", lineHeight: 1.7, maxWidth: 600 }}>
                 Each circle represents one of the 20 monitored destinations. Size and colour reflect
                 congestion intensity for the selected month — derived from real INE hotel occupancy data.
               </Typography>
@@ -495,8 +598,48 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
         </motion.div>
       </Container>
 
+      {/* LOW SEASON OPTIMIZER */}
+      <Box sx={{ bgcolor: dark ? "rgba(15,25,47,.5)" : "#F8FAFC", py: { xs: 8, md: 10 } }}>
+        <Container maxWidth="xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#10B981", mb: 1 }}>
+              Low Season Boost
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 2, mb: 2 }}>
+              <Box>
+                <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "text.primary", lineHeight: 1.1, mb: 0.5 }}>
+                  Low Season Optimizer
+                </Typography>
+                <Typography sx={{ color: "text.secondary", fontSize: ".95rem", lineHeight: 1.7, maxWidth: 640 }}>
+                  For each destination, Horizon identifies the <Box component="span" sx={{ fontWeight: 700, color: "#059669" }}>best months to visit</Box> — when
+                  congestion is lowest, prices are up to 30% cheaper, and locals actually benefit from your visit.
+                </Typography>
+              </Box>
+              <Chip
+                label="Based on INE EOH hotel occupancy data"
+                size="small"
+                sx={{ fontWeight: 600, fontSize: ".75rem", bgcolor: "rgba(16,185,129,.08)", color: "#059669", border: "1px solid rgba(16,185,129,.18)" }}
+              />
+            </Box>
+          </motion.div>
+
+          <Grid container spacing={2.5} sx={{ mt: 2 }}>
+            {displayedDestinations.map((dest, i) => (
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={dest.id}>
+                <LowSeasonCard dest={dest} delay={i * 0.06} />
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
       {/* HEATMAP */}
-      <Box sx={{ bgcolor: "#F8FAFC", py: { xs: 8, md: 10 } }}>
+      <Box sx={{ bgcolor: "background.default", py: { xs: 8, md: 10 } }}>
         <Container maxWidth="xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -515,12 +658,12 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
             <Typography
               sx={{
                 fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800,
-                color: "#0F172A", lineHeight: 1.1, mb: 1.5,
+                color: "text.primary", lineHeight: 1.1, mb: 1.5,
               }}
             >
               Monthly Congestion Levels by Destination
             </Typography>
-            <Typography sx={{ color: "#64748B", fontSize: ".95rem", lineHeight: 1.8, maxWidth: 680, mb: 4 }}>
+            <Typography sx={{ color: "text.secondary", fontSize: ".95rem", lineHeight: 1.8, maxWidth: 680, mb: 4 }}>
               Select a month to see which destinations exceed sustainable limits.
               Cells with a red dot trigger Horizon's{" "}
               <Box component="span" sx={{ fontWeight: 700, color: "#EF4444" }}>−10% congestion penalty</Box>{" "}
@@ -543,10 +686,10 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
                     fontWeight: isActive ? 700 : 500,
                     bgcolor: isActive
                       ? p > 0 ? "rgba(239,68,68,.12)" : "rgba(37,99,235,.12)"
-                      : "rgba(0,0,0,.04)",
+                      : dark ? "rgba(255,255,255,.06)" : "rgba(0,0,0,.04)",
                     color: isActive
                       ? p > 0 ? "#EF4444" : "#2563EB"
-                      : "#64748B",
+                      : "text.secondary",
                     border: isActive
                       ? p > 0 ? "1px solid rgba(239,68,68,.25)" : "1px solid rgba(37,99,235,.25)"
                       : "1px solid transparent",
@@ -574,7 +717,7 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
                 }}
               >
                 <PeopleRoundedIcon sx={{ color: "#EF4444", fontSize: 20 }} />
-                <Typography sx={{ fontSize: ".88rem", color: "#0F172A" }}>
+                <Typography sx={{ fontSize: ".88rem", color: "text.primary" }}>
                   <Box component="span" sx={{ fontWeight: 700, color: "#EF4444" }}>
                     {penalized} of 20 destinations
                   </Box>{" "}
@@ -603,7 +746,7 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
                 }}
               >
                 <SpaRoundedIcon sx={{ color: "#10B981", fontSize: 20 }} />
-                <Typography sx={{ fontSize: ".88rem", color: "#0F172A" }}>
+                <Typography sx={{ fontSize: ".88rem", color: "text.primary" }}>
                   <Box component="span" sx={{ fontWeight: 700, color: "#10B981" }}>
                     All 20 destinations
                   </Box>{" "}
@@ -632,7 +775,7 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
                 bgcolor: hasRecs ? "#2563EB" : "#94A3B8",
               }}
             />
-            <Typography sx={{ fontSize: ".8rem", color: "#475569" }}>
+            <Typography sx={{ fontSize: ".8rem", color: "text.secondary" }}>
               {hasRecs ? (
                 <>
                   Showing{" "}
@@ -644,7 +787,7 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
               ) : (
                 <>
                   Showing{" "}
-                  <Box component="span" sx={{ fontWeight: 700, color: "#64748B" }}>
+                  <Box component="span" sx={{ fontWeight: 700, color: "text.secondary" }}>
                     8 representative destinations
                   </Box>
                   {" "}— run a search in Destinations to see your specific results
@@ -672,10 +815,10 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
           <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
             Redistribution in Action
           </Typography>
-          <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "#0F172A", lineHeight: 1.1, mb: 1.5 }}>
+          <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "text.primary", lineHeight: 1.1, mb: 1.5 }}>
             What Horizon Does Differently
           </Typography>
-          <Typography sx={{ color: "#64748B", fontSize: ".95rem", lineHeight: 1.8, maxWidth: 680, mb: 6 }}>
+          <Typography sx={{ color: "text.secondary", fontSize: ".95rem", lineHeight: 1.8, maxWidth: 680, mb: 6 }}>
             Instead of recommending the most popular choice, Horizon identifies sustainable alternatives
             that match traveler preferences while reducing pressure on saturated destinations.
           </Typography>

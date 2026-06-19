@@ -1,3 +1,6 @@
+// KPI summary dashboard displayed after a recommendation search.
+// Shows top-destination sustainability score, average confidence, average congestion
+// and a demand-redistribution banner listing how many destinations were penalised.
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -133,7 +136,7 @@ const MetricCard = ({
               fontSize: "3rem",
               fontWeight: 900,
               lineHeight: 1,
-              color: "#0F172A",
+              color: "text.primary",
               letterSpacing: "-0.02em",
               mb: 0.75,
             }}
@@ -146,7 +149,7 @@ const MetricCard = ({
             sx={{
               fontWeight: 700,
               fontSize: "1rem",
-              color: "#0F172A",
+              color: "text.primary",
               mb: 0.4,
             }}
           >

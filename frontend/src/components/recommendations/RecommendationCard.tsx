@@ -1,3 +1,7 @@
+// Individual destination recommendation card.
+// Shows rank panel (colour-coded #1/#2/#3), final score, metric tiles
+// (Preference/Sustainability/Popularity/Congestion), explanation chips,
+// and Best Months to Visit based on INE monthly congestion scores.
 import {
   Card,
   Typography,
@@ -6,9 +10,11 @@ import {
   Box,
   Grid,
   Chip,
+  useTheme,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
+import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 
 import type { Recommendation } from "../../types/recommendation";
 
@@ -16,30 +22,75 @@ import SustainabilityBadge from "./SustainabilityBadge";
 import ConfidenceBadge from "./ConfidenceBadge";
 import CongestionBadge from "./CongestionBadge";
 
+// ── Monthly congestion scores (INE EOH data) ─────────────
+const MONTHLY_SCORES: Record<string, number[]> = {
+  D001: [12, 16, 25, 47, 89, 98, 100, 100, 95, 70, 15, 13],
+  D002: [10, 14, 22, 42, 80, 88, 100, 100, 85, 63, 13, 11],
+  D003: [7,  10, 16, 30, 57, 63, 83, 88, 67, 45, 9,  8],
+  D004: [59, 65, 61, 57, 62, 71, 87, 92, 77, 72, 66, 77],
+  D005: [57, 62, 58, 54, 59, 68, 83, 88, 73, 69, 63, 73],
+  D006: [43, 47, 44, 41, 44, 51, 62, 66, 55, 52, 47, 55],
+  D007: [14, 18, 29, 54, 102, 113, 115, 115, 109, 80, 17, 15],
+  D008: [11, 14, 23, 43, 82, 90, 92, 92, 87, 64, 14, 12],
+  D009: [59, 58, 68, 82, 89, 77, 64, 58, 73, 82, 68, 57],
+  D010: [55, 59, 66, 74, 82, 84, 88, 88, 79, 84, 64, 59],
+  D011: [19, 25, 36, 63, 103, 113, 118, 118, 111, 82, 22, 17],
+  D012: [25, 32, 46, 80, 131, 144, 150, 150, 141, 105, 28, 22],
+  D013: [55, 59, 66, 74, 82, 84, 88, 88, 79, 84, 64, 59],
+  D014: [55, 59, 66, 74, 82, 84, 88, 88, 79, 84, 64, 59],
+  D015: [55, 59, 66, 74, 82, 84, 88, 88, 79, 84, 64, 59],
+  D016: [55, 59, 66, 74, 82, 84, 88, 88, 79, 84, 64, 59],
+  D017: [55, 59, 66, 74, 82, 84, 88, 88, 79, 84, 64, 59],
+  D018: [55, 59, 66, 74, 82, 84, 88, 88, 79, 84, 64, 59],
+  D019: [28, 30, 36, 44, 49, 55, 66, 72, 58, 48, 37, 33],
+  D020: [14, 15, 18, 22, 25, 28, 33, 36, 29, 24, 18, 17],
+};
+
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+const getBestMonths = (destId: string, count = 3): string[] => {
+  const scores = MONTHLY_SCORES[destId];
+  if (!scores) return [];
+  return scores
+    .map((score, i) => ({ score: Math.min(100, score), i }))
+    .sort((a, b) => a.score - b.score)
+    .slice(0, count)
+    .sort((a, b) => a.i - b.i)
+    .map(({ i }) => MONTH_NAMES[i]);
+};
+
 // ── Rank colour palette ─────────────────────────────────
-const rankMeta = (rank: number) => {
+const rankMeta = (rank: number, dark: boolean) => {
   if (rank === 1)
     return {
       color: "#F59E0B",
-      bg: "linear-gradient(160deg, #FFFBEB 0%, #FEF3C7 100%)",
-      border: "rgba(245,158,11,.18)",
+      bg: dark
+        ? "linear-gradient(160deg, rgba(245,158,11,.14) 0%, rgba(245,158,11,.08) 100%)"
+        : "linear-gradient(160deg, #FFFBEB 0%, #FEF3C7 100%)",
+      border: "rgba(245,158,11,.22)",
     };
   if (rank === 2)
     return {
       color: "#94A3B8",
-      bg: "linear-gradient(160deg, #F8FAFC 0%, #F1F5F9 100%)",
-      border: "rgba(148,163,184,.18)",
+      bg: dark
+        ? "linear-gradient(160deg, rgba(148,163,184,.10) 0%, rgba(100,116,139,.07) 100%)"
+        : "linear-gradient(160deg, #F8FAFC 0%, #F1F5F9 100%)",
+      border: "rgba(148,163,184,.20)",
     };
   if (rank === 3)
     return {
       color: "#B87333",
-      bg: "linear-gradient(160deg, #FDF8F5 0%, #FDEEE4 100%)",
-      border: "rgba(184,115,51,.18)",
+      bg: dark
+        ? "linear-gradient(160deg, rgba(184,115,51,.14) 0%, rgba(184,115,51,.08) 100%)"
+        : "linear-gradient(160deg, #FDF8F5 0%, #FDEEE4 100%)",
+      border: "rgba(184,115,51,.22)",
     };
   return {
     color: "#2563EB",
-    bg: "linear-gradient(160deg, #EFF6FF 0%, #DBEAFE 100%)",
-    border: "rgba(37,99,235,.12)",
+    bg: dark
+      ? "linear-gradient(160deg, rgba(37,99,235,.14) 0%, rgba(37,99,235,.08) 100%)"
+      : "linear-gradient(160deg, #EFF6FF 0%, #DBEAFE 100%)",
+    border: "rgba(37,99,235,.18)",
   };
 };
 
@@ -84,7 +135,7 @@ const MetricTile = ({
           sx={{
             fontSize: ".7rem",
             fontWeight: 700,
-            color: "#64748B",
+            color: "text.secondary",
             textTransform: "uppercase",
             letterSpacing: ".08em",
           }}
@@ -115,7 +166,9 @@ interface RecommendationCardProps {
 }
 
 const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
-  const rank = rankMeta(recommendation.recommendation_rank);
+  const theme = useTheme();
+  const dark = theme.palette.mode === "dark";
+  const rank = rankMeta(recommendation.recommendation_rank, dark);
 
   const metrics = [
     { label: "Preference",    value: recommendation.preference_score,    color: "#6366F1" },
@@ -129,13 +182,16 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
       elevation={0}
       sx={{
         borderRadius: "24px",
-        border: "1px solid rgba(226,232,240,.85)",
+        border: "1px solid",
+        borderColor: "divider",
         background: `linear-gradient(160deg, ${rank.color}06 0%, ${rank.color}0E 100%)`,
         overflow: "hidden",
         transition: "all .35s ease",
         "&:hover": {
           transform: "translateY(-4px)",
-          boxShadow: "0 24px 56px rgba(15,23,42,.09)",
+          boxShadow: dark
+            ? "0 24px 56px rgba(0,0,0,.35)"
+            : "0 24px 56px rgba(15,23,42,.09)",
         },
       }}
     >
@@ -193,7 +249,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
               sx={{
                 fontSize: { xs: "2.2rem", md: "2.6rem" },
                 fontWeight: 900,
-                color: "#0F172A",
+                color: "text.primary",
                 lineHeight: 1,
               }}
             >
@@ -202,7 +258,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
             <Typography
               sx={{
                 fontSize: ".65rem",
-                color: "#94A3B8",
+                color: "text.secondary",
                 fontWeight: 600,
                 mt: 0.25,
                 textTransform: "uppercase",
@@ -222,7 +278,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
             sx={{
               fontSize: { xs: "1.65rem", md: "2rem" },
               fontWeight: 800,
-              color: "#0F172A",
+              color: "text.primary",
               lineHeight: 1.1,
               mb: 0.5,
             }}
@@ -230,7 +286,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
             {recommendation.destination_name}
           </Typography>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "#94A3B8", mb: 2.5 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "text.secondary", mb: 2.5 }}>
             <LocationOnRoundedIcon sx={{ fontSize: 14 }} />
             <Typography sx={{ fontSize: ".82rem" }}>Spain</Typography>
           </Box>
@@ -259,7 +315,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
           <Divider sx={{ mb: 2 }} />
 
           {/* Why */}
-          <Typography sx={{ fontSize: ".8rem", fontWeight: 700, color: "#0F172A", mb: 1.25 }}>
+          <Typography sx={{ fontSize: ".8rem", fontWeight: 700, color: "text.primary", mb: 1.25 }}>
             Why Horizon Recommended This
           </Typography>
 
@@ -277,15 +333,49 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
                     whiteSpace: "normal",
                     fontSize: ".74rem",
                     fontWeight: 500,
-                    color: "#475569",
+                    color: "text.secondary",
                     lineHeight: 1.5,
                   },
-                  bgcolor: "rgba(37,99,235,.05)",
-                  border: "1px solid rgba(37,99,235,.10)",
+                  bgcolor: "rgba(37,99,235,.07)",
+                  border: "1px solid rgba(37,99,235,.14)",
                 }}
               />
             ))}
           </Box>
+
+          {/* Best months — low season boost */}
+          {getBestMonths(recommendation.destination_id).length > 0 && (
+            <>
+              <Divider sx={{ my: 2 }} />
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                <CalendarTodayRoundedIcon sx={{ fontSize: 14, color: "#10B981" }} />
+                <Typography sx={{ fontSize: ".78rem", fontWeight: 700, color: "text.primary" }}>
+                  Best Months to Visit
+                </Typography>
+                <Typography sx={{ fontSize: ".72rem", color: "text.secondary" }}>
+                  — lowest congestion, best value
+                </Typography>
+              </Box>
+              <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
+                {getBestMonths(recommendation.destination_id).map((m) => (
+                  <Chip
+                    key={m}
+                    label={m}
+                    size="small"
+                    sx={{
+                      height: 22,
+                      fontSize: ".73rem",
+                      fontWeight: 700,
+                      bgcolor: "rgba(16,185,129,.08)",
+                      color: "#059669",
+                      border: "1px solid rgba(16,185,129,.22)",
+                      borderRadius: "8px",
+                    }}
+                  />
+                ))}
+              </Box>
+            </>
+          )}
         </Box>
       </Box>
     </Card>
