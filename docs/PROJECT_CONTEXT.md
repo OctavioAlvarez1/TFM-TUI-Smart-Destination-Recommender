@@ -240,6 +240,8 @@ Dashboard de ejemplo que muestran en el documento:
 
 ### ✅ Documentación
 
+**Documentos de referencia técnica:**
+
 | Archivo | Contenido |
 |---------|-----------|
 | `README.md` | Quick start, estructura del proyecto, API reference, SDG 8.9 alignment |
@@ -248,6 +250,25 @@ Dashboard de ejemplo que muestran en el documento:
 | `docs/ARCHITECTURE.md` | Arquitectura completa con diagramas ASCII, 5 capas, data flow end-to-end |
 | `docs/API_REFERENCE.md` | Spec completo de los 3 endpoints REST con ejemplos cURL/JS/Python |
 | `docs/USER_MANUAL.md` | Manual de usuario completo — 10 secciones, guía de scores, troubleshooting |
+
+**Documentos del proyecto TFM (01–14):**
+
+| Archivo | Contenido |
+|---------|-----------|
+| `docs/01_Business_Problem_and_Vision.md` | Definición del problema, objetivos, stakeholders, KPIs, casos de uso, alcance del MVP |
+| `docs/02_Solution_Architecture_and_Technical_Design.md` | Arquitectura de solución, 5 capas, plataforma de datos, APIs, escalabilidad |
+| `docs/03_AI_Recommendation_Design.md` | Diseño de IA — por qué no solo collaborative filtering, affinity score, sustainability score, popularity score, ranking final |
+| `docs/04_Business_Case_KPIs_ESG.md` | Business case, KPIs estratégicos, indicadores ESG, metodología de medición de impacto |
+| `docs/05_Cloud_Architecture_and_Tech_Stack.md` | Arquitectura GCP para producción (BigQuery, Vertex AI, Cloud Run) — roadmap post-MVP |
+| `docs/06_MVP_Technical_Design.md` | Diseño técnico del MVP implementado — stack real, componentes, fórmula, entregables |
+| `docs/07_Data_Model_and_Dataset_Design.md` | Modelo de datos, estructura de los 5 CSVs, lógica de scoring |
+| `docs/08_Dataset_Construction_and_Data_Sources.md` | Estrategia de datos sintéticos, fuentes open data (INE, FRONTUR), GDPR |
+| `docs/09_Data_Dictionary.md` | Diccionario de datos — campo por campo de los 5 CSVs |
+| `docs/10_Data_Validation_and_QA.md` | Reporte de validación — completitud, integridad referencial, rangos, distribución |
+| `docs/11_Recommendation_Engine_Design.md` | Diseño completo del motor de recomendaciones — pseudocódigo, flujo, hoja de ruta ML |
+| `docs/12_Frontend_Architecture.md` | Arquitectura del frontend React 19 — páginas, componentes, tema dark/light, mapa, state |
+| `docs/13_Executive_Dashboard_Design.md` | Diseño del dashboard ejecutivo — módulos, KPIs, visualizaciones, tecnología |
+| `docs/14_Final_Solution_Blueprint.md` | Blueprint completo de la solución — resumen ejecutivo, status de fases, roadmap |
 
 ---
 

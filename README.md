@@ -58,7 +58,7 @@ Business rules on top:
 │   └── scripts/                # fetch_open_data.py — refresh from INE/AEMET APIs
 ├── tests/                      # Pytest suite (one file per module)
 ├── notebooks/                  # Data generation notebooks
-└── docs/                       # Architecture, API reference, user manual
+└── docs/                       # 18 documentation files (architecture, API, user manual, TFM design docs 01–14)
 ```
 
 ---
@@ -192,6 +192,18 @@ python -m pytest tests/test_recommendation_engine.py -v
 ```
 
 Tests use real CSV data — no mocking. Always run from the project root.
+
+---
+
+## Documentation
+
+| File | Description |
+|---|---|
+| `docs/ARCHITECTURE.md` | System architecture, 5-layer design, data flow |
+| `docs/API_REFERENCE.md` | Full REST API spec with curl/JS/Python examples |
+| `docs/USER_MANUAL.md` | End-user guide — scores, pages, troubleshooting |
+| `docs/PROJECT_CONTEXT.md` | TUI challenge context, implementation status |
+| `docs/01–14_*.md` | Full TFM design package — business case, AI design, data model, cloud architecture, engine design, frontend architecture, executive dashboard, solution blueprint |
 
 ---
 
