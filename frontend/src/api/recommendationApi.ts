@@ -2,6 +2,20 @@ import axios from "axios";
 
 const API_URL = "http://localhost:8000";
 
+export interface UserProfile {
+  user_id: string;
+  country: string;
+  age_group: string;
+  budget_level: string;
+  travel_style: string;
+  sustainability_preference: string;
+}
+
+export const getUserProfile = async (userId: string): Promise<UserProfile> => {
+  const response = await axios.get(`${API_URL}/users/${userId}`);
+  return response.data;
+};
+
 export const getRecommendations = async (
   userId: string,
   month: number,

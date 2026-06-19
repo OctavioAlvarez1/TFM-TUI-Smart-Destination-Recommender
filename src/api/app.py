@@ -17,6 +17,8 @@ Octavio Alvarez
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from fastapi import HTTPException
+
 from src.api.models import (
     RecommendationRequest
 )
@@ -24,6 +26,8 @@ from src.api.models import (
 from src.recommendation.recommendation_engine import (
     RecommendationEngine
 )
+
+from src.data.data_loader import DataLoader
 
 app = FastAPI(
     title="TUI Smart Destination Recommender API",
@@ -49,6 +53,7 @@ app.add_middleware(
 # =====================================================
 
 engine = RecommendationEngine()
+_users_df = DataLoader.load_users()
 
 # =====================================================
 # Endpoints
@@ -101,3 +106,30 @@ def get_recommendations(
         "recommendations":
             recommendations
     }
+
+
+@app.get("/users/{user_id}")
+def get_user(user_id: str):
+    """
+    Return profile for a single user.
+    """
+    row = _users_df[_users_df["user_id"] == user_id]
+    if row.empty:
+        raise HTTPException(status_code=404, detail=f"User {user_id} not found")
+    record = row.iloc[0].to_dict()
+    return {
+        "user_id":                   record.get("user_id"),
+        "country":                   record.get("country"),
+        "age_group":                 record.get("age_group"),
+        "budget_level":              record.get("budget_level"),
+        "travel_style":              record.get("travel_style"),
+        "sustainability_preference": record.get("sustainability_preference"),
+    }
+
+
+@app.get("/users")
+def list_users():
+    """
+    Return all user IDs.
+    """
+    return {"user_ids": _users_df["user_id"].tolist()}

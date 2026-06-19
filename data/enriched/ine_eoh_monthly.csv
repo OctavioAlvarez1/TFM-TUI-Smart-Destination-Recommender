@@ -1,0 +1,157 @@
+province,month,avg_travelers
+Alicante,1,237912.0
+Alicante,2,304414.0
+Alicante,3,366969.0
+Alicante,4,453391.0
+Alicante,5,471420.0
+Alicante,6,508872.0
+Alicante,7,561614.0
+Alicante,8,611235.0
+Alicante,9,468102.0
+Alicante,10,438002.0
+Alicante,11,357820.0
+Alicante,12,297688.0
+Asturias,1,76060.0
+Asturias,2,87703.0
+Asturias,3,112102.0
+Asturias,4,153267.0
+Asturias,5,178540.0
+Asturias,6,204806.0
+Asturias,7,255898.0
+Asturias,8,286710.0
+Asturias,9,217906.0
+Asturias,10,169551.0
+Asturias,11,117149.0
+Asturias,12,102224.0
+Barcelona,1,838953.0
+Barcelona,2,905042.0
+Barcelona,3,1040620.0
+Barcelona,4,1175722.0
+Barcelona,5,1324501.0
+Barcelona,6,1348735.0
+Barcelona,7,1416260.0
+Barcelona,8,1422358.0
+Barcelona,9,1263546.0
+Barcelona,10,1358820.0
+Barcelona,11,995175.0
+Barcelona,12,917329.0
+Bizkaia,1,90782.0
+Bizkaia,2,101290.0
+Bizkaia,3,126676.0
+Bizkaia,4,153496.0
+Bizkaia,5,171543.0
+Bizkaia,6,163820.0
+Bizkaia,7,182168.0
+Bizkaia,8,194614.0
+Bizkaia,9,176484.0
+Bizkaia,10,169284.0
+Bizkaia,11,128413.0
+Bizkaia,12,116902.0
+Gipuzkoa,1,89254.0
+Gipuzkoa,2,97298.0
+Gipuzkoa,3,119025.0
+Gipuzkoa,4,145765.0
+Gipuzkoa,5,155535.0
+Gipuzkoa,6,154379.0
+Gipuzkoa,7,164930.0
+Gipuzkoa,8,172310.0
+Gipuzkoa,9,159455.0
+Gipuzkoa,10,147949.0
+Gipuzkoa,11,111965.0
+Gipuzkoa,12,105530.0
+Granada,1,197085.0
+Granada,2,210980.0
+Granada,3,241518.0
+Granada,4,272488.0
+Granada,5,257371.0
+Granada,6,243803.0
+Granada,7,240435.0
+Granada,8,265970.0
+Granada,9,261673.0
+Granada,10,269229.0
+Granada,11,205815.0
+Granada,12,219278.0
+Illes Balears,1,78029.0
+Illes Balears,2,164824.0
+Illes Balears,3,343078.0
+Illes Balears,4,820065.0
+Illes Balears,5,1705037.0
+Illes Balears,6,1887685.0
+Illes Balears,7,2036446.0
+Illes Balears,8,2058841.0
+Illes Balears,9,1831184.0
+Illes Balears,10,1298471.0
+Illes Balears,11,139514.0
+Illes Balears,12,104589.0
+Las Palmas,1,525834.0
+Las Palmas,2,542296.0
+Las Palmas,3,577520.0
+Las Palmas,4,538145.0
+Las Palmas,5,510814.0
+Las Palmas,6,527790.0
+Las Palmas,7,587211.0
+Las Palmas,8,628696.0
+Las Palmas,9,526666.0
+Las Palmas,10,586387.0
+Las Palmas,11,538482.0
+Las Palmas,12,528181.0
+Madrid,1,944314.0
+Madrid,2,961528.0
+Madrid,3,1081092.0
+Madrid,4,1153480.0
+Madrid,5,1213258.0
+Madrid,6,1202428.0
+Madrid,7,1179239.0
+Madrid,8,1025795.0
+Madrid,9,1157280.0
+Madrid,10,1244341.0
+Madrid,11,1149382.0
+Madrid,12,1129066.0
+Málaga,1,276252.0
+Málaga,2,347150.0
+Málaga,3,470500.0
+Málaga,4,609162.0
+Málaga,5,637204.0
+Málaga,6,612924.0
+Málaga,7,671077.0
+Málaga,8,722501.0
+Málaga,9,641763.0
+Málaga,10,618584.0
+Málaga,11,394575.0
+Málaga,12,329153.0
+Santa Cruz de Tenerife,1,384401.0
+Santa Cruz de Tenerife,2,385106.0
+Santa Cruz de Tenerife,3,405465.0
+Santa Cruz de Tenerife,4,377432.0
+Santa Cruz de Tenerife,5,379173.0
+Santa Cruz de Tenerife,6,378459.0
+Santa Cruz de Tenerife,7,412358.0
+Santa Cruz de Tenerife,8,427801.0
+Santa Cruz de Tenerife,9,361491.0
+Santa Cruz de Tenerife,10,401938.0
+Santa Cruz de Tenerife,11,391022.0
+Santa Cruz de Tenerife,12,372733.0
+Sevilla,1,263658.0
+Sevilla,2,278954.0
+Sevilla,3,323546.0
+Sevilla,4,358631.0
+Sevilla,5,366777.0
+Sevilla,6,331000.0
+Sevilla,7,297892.0
+Sevilla,8,314675.0
+Sevilla,9,351790.0
+Sevilla,10,366742.0
+Sevilla,11,317715.0
+Sevilla,12,298309.0
+Valencia,1,219789.0
+Valencia,2,240196.0
+Valencia,3,309139.0
+Valencia,4,335804.0
+Valencia,5,344749.0
+Valencia,6,353693.0
+Valencia,7,359588.0
+Valencia,8,378153.0
+Valencia,9,327689.0
+Valencia,10,325005.0
+Valencia,11,277288.0
+Valencia,12,241219.0

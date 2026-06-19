@@ -140,7 +140,7 @@ const HeroSection = () => {
                   },
                 }}
               >
-                Discover Better Destinations
+                Discover Better Destinations in Spain
               </Typography>
             </motion.div>
 

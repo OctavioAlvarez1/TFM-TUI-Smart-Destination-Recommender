@@ -9,7 +9,7 @@ import {
   Stack,
 } from "@mui/material";
 
-import Header from "../components/layout/Header";
+import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 
 import HeroSection from "../components/home/HeroSection";
 import SearchBarHero from "../components/home/SearchBarHero";
@@ -17,7 +17,6 @@ import FeatureSection from "../components/home/FeatureSection";
 import DestinationShowcase from "../components/home/DestinationShowcase";
 
 import RecommendationGrid from "../components/recommendations/RecommendationGrid";
-
 import KpiDashboard from "../components/dashboard/KpiDashboard";
 
 import EmptyState from "../components/common/EmptyState";
@@ -25,70 +24,56 @@ import LoadingSkeleton from "../components/common/LoadingSkeleton";
 import Footer from "../components/layout/Footer";
 
 import { getRecommendations } from "../api/recommendationApi";
-
 import type { Recommendation } from "../types/recommendation";
 
-const Home = () => {
-  const [recommendations, setRecommendations] =
-    useState<Recommendation[]>([]);
+// Destinations that exceed congestion > 80 threshold per month (from congestion_scores.csv)
+const PENALIZED_BY_MONTH: Record<number, number> = {
+  1: 0, 2: 0, 3: 0, 4: 8, 5: 8, 6: 0, 7: 12, 8: 12, 9: 0, 10: 8, 11: 0, 12: 0,
+};
 
-  const [loading, setLoading] =
-    useState(false);
+const MONTH_NAMES = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December",
+];
 
-  const [userId, setUserId] =
-    useState("U001");
+interface HomeProps {
+  month: number;
+  setMonth: (m: number) => void;
+  recommendations: Recommendation[];
+  setRecommendations: (r: Recommendation[]) => void;
+}
 
-  const [month, setMonth] =
-    useState(7);
+const Home = ({ month, setMonth, recommendations, setRecommendations }: HomeProps) => {
+  const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState("U001");
+  const [topN, setTopN] = useState(5);
 
-  const [topN, setTopN] =
-    useState(5);
+  const handleGenerateRecommendations = async () => {
+    try {
+      setLoading(true);
+      const response = await getRecommendations(userId, month, topN);
+      setRecommendations(response.recommendations);
+    } catch (error) {
+      console.error("Error loading recommendations:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleGenerateRecommendations =
-    async () => {
-      try {
-        setLoading(true);
-
-        const response =
-          await getRecommendations(
-            userId,
-            month,
-            topN
-          );
-
-        setRecommendations(
-          response.recommendations
-        );
-      } catch (error) {
-        console.error(
-          "Error loading recommendations:",
-          error
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+  const penalized = PENALIZED_BY_MONTH[month] ?? 0;
+  const monthName = MONTH_NAMES[month - 1];
 
   return (
     <>
-      <Header />
-
       <HeroSection />
 
       {/* SEARCH BAR FLOATING */}
-
       <Container
         maxWidth="xl"
         sx={{
           position: "relative",
-
           zIndex: 100,
-
-          mt: {
-            xs: "-80px",
-            md: "-100px",
-            lg: "-120px",
-          },
+          mt: { xs: "-80px", md: "-100px", lg: "-120px" },
         }}
       >
         <SearchBarHero
@@ -98,57 +83,100 @@ const Home = () => {
           setUserId={setUserId}
           setMonth={setMonth}
           setTopN={setTopN}
-          onSearch={
-            handleGenerateRecommendations
-          }
+          onSearch={handleGenerateRecommendations}
         />
       </Container>
 
       {/* MAIN CONTENT */}
-
-      <Container
-        maxWidth="xl"
-        sx={{
-          mt: {
-            xs: 6,
-            md: 8,
-          },
-
-          mb: 12,
-        }}
-      >
+      <Container maxWidth="xl" sx={{ mt: { xs: 6, md: 8 }, mb: 12 }}>
         <FeatureSection />
 
-        <Box
-          sx={{
-            mt: {
-              xs: 8,
-              md: 10,
-            },
-          }}
-        >
+        <Box sx={{ mt: { xs: 8, md: 10 } }}>
           <DestinationShowcase />
         </Box>
 
-        <Box
-          sx={{
-            mt: {
-              xs: 8,
-              md: 10,
-            },
-          }}
-        >
+        <Box sx={{ mt: { xs: 8, md: 10 } }}>
           {loading ? (
             <LoadingSkeleton />
           ) : recommendations.length === 0 ? (
             <EmptyState />
           ) : (
             <>
-              <KpiDashboard
-                recommendations={
-                  recommendations
-                }
-              />
+              <KpiDashboard recommendations={recommendations} />
+
+              {/* REDISTRIBUTION BANNER */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.25, ease: "easeOut" }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    p: { xs: 2, md: 2.5 },
+                    mb: 5,
+                    borderRadius: "16px",
+                    bgcolor: penalized > 0
+                      ? "rgba(239,68,68,.05)"
+                      : "rgba(16,185,129,.05)",
+                    border: penalized > 0
+                      ? "1px solid rgba(239,68,68,.15)"
+                      : "1px solid rgba(16,185,129,.15)",
+                    flexWrap: "wrap",
+                    gap: 1.5,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 36, height: 36, borderRadius: "10px", flexShrink: 0,
+                      bgcolor: penalized > 0 ? "rgba(239,68,68,.1)" : "rgba(16,185,129,.1)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: penalized > 0 ? "#EF4444" : "#10B981",
+                    }}
+                  >
+                    <SwapHorizRoundedIcon sx={{ fontSize: 20 }} />
+                  </Box>
+
+                  <Box sx={{ flex: 1, minWidth: 200 }}>
+                    <Typography sx={{ fontSize: ".88rem", color: "#0F172A", lineHeight: 1.6 }}>
+                      <Box component="span" sx={{ fontWeight: 700 }}>
+                        Demand Redistribution Active
+                      </Box>
+                      {penalized > 0 ? (
+                        <>
+                          {" "}— Horizon applied congestion penalties to{" "}
+                          <Box component="span" sx={{ fontWeight: 700, color: "#EF4444" }}>
+                            {penalized} destinations
+                          </Box>{" "}
+                          with Very High saturation in{" "}
+                          <Box component="span" sx={{ fontWeight: 700 }}>{monthName}</Box>.
+                          {" "}The results below prioritize sustainable alternatives.
+                        </>
+                      ) : (
+                        <>
+                          {" "}— All destinations are within sustainable limits in{" "}
+                          <Box component="span" sx={{ fontWeight: 700 }}>{monthName}</Box>.
+                          {" "}No congestion penalties applied.
+                        </>
+                      )}
+                    </Typography>
+                  </Box>
+
+                  {penalized > 0 && (
+                    <Chip
+                      label={`${penalized} penalized`}
+                      size="small"
+                      sx={{
+                        fontWeight: 700, fontSize: ".75rem",
+                        bgcolor: "rgba(239,68,68,.1)",
+                        color: "#EF4444",
+                        border: "1px solid rgba(239,68,68,.2)",
+                      }}
+                    />
+                  )}
+                </Box>
+              </motion.div>
 
               {/* RESULTS HEADER */}
               <motion.div
@@ -183,12 +211,7 @@ const Home = () => {
                     />
                   </Stack>
 
-                  <Typography
-                    sx={{
-                      color: "text.secondary",
-                      fontSize: ".95rem",
-                    }}
-                  >
+                  <Typography sx={{ color: "text.secondary", fontSize: ".95rem" }}>
                     Showing{" "}
                     <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
                       {recommendations.length} destinations
@@ -199,16 +222,14 @@ const Home = () => {
                     </Box>{" "}
                     ·{" "}
                     <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
-                      {new Date(2024, month - 1).toLocaleString("en", { month: "long" })}
+                      {monthName}
                     </Box>{" "}
                     · ranked by AI match score
                   </Typography>
                 </Box>
               </motion.div>
 
-              <RecommendationGrid
-                recommendations={recommendations}
-              />
+              <RecommendationGrid recommendations={recommendations} />
             </>
           )}
         </Box>

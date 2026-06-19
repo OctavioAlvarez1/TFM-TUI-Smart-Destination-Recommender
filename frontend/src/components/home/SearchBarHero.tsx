@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Paper,
@@ -6,12 +7,26 @@ import {
   TextField,
   MenuItem,
   Button,
+  Chip,
 } from "@mui/material";
 
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import TravelExploreRoundedIcon from "@mui/icons-material/TravelExploreRounded";
+import { getUserProfile, type UserProfile } from "../../api/recommendationApi";
+
+// ── Profile chip colours ─────────────────────────────────
+const STYLE_COLOR: Record<string, string> = {
+  Nature: "#10B981", Relax: "#38BDF8", Culture: "#8B5CF6",
+  Family: "#F59E0B", Nightlife: "#EC4899", Adventure: "#06B6D4",
+};
+const BUDGET_COLOR: Record<string, string> = {
+  Low: "#10B981", Medium: "#F59E0B", High: "#EF4444",
+};
+const SUST_COLOR: Record<string, string> = {
+  Low: "#EF4444", Medium: "#F59E0B", High: "#10B981",
+};
 
 interface SearchBarHeroProps {
   userId: string;
@@ -57,6 +72,21 @@ const SearchBarHero = ({
   setTopN,
   onSearch,
 }: SearchBarHeroProps) => {
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      if (/^U\d{3}$/.test(userId)) {
+        getUserProfile(userId)
+          .then(setProfile)
+          .catch(() => setProfile(null));
+      } else {
+        setProfile(null);
+      }
+    }, 400);
+    return () => clearTimeout(id);
+  }, [userId]);
+
   const handleTopNChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -192,11 +222,8 @@ const SearchBarHero = ({
             <Typography
               sx={{
                 color: "#64748B",
-
                 fontWeight: 600,
-
                 fontSize: ".9rem",
-
                 mb: 0.75,
               }}
             >
@@ -207,27 +234,62 @@ const SearchBarHero = ({
               fullWidth
               variant="standard"
               value={userId}
-              onChange={(e) =>
-                setUserId(
-                  e.target.value
-                )
-              }
-              InputProps={{
-                disableUnderline: true,
-              }}
+              onChange={(e) => setUserId(e.target.value)}
+              InputProps={{ disableUnderline: true }}
               sx={{
-                "& .MuiInputBase-input":
-                  {
-                    fontSize:
-                      "1.3rem",
-
-                    fontWeight: 700,
-
-                    color:
-                      "#0F172A",
-                  },
+                "& .MuiInputBase-input": {
+                  fontSize: "1.3rem",
+                  fontWeight: 700,
+                  color: "#0F172A",
+                },
               }}
             />
+
+            {/* Profile chips — appear once profile is loaded */}
+            {profile && (
+              <Box sx={{ display: "flex", gap: 0.75, mt: 1, flexWrap: "wrap" }}>
+                <Chip
+                  label={profile.travel_style}
+                  size="small"
+                  sx={{
+                    fontSize: ".68rem", fontWeight: 700, height: 20,
+                    bgcolor: `${STYLE_COLOR[profile.travel_style] ?? "#6366F1"}18`,
+                    color: STYLE_COLOR[profile.travel_style] ?? "#6366F1",
+                    border: `1px solid ${STYLE_COLOR[profile.travel_style] ?? "#6366F1"}30`,
+                  }}
+                />
+                <Chip
+                  label={`${profile.budget_level} budget`}
+                  size="small"
+                  sx={{
+                    fontSize: ".68rem", fontWeight: 700, height: 20,
+                    bgcolor: `${BUDGET_COLOR[profile.budget_level] ?? "#64748B"}18`,
+                    color: BUDGET_COLOR[profile.budget_level] ?? "#64748B",
+                    border: `1px solid ${BUDGET_COLOR[profile.budget_level] ?? "#64748B"}30`,
+                  }}
+                />
+                <Chip
+                  label={`Eco: ${profile.sustainability_preference}`}
+                  size="small"
+                  sx={{
+                    fontSize: ".68rem", fontWeight: 700, height: 20,
+                    bgcolor: `${SUST_COLOR[profile.sustainability_preference] ?? "#10B981"}18`,
+                    color: SUST_COLOR[profile.sustainability_preference] ?? "#10B981",
+                    border: `1px solid ${SUST_COLOR[profile.sustainability_preference] ?? "#10B981"}30`,
+                  }}
+                />
+                <Chip
+                  label={`${profile.country} · ${profile.age_group}`}
+                  size="small"
+                  sx={{
+                    fontSize: ".68rem", fontWeight: 600, height: 20,
+                    bgcolor: "rgba(100,116,139,.08)",
+                    color: "#64748B",
+                    border: "1px solid rgba(100,116,139,.15)",
+                  }}
+                />
+              </Box>
+            )}
           </Box>
         </Box>
 

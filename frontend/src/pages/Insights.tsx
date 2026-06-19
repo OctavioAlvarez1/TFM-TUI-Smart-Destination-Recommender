@@ -1,0 +1,773 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Box,
+  Container,
+  Typography,
+  Chip,
+  Stack,
+  Grid,
+} from "@mui/material";
+
+import TrendingDownRoundedIcon from "@mui/icons-material/TrendingDownRounded";
+import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
+import EuroRoundedIcon from "@mui/icons-material/EuroRounded";
+import WbSunnyRoundedIcon from "@mui/icons-material/WbSunnyRounded";
+import SpaRoundedIcon from "@mui/icons-material/SpaRounded";
+import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
+
+import Footer from "../components/layout/Footer";
+import DestinationMap from "../components/map/DestinationMap";
+import type { Recommendation } from "../types/recommendation";
+
+// ── Static data from congestion_scores.csv ──────────────
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+type HeatmapDest = { id: string; name: string; region: string; type: string; monthly: number[] };
+
+const ALL_DESTINATIONS: HeatmapDest[] = [
+  { id: "D001", name: "Mallorca",         region: "Balearic Islands",     type: "Beach",  monthly: [25,25,35,50,65,80,95,100,75,55,35,30] },
+  { id: "D002", name: "Ibiza",            region: "Balearic Islands",     type: "Beach",  monthly: [25,25,35,50,65,80,95,100,75,55,35,30] },
+  { id: "D003", name: "Menorca",          region: "Balearic Islands",     type: "Beach",  monthly: [25,25,35,50,65,80,95,100,75,55,35,30] },
+  { id: "D004", name: "Tenerife",         region: "Canary Islands",       type: "Mixed",  monthly: [65,70,65,60,65,75,85,90,80,75,70,80] },
+  { id: "D005", name: "Gran Canaria",     region: "Canary Islands",       type: "Mixed",  monthly: [65,70,65,60,65,75,85,90,80,75,70,80] },
+  { id: "D006", name: "Lanzarote",        region: "Canary Islands",       type: "Nature", monthly: [65,70,65,60,65,75,85,90,80,75,70,80] },
+  { id: "D007", name: "Costa del Sol",    region: "Andalusia",            type: "Beach",  monthly: [25,25,35,50,65,80,95,100,75,55,35,30] },
+  { id: "D008", name: "Marbella",         region: "Andalusia",            type: "Beach",  monthly: [25,25,35,50,65,80,95,100,75,55,35,30] },
+  { id: "D009", name: "Malaga",           region: "Andalusia",            type: "City",   monthly: [60,60,70,85,90,80,65,60,75,85,70,75] },
+  { id: "D010", name: "Valencia",         region: "Valencian Community",  type: "City",   monthly: [60,60,70,85,90,80,65,60,75,85,70,75] },
+  { id: "D011", name: "Alicante",         region: "Valencian Community",  type: "Beach",  monthly: [25,25,35,50,65,80,95,100,75,55,35,30] },
+  { id: "D012", name: "Benidorm",         region: "Valencian Community",  type: "Beach",  monthly: [25,25,35,50,65,80,95,100,75,55,35,30] },
+  { id: "D013", name: "Barcelona",        region: "Catalonia",            type: "City",   monthly: [60,60,70,85,90,80,65,60,75,85,70,75] },
+  { id: "D014", name: "Madrid",           region: "Community of Madrid",  type: "City",   monthly: [60,60,70,85,90,80,65,60,75,85,70,75] },
+  { id: "D015", name: "Seville",          region: "Andalusia",            type: "City",   monthly: [60,60,70,85,90,80,65,60,75,85,70,75] },
+  { id: "D016", name: "Granada",          region: "Andalusia",            type: "City",   monthly: [60,60,70,85,90,80,65,60,75,85,70,75] },
+  { id: "D017", name: "Bilbao",           region: "Basque Country",       type: "City",   monthly: [60,60,70,85,90,80,65,60,75,85,70,75] },
+  { id: "D018", name: "San Sebastian",    region: "Basque Country",       type: "Mixed",  monthly: [60,60,70,85,90,80,65,60,75,85,70,75] },
+  { id: "D019", name: "Picos de Europa",  region: "Asturias",             type: "Nature", monthly: [15,15,20,35,55,70,85,90,75,45,25,20] },
+  { id: "D020", name: "Sierra Nevada",    region: "Andalusia",            type: "Nature", monthly: [15,15,20,35,55,70,85,90,75,45,25,20] },
+];
+
+const DEFAULT_HEATMAP_IDS = ["D001","D002","D004","D013","D014","D015","D019","D020"];
+
+// Destinations penalized (congestion > 80) per month, computed from all 20 destinations
+const PENALIZED_BY_MONTH: Record<number, number> = {
+  1: 0, 2: 0, 3: 0, 4: 8, 5: 8, 6: 0, 7: 12, 8: 12, 9: 0, 10: 8, 11: 0, 12: 0,
+};
+
+// ── Colour helpers ───────────────────────────────────────
+const cellStyle = (score: number) => {
+  if (score <= 30) return { bg: "#DCFCE7", text: "#166534", border: "#BBF7D0" };
+  if (score <= 60) return { bg: "#FEF9C3", text: "#854D0E", border: "#FDE68A" };
+  if (score <= 80) return { bg: "#FFEDD5", text: "#9A3412", border: "#FED7AA" };
+  return { bg: "#FEE2E2", text: "#991B1B", border: "#FECACA" };
+};
+
+const levelLabel = (score: number) => {
+  if (score <= 30) return "Low";
+  if (score <= 60) return "Moderate";
+  if (score <= 80) return "High";
+  return "Very High";
+};
+
+const levelShort = (score: number) => {
+  if (score <= 30) return "Low";
+  if (score <= 60) return "Mod";
+  if (score <= 80) return "High";
+  return "V.Hi";
+};
+
+// ── Stat card ────────────────────────────────────────────
+const StatCard = ({
+  value, label, icon, color, delay,
+}: {
+  value: string; label: string; icon: React.ReactNode; color: string; delay: number;
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 28 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.55, delay, ease: "easeOut" }}
+  >
+    <Box
+      sx={{
+        borderRadius: "20px",
+        border: `1px solid ${color}22`,
+        background: `linear-gradient(145deg, ${color}08 0%, ${color}14 100%)`,
+        p: 3,
+        height: "100%",
+      }}
+    >
+      <Box
+        sx={{
+          width: 44, height: 44, borderRadius: "12px",
+          bgcolor: `${color}18`, display: "flex",
+          alignItems: "center", justifyContent: "center", color, mb: 2,
+        }}
+      >
+        {icon}
+      </Box>
+      <Typography sx={{ fontSize: "2.2rem", fontWeight: 900, color: "#0F172A", lineHeight: 1, mb: 0.5 }}>
+        {value}
+      </Typography>
+      <Typography sx={{ fontSize: ".85rem", color: "#64748B", fontWeight: 500, lineHeight: 1.5 }}>
+        {label}
+      </Typography>
+    </Box>
+  </motion.div>
+);
+
+// ── Heatmap ──────────────────────────────────────────────
+const CongestionHeatmap = ({
+  activeMonth,
+  onMonthClick,
+  destinations,
+}: {
+  activeMonth: number | null;
+  onMonthClick: (m: number) => void;
+  destinations: HeatmapDest[];
+}) => (
+  <Box sx={{ overflowX: "auto", pb: 1 }}>
+    <Box sx={{ minWidth: 820 }}>
+      {/* Header row — clickeable */}
+      <Box sx={{ display: "grid", gridTemplateColumns: "180px repeat(12, 1fr)", gap: 0.5, mb: 0.5 }}>
+        <Box />
+        {MONTHS.map((m, i) => {
+          const isActive = activeMonth === i + 1;
+          const penalized = PENALIZED_BY_MONTH[i + 1] > 0;
+          return (
+            <Box
+              key={m}
+              onClick={() => onMonthClick(i + 1)}
+              sx={{
+                textAlign: "center",
+                py: 1,
+                borderRadius: "8px",
+                cursor: "pointer",
+                bgcolor: isActive
+                  ? penalized ? "rgba(239,68,68,.12)" : "rgba(37,99,235,.12)"
+                  : "transparent",
+                border: isActive
+                  ? penalized ? "1px solid rgba(239,68,68,.25)" : "1px solid rgba(37,99,235,.2)"
+                  : "1px solid transparent",
+                transition: "all .2s ease",
+                "&:hover": {
+                  bgcolor: isActive
+                    ? undefined
+                    : "rgba(0,0,0,.04)",
+                  border: isActive ? undefined : "1px solid rgba(0,0,0,.08)",
+                },
+              }}
+            >
+              <Typography sx={{
+                fontSize: ".7rem", fontWeight: 700,
+                color: isActive
+                  ? penalized ? "#EF4444" : "#2563EB"
+                  : "#94A3B8",
+              }}>
+                {m}
+              </Typography>
+              {penalized && (
+                <Box sx={{
+                  width: 4, height: 4, borderRadius: "50%",
+                  bgcolor: isActive ? "#EF4444" : "#CBD5E1",
+                  mx: "auto", mt: 0.4,
+                  transition: "background .2s",
+                }} />
+              )}
+            </Box>
+          );
+        })}
+      </Box>
+
+      {/* Data rows */}
+      {destinations.map((dest, dIdx) => (
+        <motion.div
+          key={dest.id}
+          initial={{ opacity: 0, x: -16 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: dIdx * 0.07, ease: "easeOut" }}
+        >
+          <Box sx={{ display: "grid", gridTemplateColumns: "180px repeat(12, 1fr)", gap: 0.5, mb: 0.5 }}>
+            {/* Destination label */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, pr: 1 }}>
+              <Box>
+                <Typography sx={{ fontSize: ".8rem", fontWeight: 700, color: "#0F172A", lineHeight: 1.2 }}>
+                  {dest.name}
+                </Typography>
+                <Typography sx={{ fontSize: ".68rem", color: "#94A3B8" }}>
+                  {dest.type}
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Month cells */}
+            {dest.monthly.map((score, mIdx) => {
+              const s = cellStyle(score);
+              const isActive = activeMonth === mIdx + 1;
+              const isPenalized = score > 80;
+              return (
+                <motion.div
+                  key={mIdx}
+                  initial={{ scale: 0.7, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: dIdx * 0.05 + mIdx * 0.015 }}
+                >
+                  <Box
+                    sx={{
+                      bgcolor: s.bg,
+                      border: `1px solid ${isActive ? s.text : s.border}`,
+                      borderRadius: "7px",
+                      height: 58,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "2px",
+                      cursor: "default",
+                      boxShadow: isPenalized && isActive ? `0 0 0 2px ${s.text}44` : "none",
+                      transform: isActive ? "scale(1.05)" : "scale(1)",
+                      transition: "all .2s ease",
+                      position: "relative",
+                    }}
+                  >
+                    <Typography sx={{ fontSize: ".78rem", fontWeight: 900, color: s.text, lineHeight: 1 }}>
+                      {score}
+                    </Typography>
+                    <Typography sx={{ fontSize: ".58rem", fontWeight: 600, color: s.text, opacity: 0.75, lineHeight: 1 }}>
+                      {levelShort(score)}
+                    </Typography>
+                    {isPenalized && (
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          top: 3, right: 3,
+                          width: 5, height: 5,
+                          borderRadius: "50%",
+                          bgcolor: s.text,
+                        }}
+                      />
+                    )}
+                  </Box>
+                </motion.div>
+              );
+            })}
+          </Box>
+        </motion.div>
+      ))}
+
+      {/* Legend */}
+      <Box sx={{ display: "flex", gap: 2, mt: 2, flexWrap: "wrap" }}>
+        {[
+          { label: "Low (0–30)", bg: "#DCFCE7", text: "#166534" },
+          { label: "Moderate (31–60)", bg: "#FEF9C3", text: "#854D0E" },
+          { label: "High (61–80)", bg: "#FFEDD5", text: "#9A3412" },
+          { label: "Very High (81–100) — penalized", bg: "#FEE2E2", text: "#991B1B" },
+        ].map((l) => (
+          <Box key={l.label} sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+            <Box sx={{ width: 14, height: 14, borderRadius: "4px", bgcolor: l.bg, border: `1px solid ${l.text}44` }} />
+            <Typography sx={{ fontSize: ".72rem", color: "#64748B" }}>{l.label}</Typography>
+          </Box>
+        ))}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, ml: 1 }}>
+          <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: "#991B1B" }} />
+          <Typography sx={{ fontSize: ".72rem", color: "#64748B" }}>Penalty trigger dot</Typography>
+        </Box>
+      </Box>
+    </Box>
+  </Box>
+);
+
+// ── Redistribution scenario card ─────────────────────────
+const ScenarioCard = ({
+  from, to, monthLabel, fromScore, toScore, delay,
+}: {
+  from: string; to: string; monthLabel: string; fromScore: number; toScore: number; delay: number;
+}) => {
+  const fromS = cellStyle(fromScore);
+  const toS = cellStyle(toScore);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay, ease: "easeOut" }}
+    >
+      <Box
+        sx={{
+          borderRadius: "20px",
+          border: "1px solid rgba(226,232,240,.8)",
+          background: "linear-gradient(160deg, #FAFBFF 0%, #F5F8FF 100%)",
+          p: 3,
+          height: "100%",
+        }}
+      >
+        <Typography sx={{ fontSize: ".72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".12em", color: "#94A3B8", mb: 2 }}>
+          {monthLabel}
+        </Typography>
+
+        {/* FROM */}
+        <Box sx={{ p: 2, borderRadius: "12px", bgcolor: `${fromS.bg}`, border: `1px solid ${fromS.border}`, mb: 1.5 }}>
+          <Typography sx={{ fontSize: ".68rem", fontWeight: 600, color: fromS.text, mb: 0.25, textTransform: "uppercase", letterSpacing: ".1em" }}>
+            ✗ Over-saturated
+          </Typography>
+          <Typography sx={{ fontWeight: 800, color: "#0F172A", fontSize: "1rem" }}>{from}</Typography>
+          <Typography sx={{ fontSize: ".75rem", color: fromS.text, fontWeight: 700 }}>
+            Congestion: {fromScore} — {levelLabel(fromScore)}
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: "flex", justifyContent: "center", my: 1 }}>
+          <SwapHorizRoundedIcon sx={{ color: "#2563EB", fontSize: 22 }} />
+        </Box>
+
+        {/* TO */}
+        <Box sx={{ p: 2, borderRadius: "12px", bgcolor: `${toS.bg}`, border: `1px solid ${toS.border}` }}>
+          <Typography sx={{ fontSize: ".68rem", fontWeight: 600, color: toS.text, mb: 0.25, textTransform: "uppercase", letterSpacing: ".1em" }}>
+            ✓ Horizon recommends
+          </Typography>
+          <Typography sx={{ fontWeight: 800, color: "#0F172A", fontSize: "1rem" }}>{to}</Typography>
+          <Typography sx={{ fontSize: ".75rem", color: toS.text, fontWeight: 700 }}>
+            Congestion: {toScore} — {levelLabel(toScore)}
+          </Typography>
+        </Box>
+      </Box>
+    </motion.div>
+  );
+};
+
+interface InsightsProps {
+  initialMonth?: number;
+  recommendations?: Recommendation[];
+}
+
+// ── Main page ────────────────────────────────────────────
+const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => {
+  const [activeMonth, setActiveMonth] = useState<number | null>(initialMonth);
+
+  const penalized = activeMonth ? PENALIZED_BY_MONTH[activeMonth] : 0;
+
+  const hasRecs = recommendations.length > 0;
+  const displayedDestinations = hasRecs
+    ? ALL_DESTINATIONS.filter((d) =>
+        recommendations.some((r) => r.destination_name === d.name)
+      )
+    : ALL_DESTINATIONS.filter((d) => DEFAULT_HEATMAP_IDS.includes(d.id));
+
+  return (
+    <>
+      {/* PAGE HEADER */}
+      <Box
+        sx={{
+          background: "linear-gradient(160deg, #070C16 0%, #0F1A2E 100%)",
+          pt: { xs: 14, md: 16 },
+          pb: { xs: 8, md: 10 },
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Dot grid texture */}
+        <Box sx={{
+          position: "absolute", inset: 0, pointerEvents: "none",
+          backgroundImage: "radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+        }} />
+
+        {/* Animated orb 1 — strong blue, top-left */}
+        <motion.div
+          style={{ position: "absolute", top: "-5%", left: "-8%", width: 550, height: 550, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,.55) 0%, rgba(37,99,235,.2) 40%, transparent 70%)", filter: "blur(45px)", pointerEvents: "none" }}
+          animate={{ x: [0, 50, -25, 0], y: [0, -35, 25, 0], scale: [1, 1.15, 0.92, 1] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+        />
+        {/* Animated orb 2 — cyan, right */}
+        <motion.div
+          style={{ position: "absolute", top: "10%", right: "-10%", width: 420, height: 420, borderRadius: "50%", background: "radial-gradient(circle, rgba(56,189,248,.45) 0%, rgba(56,189,248,.15) 45%, transparent 70%)", filter: "blur(40px)", pointerEvents: "none" }}
+          animate={{ x: [0, -40, 18, 0], y: [0, 30, -20, 0], scale: [1, 0.88, 1.1, 1] }}
+          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+        />
+        {/* Animated orb 3 — teal/emerald accent, bottom-left */}
+        <motion.div
+          style={{ position: "absolute", bottom: "-15%", left: "15%", width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(16,185,129,.4) 0%, rgba(16,185,129,.12) 45%, transparent 70%)", filter: "blur(50px)", pointerEvents: "none" }}
+          animate={{ x: [0, 30, -20, 0], y: [0, -20, 15, 0], scale: [1, 1.18, 0.9, 1] }}
+          transition={{ duration: 13, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+        />
+        {/* Animated orb 4 — violet warm accent, bottom-right */}
+        <motion.div
+          style={{ position: "absolute", bottom: "-10%", right: "10%", width: 280, height: 280, borderRadius: "50%", background: "radial-gradient(circle, rgba(139,92,246,.38) 0%, transparent 65%)", filter: "blur(42px)", pointerEvents: "none" }}
+          animate={{ x: [0, -20, 25, 0], y: [0, 15, -25, 0], scale: [1, 1.1, 0.85, 1] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+        />
+        <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <Typography
+              sx={{
+                display: "inline-block", px: 2.5, py: 0.9, borderRadius: "999px",
+                color: "#38BDF8", fontWeight: 700, fontSize: ".78rem",
+                textTransform: "uppercase", letterSpacing: ".2em", mb: 3,
+                border: "1px solid rgba(56,189,248,.2)",
+                background: "rgba(56,189,248,.06)",
+              }}
+            >
+              Tourism Intelligence · Reto 2 / TUI Care Foundation
+            </Typography>
+
+            <Typography
+              sx={{
+                color: "#FFFFFF", fontWeight: 900, lineHeight: 1.05,
+                fontSize: { xs: "2.5rem", md: "3.5rem" },
+                maxWidth: 800, mb: 2.5,
+              }}
+            >
+              Spain's Tourism Concentration Problem
+            </Typography>
+
+            <Typography
+              sx={{
+                color: "rgba(255,255,255,.65)", fontSize: { xs: "1rem", md: "1.1rem" },
+                maxWidth: 680, lineHeight: 1.8,
+              }}
+            >
+              96.8 million tourists visit Spain every year — but 85% of them go to the same 10% of destinations.
+              Horizon uses AI to identify this imbalance and redistribute demand sustainably.
+            </Typography>
+          </motion.div>
+        </Container>
+      </Box>
+
+      {/* STATS */}
+      <Container maxWidth="xl" sx={{ mt: { xs: 6, md: 8 }, mb: 8 }}>
+        <Grid container spacing={2.5}>
+          {[
+            { value: "96.8M", label: "International tourists per year — Spain ranks among world's top destinations", icon: <PeopleRoundedIcon sx={{ fontSize: 22 }} />, color: "#6366F1", delay: 0 },
+            { value: "85%", label: "concentrate in only 10% of destinations — extreme spatial asymmetry", icon: <TrendingDownRoundedIcon sx={{ fontSize: 22 }} />, color: "#EF4444", delay: 0.1 },
+            { value: "134.7B€", label: "economic impact, but economic benefits don't reach SMEs and local communities", icon: <EuroRoundedIcon sx={{ fontSize: 22 }} />, color: "#F59E0B", delay: 0.2 },
+            { value: "22.5M", label: "tourists arrive just between July and August — extreme demand seasonality", icon: <WbSunnyRoundedIcon sx={{ fontSize: 22 }} />, color: "#10B981", delay: 0.3 },
+          ].map((s) => (
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={s.value}>
+              <StatCard {...s} />
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+
+      {/* MAP */}
+      <Container maxWidth="xl" sx={{ mb: { xs: 8, md: 10 } }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
+            Territorial Impact
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 2, mb: 3 }}>
+            <Box>
+              <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "#0F172A", lineHeight: 1.1, mb: 0.5 }}>
+                Spain Congestion Map
+              </Typography>
+              <Typography sx={{ color: "#64748B", fontSize: ".95rem", lineHeight: 1.7, maxWidth: 600 }}>
+                Each circle represents one of the 20 monitored destinations. Size and colour reflect
+                congestion intensity for the selected month — derived from real INE hotel occupancy data.
+              </Typography>
+            </Box>
+            {hasRecs && (
+              <Chip
+                label={`Highlighting your ${recommendations.length} recommended destinations`}
+                sx={{ fontWeight: 700, fontSize: ".78rem", bgcolor: "rgba(37,99,235,.08)", color: "#2563EB", border: "1px solid rgba(37,99,235,.15)" }}
+              />
+            )}
+          </Box>
+          <DestinationMap
+            activeMonth={activeMonth}
+            recommendedIds={hasRecs ? recommendations.map((r) => {
+              // Map destination name back to ID using the ALL_DESTINATIONS list
+              const found = ALL_DESTINATIONS.find((d) => d.name === r.destination_name);
+              return found?.id ?? "";
+            }).filter(Boolean) : []}
+          />
+        </motion.div>
+      </Container>
+
+      {/* HEATMAP */}
+      <Box sx={{ bgcolor: "#F8FAFC", py: { xs: 8, md: 10 } }}>
+        <Container maxWidth="xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <Typography
+              sx={{
+                fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase",
+                letterSpacing: ".2em", color: "#2563EB", mb: 1,
+              }}
+            >
+              Congestion Intelligence
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800,
+                color: "#0F172A", lineHeight: 1.1, mb: 1.5,
+              }}
+            >
+              Monthly Congestion Levels by Destination
+            </Typography>
+            <Typography sx={{ color: "#64748B", fontSize: ".95rem", lineHeight: 1.8, maxWidth: 680, mb: 4 }}>
+              Select a month to see which destinations exceed sustainable limits.
+              Cells with a red dot trigger Horizon's{" "}
+              <Box component="span" sx={{ fontWeight: 700, color: "#EF4444" }}>−10% congestion penalty</Box>{" "}
+              in the scoring formula.
+            </Typography>
+          </motion.div>
+
+          {/* Month selector */}
+          <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1, mb: 4 }}>
+            {MONTHS.map((m, i) => {
+              const monthNum = i + 1;
+              const p = PENALIZED_BY_MONTH[monthNum];
+              const isActive = activeMonth === monthNum;
+              return (
+                <Chip
+                  key={m}
+                  label={p > 0 ? `${m} (${p} penalized)` : m}
+                  onClick={() => setActiveMonth(isActive ? null : monthNum)}
+                  sx={{
+                    fontWeight: isActive ? 700 : 500,
+                    bgcolor: isActive
+                      ? p > 0 ? "rgba(239,68,68,.12)" : "rgba(37,99,235,.12)"
+                      : "rgba(0,0,0,.04)",
+                    color: isActive
+                      ? p > 0 ? "#EF4444" : "#2563EB"
+                      : "#64748B",
+                    border: isActive
+                      ? p > 0 ? "1px solid rgba(239,68,68,.25)" : "1px solid rgba(37,99,235,.25)"
+                      : "1px solid transparent",
+                    transition: "all .2s ease",
+                    "&:hover": { opacity: 0.85 },
+                  }}
+                />
+              );
+            })}
+          </Stack>
+
+          {/* Active month banner */}
+          {activeMonth && penalized > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Box
+                sx={{
+                  p: 2, mb: 3, borderRadius: "14px",
+                  bgcolor: "rgba(239,68,68,.06)",
+                  border: "1px solid rgba(239,68,68,.15)",
+                  display: "flex", alignItems: "center", gap: 1.5,
+                }}
+              >
+                <PeopleRoundedIcon sx={{ color: "#EF4444", fontSize: 20 }} />
+                <Typography sx={{ fontSize: ".88rem", color: "#0F172A" }}>
+                  <Box component="span" sx={{ fontWeight: 700, color: "#EF4444" }}>
+                    {penalized} of 20 destinations
+                  </Box>{" "}
+                  exceed the sustainability congestion threshold in{" "}
+                  <Box component="span" sx={{ fontWeight: 700 }}>
+                    {MONTHS[activeMonth - 1]}
+                  </Box>
+                  . Horizon applies redistribution penalties to these locations.
+                </Typography>
+              </Box>
+            </motion.div>
+          )}
+
+          {activeMonth && penalized === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Box
+                sx={{
+                  p: 2, mb: 3, borderRadius: "14px",
+                  bgcolor: "rgba(16,185,129,.06)",
+                  border: "1px solid rgba(16,185,129,.15)",
+                  display: "flex", alignItems: "center", gap: 1.5,
+                }}
+              >
+                <SpaRoundedIcon sx={{ color: "#10B981", fontSize: 20 }} />
+                <Typography sx={{ fontSize: ".88rem", color: "#0F172A" }}>
+                  <Box component="span" sx={{ fontWeight: 700, color: "#10B981" }}>
+                    All 20 destinations
+                  </Box>{" "}
+                  are within sustainable congestion limits in{" "}
+                  <Box component="span" sx={{ fontWeight: 700 }}>
+                    {MONTHS[activeMonth - 1]}
+                  </Box>
+                  . No redistribution penalties applied.
+                </Typography>
+              </Box>
+            </motion.div>
+          )}
+
+          {/* Source banner */}
+          <Box
+            sx={{
+              display: "flex", alignItems: "center", gap: 1.5,
+              p: 1.5, mb: 2, borderRadius: "12px",
+              bgcolor: hasRecs ? "rgba(37,99,235,.06)" : "rgba(100,116,139,.06)",
+              border: hasRecs ? "1px solid rgba(37,99,235,.15)" : "1px solid rgba(100,116,139,.12)",
+            }}
+          >
+            <Box
+              sx={{
+                width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+                bgcolor: hasRecs ? "#2563EB" : "#94A3B8",
+              }}
+            />
+            <Typography sx={{ fontSize: ".8rem", color: "#475569" }}>
+              {hasRecs ? (
+                <>
+                  Showing{" "}
+                  <Box component="span" sx={{ fontWeight: 700, color: "#2563EB" }}>
+                    your {displayedDestinations.length} recommended destinations
+                  </Box>
+                  {" "}— go to Destinations to change your search
+                </>
+              ) : (
+                <>
+                  Showing{" "}
+                  <Box component="span" sx={{ fontWeight: 700, color: "#64748B" }}>
+                    8 representative destinations
+                  </Box>
+                  {" "}— run a search in Destinations to see your specific results
+                </>
+              )}
+            </Typography>
+          </Box>
+
+          <CongestionHeatmap
+            activeMonth={activeMonth}
+            onMonthClick={(m) => setActiveMonth((prev) => (prev === m ? null : m))}
+            destinations={displayedDestinations}
+          />
+        </Container>
+      </Box>
+
+      {/* REDISTRIBUTION SCENARIOS */}
+      <Container maxWidth="xl" sx={{ py: { xs: 8, md: 10 } }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
+            Redistribution in Action
+          </Typography>
+          <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "#0F172A", lineHeight: 1.1, mb: 1.5 }}>
+            What Horizon Does Differently
+          </Typography>
+          <Typography sx={{ color: "#64748B", fontSize: ".95rem", lineHeight: 1.8, maxWidth: 680, mb: 6 }}>
+            Instead of recommending the most popular choice, Horizon identifies sustainable alternatives
+            that match traveler preferences while reducing pressure on saturated destinations.
+          </Typography>
+        </motion.div>
+
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <ScenarioCard
+              from="Mallorca" to="Picos de Europa"
+              monthLabel="July — Peak Season"
+              fromScore={95} toScore={85}
+              delay={0}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <ScenarioCard
+              from="Barcelona" to="Sierra Nevada"
+              monthLabel="May — Spring Peak"
+              fromScore={90} toScore={55}
+              delay={0.1}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <ScenarioCard
+              from="Ibiza" to="Sierra Nevada"
+              monthLabel="August — Summer Peak"
+              fromScore={100} toScore={90}
+              delay={0.2}
+            />
+          </Grid>
+        </Grid>
+      </Container>
+
+      {/* IMPACT TARGETS */}
+      <Box sx={{ bgcolor: "linear-gradient(160deg, #070C16 0%, #0F1A2E 100%)", background: "linear-gradient(160deg, #070C16 0%, #0F1A2E 100%)", py: { xs: 8, md: 10 } }}>
+        <Container maxWidth="xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#38BDF8", mb: 1 }}>
+              SDG 8.9 Impact Targets
+            </Typography>
+            <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "#FFFFFF", lineHeight: 1.1, mb: 6 }}>
+              Measurable Impact on Spanish Tourism
+            </Typography>
+          </motion.div>
+
+          <Grid container spacing={3}>
+            {[
+              { value: "5–10%", label: "demand redistribution", desc: "Target shift of tourist flow from saturated to sustainable destinations during pilots", color: "#38BDF8", delay: 0 },
+              { value: "200+", label: "alternative destinations", desc: "Locations in Spain with growth potential identified as redistribution targets", color: "#10B981", delay: 0.1 },
+              { value: "20–30%", label: "recommendation acceptance", desc: "Target acceptance rate for Horizon's alternative destination suggestions", color: "#6366F1", delay: 0.2 },
+              { value: "+10%", label: "secondary destination growth", desc: "Annual growth target for bookings in less-visited sustainable destinations", color: "#F59E0B", delay: 0.3 },
+            ].map((t) => (
+              <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={t.value}>
+                <motion.div
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: t.delay, ease: "easeOut" }}
+                >
+                  <Box
+                    sx={{
+                      borderRadius: "20px",
+                      border: `1px solid ${t.color}22`,
+                      background: `linear-gradient(145deg, ${t.color}08 0%, ${t.color}14 100%)`,
+                      p: 3, height: "100%",
+                    }}
+                  >
+                    <Typography sx={{ fontSize: "2.4rem", fontWeight: 900, color: t.color, lineHeight: 1, mb: 0.5 }}>
+                      {t.value}
+                    </Typography>
+                    <Typography sx={{ fontSize: ".85rem", fontWeight: 700, color: "#FFFFFF", mb: 1 }}>
+                      {t.label}
+                    </Typography>
+                    <Typography sx={{ fontSize: ".8rem", color: "rgba(255,255,255,.5)", lineHeight: 1.6 }}>
+                      {t.desc}
+                    </Typography>
+                  </Box>
+                </motion.div>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      <Footer />
+    </>
+  );
+};
+
+export default Insights;

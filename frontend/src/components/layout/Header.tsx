@@ -7,8 +7,6 @@ import {
   Button,
 } from "@mui/material";
 
-import { useState } from "react";
-
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 
@@ -16,164 +14,111 @@ import { useThemeContext } from "../../theme/ThemeProvider";
 
 import horizonLogo from "../../assets/logo/horizon-logo.svg";
 
-import MegaMenu from "./MegaMenu";
+import type { Page } from "../../App";
 
-const Header = () => {
-  const {
-    darkMode,
-    toggleTheme,
-  } = useThemeContext();
+interface HeaderProps {
+  currentPage: Page;
+  onNavigate: (page: Page) => void;
+}
 
-  const [megaOpen, setMegaOpen] =
-    useState(false);
+const NAV_ITEMS: { label: string; page: Page }[] = [
+  { label: "Destinations", page: "home" },
+  { label: "Insights",     page: "insights" },
+  { label: "Analytics",   page: "analytics" },
+  { label: "About",        page: "about" },
+];
+
+const Header = ({ currentPage, onNavigate }: HeaderProps) => {
+  const { darkMode, toggleTheme } = useThemeContext();
 
   return (
     <AppBar
       position="fixed"
       elevation={0}
       sx={{
-        background:
-          "rgba(7,12,22,0.55)",
-
-        backdropFilter:
-          "blur(16px)",
-
-        borderBottom:
-          "1px solid rgba(255,255,255,0.12)",
-
+        background: "rgba(7,12,22,0.55)",
+        backdropFilter: "blur(16px)",
+        borderBottom: "1px solid rgba(255,255,255,0.12)",
         boxShadow: "none",
-
         overflow: "visible",
       }}
     >
       <Toolbar
         sx={{
           minHeight: "62px",
-
-          px: {
-            xs: 2,
-            md: 4,
-          },
+          px: { xs: 2, md: 4 },
         }}
       >
+        {/* Logo */}
         <Box
+          onClick={() => onNavigate("home")}
           sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1.5,
-            flexGrow: 1,
+            display: "flex", alignItems: "center", gap: 1.5,
+            flexGrow: 1, cursor: "pointer",
           }}
         >
-          <img
-            src={horizonLogo}
-            alt="Horizon"
-            style={{
-              width: 28,
-              height: 28,
-            }}
-          />
-
+          <img src={horizonLogo} alt="Horizon" style={{ width: 28, height: 28 }} />
           <Typography
             sx={{
-              color: "#FFFFFF",
-
-              fontSize: "1.1rem",
-
-              fontWeight: 800,
-
-              letterSpacing: ".08em",
+              color: "#FFFFFF", fontSize: "1.1rem",
+              fontWeight: 800, letterSpacing: ".08em",
             }}
           >
             HORIZON
           </Typography>
         </Box>
 
-        <Box
-          sx={{
-            display: {
-              xs: "none",
-              md: "flex",
-            },
+        {/* Nav items */}
+        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3 }}>
+          {NAV_ITEMS.map(({ label, page }) => {
+            const isActive = currentPage === page;
+            return (
+              <Button
+                key={label}
+                onClick={() => onNavigate(page)}
+                sx={{
+                  color: isActive ? "#38BDF8" : "#FFFFFF",
+                  fontSize: ".78rem",
+                  fontWeight: isActive ? 700 : 500,
+                  textTransform: "uppercase",
+                  position: "relative",
+                  pb: "6px",
+                  borderRadius: 0,
 
-            gap: 3,
-          }}
-        >
-          {[
-            { label: "Destinations", onMouseEnter: () => setMegaOpen(true) },
-            { label: "Insights" },
-            { label: "Analytics" },
-            { label: "About" },
-          ].map(({ label, onMouseEnter }) => (
-            <Button
-              key={label}
-              onMouseEnter={onMouseEnter}
-              sx={{
-                color: "#FFFFFF",
-                fontSize: ".78rem",
-                fontWeight: 500,
-                textTransform: "uppercase",
-                position: "relative",
-                pb: "6px",
-                borderRadius: 0,
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    bottom: 0,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: isActive ? "100%" : 0,
+                    height: "2px",
+                    borderRadius: "999px",
+                    background: "#38BDF8",
+                    transition: "width .25s ease",
+                  },
 
-                "&::after": {
-                  content: '""',
-                  position: "absolute",
-                  bottom: 0,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  width: 0,
-                  height: "2px",
-                  borderRadius: "999px",
-                  background: "#38BDF8",
-                  transition: "width .25s ease",
-                },
-
-                "&:hover::after": {
-                  width: "100%",
-                },
-
-                "&:hover": {
-                  background: "transparent",
-                  color: "#38BDF8",
-                },
-              }}
-            >
-              {label}
-            </Button>
-          ))}
+                  "&:hover::after": { width: "100%" },
+                  "&:hover": { background: "transparent", color: "#38BDF8" },
+                }}
+              >
+                {label}
+              </Button>
+            );
+          })}
         </Box>
 
+        {/* Theme toggle */}
         <IconButton
           onClick={toggleTheme}
           sx={{
-            ml: 3,
-
-            color: "#FFFFFF",
-
-            width: 42,
-
-            height: 42,
-
-            border:
-              "1px solid rgba(255,255,255,0.15)",
+            ml: 3, color: "#FFFFFF", width: 42, height: 42,
+            border: "1px solid rgba(255,255,255,0.15)",
           }}
         >
-          {darkMode ? (
-            <LightModeIcon />
-          ) : (
-            <DarkModeIcon />
-          )}
+          {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
         </IconButton>
       </Toolbar>
-
-      <Box
-        onMouseLeave={() =>
-          setMegaOpen(false)
-        }
-      >
-        {megaOpen && <MegaMenu />}
-      </Box>
     </AppBar>
   );
 };

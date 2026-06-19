@@ -1,7 +1,34 @@
+import { useState } from "react";
+
+import Header from "./components/layout/Header";
 import Home from "./pages/Home";
+import Insights from "./pages/Insights";
+import Analytics from "./pages/Analytics";
+import About from "./pages/About";
+
+import type { Recommendation } from "./types/recommendation";
+
+export type Page = "home" | "insights" | "analytics" | "about";
 
 function App() {
-  return <Home />;
+  const [currentPage, setCurrentPage] = useState<Page>("home");
+  const [month, setMonth] = useState(7);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+
+  const navigate = (page: Page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <>
+      <Header currentPage={currentPage} onNavigate={navigate} />
+      {currentPage === "home"      && <Home month={month} setMonth={setMonth} recommendations={recommendations} setRecommendations={setRecommendations} />}
+      {currentPage === "insights"  && <Insights initialMonth={month} recommendations={recommendations} />}
+      {currentPage === "analytics" && <Analytics />}
+      {currentPage === "about"     && <About />}
+    </>
+  );
 }
 
 export default App;
