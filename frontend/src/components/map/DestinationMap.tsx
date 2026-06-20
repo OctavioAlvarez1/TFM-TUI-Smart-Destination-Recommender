@@ -81,6 +81,13 @@ const LEVEL_COLOR = (score: number) => {
   return { fill: "#DC2626", stroke: "#B91C1C" };
 };
 
+const levelKey = (score: number): "low" | "moderate" | "high" | "veryHigh" => {
+  if (score <= 30) return "low";
+  if (score <= 60) return "moderate";
+  if (score <= 80) return "high";
+  return "veryHigh";
+};
+
 const levelLabel = (score: number) => {
   if (score <= 30) return "Low";
   if (score <= 60) return "Moderate";
@@ -105,9 +112,10 @@ function FitBounds() {
 interface DestinationMapProps {
   activeMonth: number | null;
   recommendedIds?: string[];
+  filterLevel?: "low" | "moderate" | "high" | "veryHigh" | null;
 }
 
-const DestinationMap = ({ activeMonth, recommendedIds }: DestinationMapProps) => {
+const DestinationMap = ({ activeMonth, recommendedIds, filterLevel }: DestinationMapProps) => {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
   const month = activeMonth ?? 7;
@@ -124,21 +132,22 @@ const DestinationMap = ({ activeMonth, recommendedIds }: DestinationMapProps) =>
       >
         <FitBounds />
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
           url={dark
             ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           }
         />
 
         {DESTINATIONS.map((dest) => {
-          const scores = MONTHLY_SCORES[dest.id] ?? [];
-          const score  = Math.min(100, scores[month - 1] ?? 50);
-          const col    = LEVEL_COLOR(score);
-          const isRec  = recommendedIds && recommendedIds.length > 0
+          const scores  = MONTHLY_SCORES[dest.id] ?? [];
+          const score   = Math.min(100, scores[month - 1] ?? 50);
+          const col     = LEVEL_COLOR(score);
+          const isRec   = recommendedIds && recommendedIds.length > 0
             ? recommendedIds.includes(dest.id)
             : true;
-          const radius = 6 + (score / 100) * 14;
+          const radius  = 6 + (score / 100) * 14;
+          const dimmed  = filterLevel !== null && filterLevel !== undefined && levelKey(score) !== filterLevel;
 
           return (
             <CircleMarker
@@ -147,9 +156,9 @@ const DestinationMap = ({ activeMonth, recommendedIds }: DestinationMapProps) =>
               radius={radius}
               pathOptions={{
                 fillColor: col.fill,
-                fillOpacity: isRec ? 0.82 : 0.18,
-                color: isRec ? col.stroke : "#94A3B8",
-                weight: isRec ? 2 : 1,
+                fillOpacity: dimmed ? 0.08 : (isRec ? 0.82 : 0.18),
+                color: dimmed ? "#94A3B8" : (isRec ? col.stroke : "#94A3B8"),
+                weight: dimmed ? 1 : (isRec ? 2 : 1),
               }}
             >
               <Popup>
@@ -187,34 +196,6 @@ const DestinationMap = ({ activeMonth, recommendedIds }: DestinationMapProps) =>
         })}
       </MapContainer>
 
-      {/* Legend */}
-      <Box
-        sx={{
-          display: "flex", alignItems: "center", flexWrap: "wrap",
-          gap: 2, px: 2.5, py: 1.5,
-          bgcolor: "background.paper",
-          borderTop: "1px solid",
-          borderTopColor: "divider",
-        }}
-      >
-        <Typography sx={{ fontSize: ".72rem", fontWeight: 700, color: "text.secondary", textTransform: "uppercase", letterSpacing: ".1em" }}>
-          Congestion
-        </Typography>
-        {[
-          { label: "Low (≤30)",     color: "#16A34A" },
-          { label: "Moderate (≤60)", color: "#CA8A04" },
-          { label: "High (≤80)",    color: "#EA580C" },
-          { label: "Very High (>80) — penalized", color: "#DC2626" },
-        ].map((l) => (
-          <Box key={l.label} sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
-            <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: l.color }} />
-            <Typography sx={{ fontSize: ".7rem", color: "text.secondary" }}>{l.label}</Typography>
-          </Box>
-        ))}
-        <Typography sx={{ fontSize: ".7rem", color: "text.secondary", ml: "auto" }}>
-          Circle size ∝ congestion intensity · OpenStreetMap tiles
-        </Typography>
-      </Box>
     </Box>
   );
 };

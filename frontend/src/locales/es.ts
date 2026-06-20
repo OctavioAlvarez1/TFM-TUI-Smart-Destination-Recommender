@@ -72,6 +72,17 @@ export const es: Locale = {
     whyRecommended: "Por qué Horizon lo recomienda",
     bestMonths: "Mejores meses para visitar",
     bestMonthsSub: "— menor congestión, mejor precio",
+    explanations: {
+      strongMatch:             "Excelente coincidencia con tus preferencias de viaje {style}.",
+      goodMatch:               "Buena coincidencia con tus preferencias de viaje {style}.",
+      excellentSustainability: "Rendimiento de sostenibilidad excelente.",
+      goodSustainability:      "Buen rendimiento de sostenibilidad.",
+      lowCongestion:           "Menor congestión esperada que en destinos comparables.",
+      highCongestion:          "Mayor congestión esperada durante el período seleccionado.",
+      popularTravelers:        "Popular entre viajeros con intereses similares.",
+      wellRated:               "Muy valorado por viajeros anteriores.",
+      styles: { Nature:"Naturaleza", Relax:"Relax", Culture:"Cultura", Family:"Familia", Nightlife:"Vida nocturna", Adventure:"Aventura" },
+    },
   },
   kpi: {
     badge: "Análisis de IA",
@@ -256,7 +267,7 @@ export const es: Locale = {
     },
   },
   insights: {
-    badge: "Inteligencia turística · Reto 2 / TUI Care Foundation",
+    badge: "Inteligencia turística",
     title: "El problema de concentración turística en España",
     subtitle:
       "96,8 millones de turistas visitan España cada año — pero el 85% va a los mismos 10% de destinos. Horizon usa IA para identificar este desequilibrio y redistribuir la demanda de forma sostenible.",

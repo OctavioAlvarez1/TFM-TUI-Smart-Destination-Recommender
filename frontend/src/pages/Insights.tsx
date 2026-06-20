@@ -17,8 +17,9 @@ import {
 
 import TrendingDownRoundedIcon from "@mui/icons-material/TrendingDownRounded";
 import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
-import EuroRoundedIcon from "@mui/icons-material/EuroRounded";
-import WbSunnyRoundedIcon from "@mui/icons-material/WbSunnyRounded";
+import FlightTakeoffRoundedIcon from "@mui/icons-material/FlightTakeoffRounded";
+import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded";
+import BeachAccessRoundedIcon from "@mui/icons-material/BeachAccessRounded";
 import SpaRoundedIcon from "@mui/icons-material/SpaRounded";
 import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
@@ -81,29 +82,36 @@ const StatCard = ({
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ duration: 0.55, delay, ease: "easeOut" }}
+    style={{ height: "100%" }}
   >
     <Box
       sx={{
         borderRadius: "20px",
-        border: `1px solid ${color}22`,
-        background: `linear-gradient(145deg, ${color}08 0%, ${color}14 100%)`,
+        border: `1px solid rgba(255,255,255,.28)`,
+        borderTop: `3px solid ${color}`,
+        background: `linear-gradient(160deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.10) 100%)`,
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        boxShadow: `0 12px 40px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.30)`,
         p: 3,
         height: "100%",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <Box
         sx={{
           width: 44, height: 44, borderRadius: "12px",
-          bgcolor: `${color}18`, display: "flex",
-          alignItems: "center", justifyContent: "center", color, mb: 2,
+          bgcolor: `${color}22`, display: "flex",
+          alignItems: "center", justifyContent: "center", color, mb: 2, flexShrink: 0,
         }}
       >
         {icon}
       </Box>
-      <Typography sx={{ fontSize: "2.2rem", fontWeight: 900, color: "text.primary", lineHeight: 1, mb: 0.5 }}>
+      <Typography sx={{ fontSize: "2.2rem", fontWeight: 900, color: "#FFFFFF", lineHeight: 1, mb: 0.5 }}>
         {value}
       </Typography>
-      <Typography sx={{ fontSize: ".85rem", color: "text.secondary", fontWeight: 500, lineHeight: 1.5 }}>
+      <Typography sx={{ fontSize: ".85rem", color: "rgba(255,255,255,.75)", fontWeight: 600, lineHeight: 1.5 }}>
         {label}
       </Typography>
     </Box>
@@ -450,6 +458,7 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
   const { locale } = useLanguage();
   const loc = locale.insights;
   const [activeMonth, setActiveMonth] = useState<number | null>(initialMonth);
+  const [mapFilter, setMapFilter] = useState<"low" | "moderate" | "high" | "veryHigh" | null>(null);
 
   const penalized = activeMonth ? PENALIZED_BY_MONTH[activeMonth] : 0;
 
@@ -465,9 +474,9 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
       {/* PAGE HEADER */}
       <Box
         sx={{
-          background: "linear-gradient(160deg, #070C16 0%, #0F1A2E 100%)",
+          background: "linear-gradient(160deg, #0A2E5E 0%, #0E63B5 35%, #0097B2 68%, #00C4CC 100%)",
           pt: { xs: 14, md: 16 },
-          pb: { xs: 8, md: 10 },
+          pb: { xs: 12, md: 14 },
           position: "relative",
           overflow: "hidden",
         }}
@@ -479,27 +488,82 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
           backgroundSize: "32px 32px",
         }} />
 
-        {/* Animated orb 1 — strong blue, top-left */}
+        {/* Wave layer 1 — slow, deep */}
+        <Box sx={{ position: "absolute", bottom: 60, left: 0, width: "100%", height: 120, overflow: "hidden", pointerEvents: "none", zIndex: 1 }}>
+          <motion.div
+            style={{ display: "flex", width: "200%", height: "100%" }}
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
+          >
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none" style={{ width: "50%", height: "100%", flexShrink: 0 }}>
+              <path d="M0,60 C180,100 360,20 540,60 C720,100 900,20 1080,60 C1260,100 1440,20 1440,60 L1440,120 L0,120 Z" fill="rgba(255,255,255,.06)" />
+            </svg>
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none" style={{ width: "50%", height: "100%", flexShrink: 0 }}>
+              <path d="M0,60 C180,100 360,20 540,60 C720,100 900,20 1080,60 C1260,100 1440,20 1440,60 L1440,120 L0,120 Z" fill="rgba(255,255,255,.06)" />
+            </svg>
+          </motion.div>
+        </Box>
+
+        {/* Wave layer 2 — medium speed */}
+        <Box sx={{ position: "absolute", bottom: 30, left: 0, width: "100%", height: 100, overflow: "hidden", pointerEvents: "none", zIndex: 1 }}>
+          <motion.div
+            style={{ display: "flex", width: "200%", height: "100%" }}
+            animate={{ x: ["-50%", "0%"] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          >
+            <svg viewBox="0 0 1440 100" preserveAspectRatio="none" style={{ width: "50%", height: "100%", flexShrink: 0 }}>
+              <path d="M0,50 C240,90 480,10 720,50 C960,90 1200,10 1440,50 L1440,100 L0,100 Z" fill="rgba(255,255,255,.09)" />
+            </svg>
+            <svg viewBox="0 0 1440 100" preserveAspectRatio="none" style={{ width: "50%", height: "100%", flexShrink: 0 }}>
+              <path d="M0,50 C240,90 480,10 720,50 C960,90 1200,10 1440,50 L1440,100 L0,100 Z" fill="rgba(255,255,255,.09)" />
+            </svg>
+          </motion.div>
+        </Box>
+
+        {/* Wave layer 3 — fast, surface */}
+        <Box sx={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 90, overflow: "hidden", pointerEvents: "none", zIndex: 1 }}>
+          <motion.div
+            style={{ display: "flex", width: "200%", height: "100%" }}
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
+          >
+            <svg viewBox="0 0 1440 90" preserveAspectRatio="none" style={{ width: "50%", height: "100%", flexShrink: 0 }}>
+              <path d="M0,45 C200,80 400,10 600,45 C800,80 1000,10 1200,45 C1320,65 1380,30 1440,45 L1440,90 L0,90 Z" fill="rgba(255,255,255,.13)" />
+            </svg>
+            <svg viewBox="0 0 1440 90" preserveAspectRatio="none" style={{ width: "50%", height: "100%", flexShrink: 0 }}>
+              <path d="M0,45 C200,80 400,10 600,45 C800,80 1000,10 1200,45 C1320,65 1380,30 1440,45 L1440,90 L0,90 Z" fill="rgba(255,255,255,.13)" />
+            </svg>
+          </motion.div>
+        </Box>
+
+        {/* Wave divider — bottom */}
+        <Box sx={{ position: "absolute", bottom: -2, left: 0, width: "100%", lineHeight: 0, pointerEvents: "none", zIndex: 2 }}>
+          <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style={{ display: "block", width: "100%", height: 80 }}>
+            <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill={dark ? "#0B1220" : "#F8FAFC"} />
+          </svg>
+        </Box>
+
+        {/* Orb 1 — bright blue, top-left */}
         <motion.div
-          style={{ position: "absolute", top: "-5%", left: "-8%", width: 550, height: 550, borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,.55) 0%, rgba(37,99,235,.2) 40%, transparent 70%)", filter: "blur(45px)", pointerEvents: "none" }}
+          style={{ position: "absolute", top: "-5%", left: "-8%", width: 550, height: 550, borderRadius: "50%", background: "radial-gradient(circle, rgba(14,163,181,.40) 0%, rgba(6,182,212,.12) 40%, transparent 70%)", filter: "blur(55px)", pointerEvents: "none" }}
           animate={{ x: [0, 50, -25, 0], y: [0, -35, 25, 0], scale: [1, 1.15, 0.92, 1] }}
           transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
         />
-        {/* Animated orb 2 — cyan, right */}
+        {/* Orb 2 — bright cyan, right */}
         <motion.div
-          style={{ position: "absolute", top: "10%", right: "-10%", width: 420, height: 420, borderRadius: "50%", background: "radial-gradient(circle, rgba(56,189,248,.45) 0%, rgba(56,189,248,.15) 45%, transparent 70%)", filter: "blur(40px)", pointerEvents: "none" }}
+          style={{ position: "absolute", top: "10%", right: "-10%", width: 420, height: 420, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,196,204,.5) 0%, rgba(0,180,216,.18) 45%, transparent 70%)", filter: "blur(40px)", pointerEvents: "none" }}
           animate={{ x: [0, -40, 18, 0], y: [0, 30, -20, 0], scale: [1, 0.88, 1.1, 1] }}
           transition={{ duration: 11, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
         />
-        {/* Animated orb 3 — teal/emerald accent, bottom-left */}
+        {/* Orb 3 — coral/sunset, bottom-left */}
         <motion.div
-          style={{ position: "absolute", bottom: "-15%", left: "15%", width: 350, height: 350, borderRadius: "50%", background: "radial-gradient(circle, rgba(16,185,129,.4) 0%, rgba(16,185,129,.12) 45%, transparent 70%)", filter: "blur(50px)", pointerEvents: "none" }}
+          style={{ position: "absolute", bottom: "-15%", left: "15%", width: 380, height: 380, borderRadius: "50%", background: "radial-gradient(circle, rgba(251,113,94,.32) 0%, rgba(239,68,68,.10) 45%, transparent 70%)", filter: "blur(50px)", pointerEvents: "none" }}
           animate={{ x: [0, 30, -20, 0], y: [0, -20, 15, 0], scale: [1, 1.18, 0.9, 1] }}
           transition={{ duration: 13, repeat: Infinity, ease: "easeInOut", delay: 3 }}
         />
-        {/* Animated orb 4 — violet warm accent, bottom-right */}
+        {/* Orb 4 — turquoise, bottom-right */}
         <motion.div
-          style={{ position: "absolute", bottom: "-10%", right: "10%", width: 280, height: 280, borderRadius: "50%", background: "radial-gradient(circle, rgba(139,92,246,.38) 0%, transparent 65%)", filter: "blur(42px)", pointerEvents: "none" }}
+          style={{ position: "absolute", bottom: "-10%", right: "10%", width: 280, height: 280, borderRadius: "50%", background: "radial-gradient(circle, rgba(20,184,166,.42) 0%, transparent 65%)", filter: "blur(42px)", pointerEvents: "none" }}
           animate={{ x: [0, -20, 25, 0], y: [0, 15, -25, 0], scale: [1, 1.1, 0.85, 1] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 5 }}
         />
@@ -531,42 +595,33 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
               {loc.title}
             </Typography>
 
-            <Typography
-              sx={{
-                color: "rgba(255,255,255,.65)", fontSize: { xs: "1rem", md: "1.1rem" },
-                maxWidth: 680, lineHeight: 1.8,
-              }}
-            >
-              {loc.subtitle}
-            </Typography>
           </motion.div>
+
+          {/* STATS — inside hero for shared dark bg */}
+          <Grid container spacing={2.5} sx={{ mt: { xs: 5, md: 7 } }}>
+            {[
+              { ...loc.stats[0], icon: <FlightTakeoffRoundedIcon sx={{ fontSize: 22 }} />,   color: "#38BDF8", delay: 0 },
+              { ...loc.stats[1], icon: <TrendingDownRoundedIcon sx={{ fontSize: 22 }} />,   color: "#FB7185", delay: 0.1 },
+              { ...loc.stats[2], icon: <AccountBalanceRoundedIcon sx={{ fontSize: 22 }} />, color: "#FBBF24", delay: 0.2 },
+              { ...loc.stats[3], icon: <BeachAccessRoundedIcon sx={{ fontSize: 22 }} />,    color: "#34D399", delay: 0.3 },
+            ].map((s) => (
+              <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={s.value}>
+                <StatCard {...s} />
+              </Grid>
+            ))}
+          </Grid>
         </Container>
       </Box>
 
-      {/* STATS */}
-      <Container maxWidth="xl" sx={{ mt: { xs: 6, md: 8 }, mb: 8 }}>
-        <Grid container spacing={2.5}>
-          {[
-            { ...loc.stats[0], icon: <PeopleRoundedIcon sx={{ fontSize: 22 }} />,        color: "#6366F1", delay: 0 },
-            { ...loc.stats[1], icon: <TrendingDownRoundedIcon sx={{ fontSize: 22 }} />,  color: "#EF4444", delay: 0.1 },
-            { ...loc.stats[2], icon: <EuroRoundedIcon sx={{ fontSize: 22 }} />,          color: "#F59E0B", delay: 0.2 },
-            { ...loc.stats[3], icon: <WbSunnyRoundedIcon sx={{ fontSize: 22 }} />,       color: "#10B981", delay: 0.3 },
-          ].map((s) => (
-            <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={s.value}>
-              <StatCard {...s} />
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
-
       {/* MAP */}
-      <Container maxWidth="xl" sx={{ mb: { xs: 8, md: 10 } }}>
+      <Container maxWidth="xl" sx={{ mt: { xs: 8, md: 10 }, mb: { xs: 8, md: 10 } }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
+          {/* Header */}
           <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
             {loc.map.badge}
           </Typography>
@@ -586,14 +641,93 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
               />
             )}
           </Box>
-          <DestinationMap
-            activeMonth={activeMonth}
-            recommendedIds={hasRecs ? recommendations.map((r) => {
-              // Map destination name back to ID using the ALL_DESTINATIONS list
-              const found = ALL_DESTINATIONS.find((d) => d.name === r.destination_name);
-              return found?.id ?? "";
-            }).filter(Boolean) : []}
-          />
+
+          {/* Map + Legend */}
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", lg: "220px 1fr" },
+              gap: 0,
+              borderRadius: "24px",
+              border: "1px solid",
+              borderColor: "divider",
+              overflow: "hidden",
+              background: dark ? "rgba(17,24,39,0.6)" : "rgba(248,250,252,0.8)",
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            {/* Legend column — left */}
+            <Box
+              sx={{
+                p: 3,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: 1.5,
+                borderRight: { lg: "1px solid" },
+                borderBottom: { xs: "1px solid", lg: "none" },
+                borderColor: "divider",
+              }}
+            >
+              <Typography sx={{ fontSize: ".8rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: ".18em", color: "text.primary", mb: 1, textAlign: "center" }}>
+                {locale.card.metrics.congestion}
+              </Typography>
+
+              {([
+                { label: loc.heatmap.levelLabels.low,      range: "≤ 30", color: "#10B981", bg: "rgba(16,185,129,.10)",  penalized: false, key: "low"      as const },
+                { label: loc.heatmap.levelLabels.moderate, range: "≤ 60", color: "#F59E0B", bg: "rgba(245,158,11,.10)", penalized: false, key: "moderate" as const },
+                { label: loc.heatmap.levelLabels.high,     range: "≤ 80", color: "#F97316", bg: "rgba(249,115,22,.10)", penalized: false, key: "high"     as const },
+                { label: loc.heatmap.levelLabels.veryHigh, range: "> 80", color: "#EF4444", bg: "rgba(239,68,68,.10)",  penalized: true,  key: "veryHigh" as const },
+              ] as const).map((item) => {
+                const active = mapFilter === item.key;
+                return (
+                  <Box
+                    key={item.key}
+                    onClick={() => setMapFilter(active ? null : item.key)}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5,
+                      p: 1.5,
+                      borderRadius: "12px",
+                      background: active ? `${item.color}22` : item.bg,
+                      border: `1px solid ${active ? item.color : `${item.color}22`}`,
+                      cursor: "pointer",
+                      transition: "all .18s",
+                      "&:hover": { border: `1px solid ${item.color}66`, background: `${item.color}18` },
+                    }}
+                  >
+                    <Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: item.color, flexShrink: 0, boxShadow: active ? `0 0 0 3px ${item.color}33` : "none" }} />
+                    <Box>
+                      <Typography sx={{ fontSize: ".82rem", fontWeight: active ? 800 : 700, color: item.color, lineHeight: 1.1 }}>
+                        {item.label}
+                      </Typography>
+                      <Typography sx={{ fontSize: ".72rem", color: "text.secondary", lineHeight: 1 }}>
+                        {item.range}
+                      </Typography>
+                      {item.penalized && (
+                        <Typography sx={{ fontSize: ".68rem", fontWeight: 700, color: "#EF4444", mt: 0.3 }}>
+                          {loc.heatmap.penalizedLabel}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Box>
+
+            {/* Map — right */}
+            <Box sx={{ overflow: "hidden", minHeight: 420 }}>
+              <DestinationMap
+                activeMonth={activeMonth}
+                filterLevel={mapFilter}
+                recommendedIds={hasRecs ? recommendations.map((r) => {
+                  const found = ALL_DESTINATIONS.find((d) => d.name === r.destination_name);
+                  return found?.id ?? "";
+                }).filter(Boolean) : []}
+              />
+            </Box>
+          </Box>
         </motion.div>
       </Container>
 

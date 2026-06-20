@@ -22,17 +22,49 @@ import SustainabilityBadge from "./SustainabilityBadge";
 import ConfidenceBadge from "./ConfidenceBadge";
 import CongestionBadge from "./CongestionBadge";
 
-import imgLanzarote from "../../assets/destinations/lanzarote.jpg";
-import imgMallorca from "../../assets/destinations/mallorca.png";
-import imgMenorca from "../../assets/destinations/menorca.jpg";
-import imgSanSebastian from "../../assets/destinations/san-sebastian.jpeg";
+import imgMallorca       from "../../assets/destinations/mallorca.png";
+import imgMenorca        from "../../assets/destinations/menorca.jpg";
+import imgLanzarote      from "../../assets/destinations/lanzarote.jpg";
+import imgSanSebastian   from "../../assets/destinations/san-sebastian.jpeg";
+import imgIbiza          from "../../assets/destinations/ibiza.jpg";
+import imgTenerife       from "../../assets/destinations/tenerife.jpg";
+import imgGranCanaria    from "../../assets/destinations/gran-canaria.jpg";
+import imgCostadelSol    from "../../assets/destinations/costa-del-sol.jpg";
+import imgMarbella       from "../../assets/destinations/marbella.jpg";
+import imgMalaga         from "../../assets/destinations/malaga.jpg";
+import imgValencia       from "../../assets/destinations/valencia.jpg";
+import imgAlicante       from "../../assets/destinations/alicante.jpg";
+import imgBenidorm       from "../../assets/destinations/benidorm.jpg";
+import imgBarcelona      from "../../assets/destinations/barcelona.jpg";
+import imgMadrid         from "../../assets/destinations/madrid.jpg";
+import imgSeville        from "../../assets/destinations/seville.jpg";
+import imgGranada        from "../../assets/destinations/granada.jpg";
+import imgBilbao         from "../../assets/destinations/bilbao.jpg";
+import imgPicosEuropa    from "../../assets/destinations/picos-de-europa.jpg";
+import imgSierraNevada   from "../../assets/destinations/sierra-nevada.jpg";
 
 const DEST_IMAGES: Record<string, string> = {
-  "Lanzarote":      imgLanzarote,
-  "Mallorca":       imgMallorca,
-  "Menorca":        imgMenorca,
-  "San Sebastián":  imgSanSebastian,
-  "San Sebastian":  imgSanSebastian,
+  "Mallorca":         imgMallorca,
+  "Ibiza":            imgIbiza,
+  "Menorca":          imgMenorca,
+  "Tenerife":         imgTenerife,
+  "Gran Canaria":     imgGranCanaria,
+  "Lanzarote":        imgLanzarote,
+  "Costa del Sol":    imgCostadelSol,
+  "Marbella":         imgMarbella,
+  "Malaga":           imgMalaga,
+  "Valencia":         imgValencia,
+  "Alicante":         imgAlicante,
+  "Benidorm":         imgBenidorm,
+  "Barcelona":        imgBarcelona,
+  "Madrid":           imgMadrid,
+  "Seville":          imgSeville,
+  "Granada":          imgGranada,
+  "Bilbao":           imgBilbao,
+  "San Sebastian":    imgSanSebastian,
+  "San Sebastián":    imgSanSebastian,
+  "Picos de Europa":  imgPicosEuropa,
+  "Sierra Nevada":    imgSierraNevada,
 };
 
 // ── Monthly congestion scores (INE EOH data) ─────────────
@@ -57,6 +89,28 @@ const MONTHLY_SCORES: Record<string, number[]> = {
   D018: [55, 59, 66, 74, 82, 84, 88, 88, 79, 84, 64, 59],
   D019: [28, 30, 36, 44, 49, 55, 66, 72, 58, 48, 37, 33],
   D020: [14, 15, 18, 22, 25, 28, 33, 36, 29, 24, 18, 17],
+};
+
+type ExplLocale = {
+  strongMatch: string; goodMatch: string;
+  excellentSustainability: string; goodSustainability: string;
+  lowCongestion: string; highCongestion: string;
+  popularTravelers: string; wellRated: string;
+  styles: Record<string, string>;
+};
+
+const translateExplanation = (exp: string, t: ExplLocale): string => {
+  if (exp === "Excellent sustainability performance.")                    return t.excellentSustainability;
+  if (exp === "Good sustainability performance.")                         return t.goodSustainability;
+  if (exp === "Lower expected congestion than comparable destinations.")  return t.lowCongestion;
+  if (exp === "Higher expected congestion during the selected period.")   return t.highCongestion;
+  if (exp === "Popular among travelers with similar interests.")          return t.popularTravelers;
+  if (exp === "Well-rated by previous travelers.")                        return t.wellRated;
+  const strong = exp.match(/^Strong match for your (\w+) travel preferences\.$/);
+  if (strong) return t.strongMatch.replace("{style}", t.styles[strong[1]] ?? strong[1]);
+  const good = exp.match(/^Good match for your (\w+) travel preferences\.$/);
+  if (good)   return t.goodMatch.replace("{style}", t.styles[good[1]] ?? good[1]);
+  return exp;
 };
 
 const getBestMonths = (destId: string, monthNames: string[], count = 3): string[] => {
@@ -367,7 +421,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
             {recommendation.explanations.slice(0, 4).map((exp, i) => (
               <Chip
                 key={i}
-                label={`✓ ${exp}`}
+                label={`✓ ${translateExplanation(exp, locale.card.explanations)}`}
                 size="small"
                 sx={{
                   height: "auto",

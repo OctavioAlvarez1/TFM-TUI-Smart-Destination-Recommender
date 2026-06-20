@@ -70,6 +70,17 @@ export const en = {
     whyRecommended: "Why Horizon Recommended This",
     bestMonths: "Best Months to Visit",
     bestMonthsSub: "— lowest congestion, best value",
+    explanations: {
+      strongMatch:            "Strong match for your {style} travel preferences.",
+      goodMatch:              "Good match for your {style} travel preferences.",
+      excellentSustainability:"Excellent sustainability performance.",
+      goodSustainability:     "Good sustainability performance.",
+      lowCongestion:          "Lower expected congestion than comparable destinations.",
+      highCongestion:         "Higher expected congestion during the selected period.",
+      popularTravelers:       "Popular among travelers with similar interests.",
+      wellRated:              "Well-rated by previous travelers.",
+      styles: { Nature:"Nature", Relax:"Relax", Culture:"Culture", Family:"Family", Nightlife:"Nightlife", Adventure:"Adventure" },
+    },
   },
   kpi: {
     badge: "AI Analysis",
@@ -254,7 +265,7 @@ export const en = {
     },
   },
   insights: {
-    badge: "Tourism Intelligence · Reto 2 / TUI Care Foundation",
+    badge: "Tourism Intelligence",
     title: "Spain's Tourism Concentration Problem",
     subtitle:
       "96.8 million tourists visit Spain every year — but 85% of them go to the same 10% of destinations. Horizon uses AI to identify this imbalance and redistribute demand sustainably.",
