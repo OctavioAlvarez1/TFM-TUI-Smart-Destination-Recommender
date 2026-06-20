@@ -110,14 +110,19 @@ A red dot in a cell means that destination triggers the redistribution penalty f
 
 ### Analytics
 
-Governance dashboard — system-level view.
+Governance dashboard — system-level view. Everything on this page is driven by the **selected month**.
 
 **Sections:**
 
-- **KPI cards** — 20 destinations monitored · 100 traveler profiles · high-congestion months count · destinations at risk in July
-- **Penalized Destinations by Month** — bar chart showing how many of the 20 destinations exceed the congestion threshold (>80) each month. Green = no penalty, yellow = 8 destinations penalised, red = 12.
-- **July Peak Distribution** — breakdown of destination status: Overloaded / High Pressure / Moderate / Opportunity. Animated fill bars show the proportion out of 20.
-- **All 20 Destinations Table** — filterable by status. Each row shows: name, region, type, July congestion bar, sustainability score, and status badge. Click the filter chips at the top-right to narrow the view.
+- **Hero KPI cards** — 4 glassmorphism stat cards inside the hero: destinations monitored (20), traveler profiles (100), high-congestion months, and destinations at risk for the currently selected month. The SVG area chart at the bottom of the hero shows the monthly redistribution penalty pattern across the year.
+
+- **Monthly Chart** — Clickable bar chart with all 12 months. Click any bar to change the selected month — all sections below update instantly to reflect the new month. The selected bar glows to indicate your active selection.
+
+- **Sustainability & Congestion Ranking** — Heat tile grid sorted by best combined profile (most sustainable + least congested) for the selected month. Each tile shows the destination name, sustainability score, congestion score, and destination type. Use the sidebar on the left to filter by type: All / Beach / City / Nature / Mixed. Tiles reorder smoothly when the month or filter changes.
+
+- **Status Breakdown** — Animated count cards showing how many of the 20 destinations fall into each category for the selected month: Overloaded (congestion ≥ 92) / High Pressure (≥ 80) / Moderate / Opportunity (low congestion, high peak at other times). Values animate when the month changes.
+
+- **All 20 Destinations Table** — Full monitoring table filtered by status chip. Each row shows: destination, type, congestion score for the selected month, sustainability score, and a colour-coded status badge. Click the filter chips at the top to narrow the view.
 
 ---
 

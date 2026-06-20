@@ -116,7 +116,7 @@ Monitors tourism distribution.
 
 The MVP implements the dashboard concept through two components:
 
-1. The **Analytics page** in the React frontend — the primary governance dashboard (Layer 5 of the 5-layer architecture). It displays governance KPIs, destination status breakdown, congestion by month, and a filterable destination table.
+1. The **Analytics page** in the React frontend — the primary governance dashboard (Layer 5 of the 5-layer architecture). It features a glassmorphism hero with KPI cards, an interactive MonthlyChart (click any month bar to update all sections), a heat tile destination ranking with sidebar type filter (Beach/City/Nature/Mixed), a dynamic status breakdown (Overloaded/High Pressure/Moderate/Opportunity) that recalculates per selected month, and a full month-aware destination monitoring table.
 
 2. The **Streamlit dashboard** (`src/dashboard/app.py`, accessible at `localhost:8501`) — an alternative read-only view of the same data, useful for rapid analytics exploration without the full React frontend.
 

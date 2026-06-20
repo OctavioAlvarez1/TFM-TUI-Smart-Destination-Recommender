@@ -18,8 +18,9 @@ The dataset has been generated using publicly available tourism information and 
 | Booking.com | Reference for destination popularity, accommodation pricing, and tourism offerings |
 | Tripadvisor | Reference for destination attractiveness, traveler interests, and tourism categories |
 | Turespaña | Tourism statistics, destination relevance, and visitor trends in Spain |
-| National Statistics Institute (INE Spain) — EOH Table 49371 | Seasonality patterns, monthly hotel occupancy by province — integrated via `fetch_open_data.py` |
-| FRONTUR — Table 23988 | International tourist arrivals by autonomous community — integrated via `fetch_open_data.py` |
+| National Statistics Institute (INE Spain) — EOH Table 49371 | Seasonality patterns, monthly hotel occupancy by province — integrated via `fetch_open_data.py`. 13/13 provinces confirmed. |
+| FRONTUR — Table 23988 | International tourist arrivals by autonomous community — integrated via `fetch_open_data.py`. 8/8 CCAA confirmed. |
+| AEMET OpenData | 30-year climate normals (temperature, precipitation, sunshine) by province — optional, requires free API key. Endpoint: `/valores/climatologicos/mensualesanuales/`. Saves to `data/enriched/aemet_climate.csv`. |
 | UN Tourism (United Nations Tourism) | Sustainability trends and responsible tourism practices |
 | Public transportation and tourism reports | Sustainability and accessibility assumptions |
 

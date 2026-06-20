@@ -163,7 +163,7 @@ export const es: Locale = {
         { title: "Universidad Complutense de Madrid", desc: "Trabajo Final de Máster — marco académico y metodología de investigación" },
         { title: "TUI Care Foundation · target 8.9", desc: "Programa de innovación abierta alineado con el ODS 8.9 de la ONU — turismo sostenible y trabajo decente" },
         { title: "Future Shapers Spain", desc: "Acelerador TUI + Telefónica que conecta universidades con retos reales de la industria turística" },
-        { title: "IA y Datos Abiertos", desc: "Construido con FastAPI, React y fuentes de datos abiertos públicos (INE, datos.gob.es) — cumple con el RGPD" },
+        { title: "IA y Datos Abiertos", desc: "Construido con FastAPI, React y APIs de datos abiertos reales: INE EOH (ocupación hotelera), FRONTUR (llegadas internacionales), AEMET (normales climáticas) — cumple con el RGPD" },
       ],
     },
     scoring: {
@@ -213,7 +213,7 @@ export const es: Locale = {
         "Mapa georreferenciado interactivo con superposición mensual de congestión en tiempo real",
         "Matching de perfiles de usuario (estilo de viaje, presupuesto, preferencia de sostenibilidad)",
         "Capa de explicabilidad — razonamiento legible por humanos para cada recomendación",
-        "Dashboard React con KPIs de sostenibilidad y mapa de calor de congestión",
+        "Dashboard de gobernanza analítica — gráfico mensual interactivo, ranking de destinos con heat tiles, KPIs de sostenibilidad y monitoreo completo de congestión en los 20 destinos",
       ],
       outScopeItems: [
         { text: "Análisis de sentimiento y procesamiento de reseñas de viajeros — acotado al Reto 1 (NLP y escucha social)", reto: "Reto 1" },
@@ -227,7 +227,7 @@ export const es: Locale = {
     },
   },
   analytics: {
-    badge: "Gobernanza · Capa 5 / TUI Care Foundation",
+    badge: "Gobernanza",
     title: "Panel de analítica",
     subtitle:
       "Vista de gobernanza a nivel de sistema de los 20 destinos monitorizados. Rastrea la actividad de redistribución de demanda, riesgos de congestión y zonas de oportunidad sostenible en la red turística de España en tiempo real.",
@@ -237,6 +237,20 @@ export const es: Locale = {
       { label: "Meses de alta congestión", sub: "Meses en que las penalizaciones de redistribución están activas" },
       { label: "Destinos en riesgo", sub: "Superando el umbral sostenible de congestión en julio" },
     ],
+    section: {
+      badge: "Gobernanza en Tiempo Real",
+      title: "Panel de Monitorización y Control",
+      monthLabel: "Analizando",
+      clickTip: "Haz clic en una barra para seleccionar el mes",
+    },
+    perfChart: {
+      badge: "Rendimiento de Destinos",
+      title: "Ranking: Sostenibilidad y Congestión",
+      subtitle: "Ordenado por la mejor combinación — destinos más sostenibles con menor congestión para el mes seleccionado.",
+      sustLabel: "Sostenibilidad",
+      congLabel: "Congestión",
+      rankTip: "Puesto #1 = mejor perfil este mes",
+    },
     redistribution: {
       badge: "Actividad de redistribución",
       title: "Destinos penalizados por mes",
@@ -245,7 +259,7 @@ export const es: Locale = {
     },
     statusBreakdown: {
       badge: "Estado de destinos",
-      title: "Pico de julio — Distribución",
+      titleBase: "Distribución",
       sdgTarget: "Objetivo ODS 8.9",
       sdgSub: "5–10% redistribución de demanda",
       engineStatus: "Estado del motor",
@@ -253,9 +267,9 @@ export const es: Locale = {
     },
     table: {
       badge: "Monitor de destinos",
-      title: "Los 20 destinos · Instantánea de julio",
+      titleBase: "Los 20 destinos",
       allFilter: "Todos",
-      headers: ["Destino","Tipo","Congestión julio","Sostenibilidad","Estado"],
+      headers: ["Destino","Tipo","Congestión","Sostenibilidad","Estado"],
       noResults: "Ningún destino coincide con este filtro.",
       statusLabels: {
         overloaded: "Saturado",
@@ -294,6 +308,7 @@ export const es: Locale = {
       peak: "Pico — evitar",
       lowSeason: "Temporada baja — recomendado",
       congestionDrop: "-{n}% congestión",
+      cheaperTip: "~30% más barato",
     },
     heatmap: {
       badge: "Inteligencia de congestión",
@@ -323,9 +338,12 @@ export const es: Locale = {
         "Cuando un destino supera el umbral de congestión, Horizon muestra alternativas sostenibles. Estos ejemplos reales muestran la redistribución de demanda en acción.",
     },
     scenarios: {
-      overSaturated: "✗ Sobre-saturado",
-      horizonRecommends: "✓ Horizon recomienda",
+      overSaturated: "Sobre-saturado",
+      horizonRecommends: "Horizon recomienda",
       congestionLabel: "Congestión:",
+      redirects: "Horizon redirige",
+      ptsLess: "pts menos congestionado",
+      labels: ["Julio — Temporada pico", "Mayo — Pico de primavera", "Agosto — Pico de verano"],
     },
     impactTargets: {
       badge: "Objetivos de Impacto ODS 8.9",

@@ -261,7 +261,7 @@ The platform is designed to evolve beyond synthetic data.
 Current real data integrations (Phase 3, partially complete):
 - **INE EOH** (Table 49371) — monthly hotel occupancy by province, integrated via `fetch_open_data.py`
 - **FRONTUR** (Table 23988) — international arrivals by autonomous community, integrated via `fetch_open_data.py`
-- **AEMET** — weather/climate API available via `AEMET_API_KEY` environment variable
+- **AEMET** — climate API via `AEMET_API_KEY` environment variable; endpoint: `/valores/climatologicos/mensualesanuales/` (pre-signed datos URL must be fetched without api_key); subject to per-hour rate limits on free tier
 
 Target external data domains for future production:
 
@@ -304,7 +304,7 @@ Recommendation Engine
 The Executive Dashboard transforms recommendation outputs into actionable business intelligence.
 
 MVP Implementation:
-- **React Analytics page** (`frontend/src/pages/Analytics.tsx`) — primary governance dashboard (Layer 5), built and running at `localhost:5173`
+- **React Analytics page** (`frontend/src/pages/Analytics.tsx`) — primary governance dashboard (Layer 5), built and running at `localhost:5173`. Features interactive MonthlyChart, heat tile destination ranking with sidebar type filter, and fully dynamic month-aware status breakdown and monitoring table.
 - **Streamlit dashboard** (`src/dashboard/app.py`) — alternative read-only analytics view at `localhost:8501`
 
 Dashboard modules:

@@ -161,7 +161,7 @@ export const en = {
         { title: "Universidad Complutense de Madrid", desc: "Trabajo Final de Máster — academic framework and research methodology" },
         { title: "TUI Care Foundation · target 8.9", desc: "Open innovation program aligned with UN SDG 8.9 — sustainable tourism and decent work" },
         { title: "Future Shapers Spain", desc: "TUI + Telefónica accelerator connecting universities with real tourism industry challenges" },
-        { title: "AI & Open Data", desc: "Built with FastAPI, React and public open data sources (INE, datos.gob.es) — GDPR compliant" },
+        { title: "AI & Open Data", desc: "Built with FastAPI, React and real open data APIs: INE EOH (hotel occupancy), FRONTUR (international arrivals), AEMET (climate normals) — GDPR compliant" },
       ],
     },
     scoring: {
@@ -211,7 +211,7 @@ export const en = {
         "Interactive georreferenced map with real-time month/congestion overlay",
         "User profile matching (travel style, budget, sustainability preference)",
         "Explainability layer — human-readable reasoning for each recommendation",
-        "React dashboard with sustainability KPIs and congestion heatmap",
+        "Governance analytics dashboard — interactive monthly chart, heat tile destination ranking, sustainability KPIs and full congestion monitoring across all 20 destinations",
       ],
       outScopeItems: [
         { text: "Sentiment analysis & traveler review processing — scoped to Reto 1 (NLP & social listening)", reto: "Reto 1" },
@@ -225,7 +225,7 @@ export const en = {
     },
   },
   analytics: {
-    badge: "Governance · Layer 5 / TUI Care Foundation",
+    badge: "Governance",
     title: "Analytics Dashboard",
     subtitle:
       "System-level governance view of all 20 monitored destinations. Track demand redistribution activity, congestion risks and sustainable opportunity zones across Spain's tourism network in real time.",
@@ -235,6 +235,20 @@ export const en = {
       { label: "High-Congestion Months", sub: "Months where redistribution penalties are active" },
       { label: "Destinations at Risk", sub: "Exceeding sustainable congestion threshold in July" },
     ],
+    section: {
+      badge: "Real-time Governance",
+      title: "Monitoring & Control Panel",
+      monthLabel: "Analyzing",
+      clickTip: "Click any bar to select month",
+    },
+    perfChart: {
+      badge: "Destination Performance",
+      title: "Sustainability & Congestion Ranking",
+      subtitle: "Sorted by the best combination — most sustainable destinations with the least congestion for the selected month.",
+      sustLabel: "Sustainability",
+      congLabel: "Congestion",
+      rankTip: "Rank #1 = best profile this month",
+    },
     redistribution: {
       badge: "Redistribution Activity",
       title: "Penalized Destinations by Month",
@@ -243,7 +257,7 @@ export const en = {
     },
     statusBreakdown: {
       badge: "Destination Status",
-      title: "July Peak — Distribution",
+      titleBase: "Distribution",
       sdgTarget: "SDG 8.9 Target",
       sdgSub: "5–10% demand redistribution",
       engineStatus: "Engine Status",
@@ -251,9 +265,9 @@ export const en = {
     },
     table: {
       badge: "Destination Monitor",
-      title: "All 20 Destinations · July Snapshot",
+      titleBase: "All 20 Destinations",
       allFilter: "All",
-      headers: ["Destination","Type","July Congestion","Sustainability","Status"],
+      headers: ["Destination","Type","Congestion","Sustainability","Status"],
       noResults: "No destinations match this filter.",
       statusLabels: {
         overloaded: "Overloaded",
@@ -292,6 +306,7 @@ export const en = {
       peak: "Peak — avoid",
       lowSeason: "Low season — recommended",
       congestionDrop: "-{n}% congestion",
+      cheaperTip: "~30% cheaper",
     },
     heatmap: {
       badge: "Congestion Intelligence",
@@ -321,9 +336,12 @@ export const en = {
         "When a destination exceeds the congestion threshold, Horizon surfaces sustainable alternatives. These real examples show demand redistribution in action.",
     },
     scenarios: {
-      overSaturated: "✗ Over-saturated",
-      horizonRecommends: "✓ Horizon recommends",
+      overSaturated: "Over-saturated",
+      horizonRecommends: "Horizon recommends",
       congestionLabel: "Congestion:",
+      redirects: "Horizon redirects",
+      ptsLess: "pts less congested",
+      labels: ["July — Peak Season", "May — Spring Peak", "August — Summer Peak"],
     },
     impactTargets: {
       badge: "SDG 8.9 Impact Targets",

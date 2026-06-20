@@ -86,13 +86,14 @@ Components:
 
 ### Analytics — `pages/Analytics.tsx`
 
-Governance dashboard (Layer 5 of the 5-layer architecture).
+Governance dashboard (Layer 5 of the 5-layer architecture). All sections are driven by `selectedMonth` state (1–12).
 
 Components:
-- `KpiCard` × 4 — Penalized destinations count, avg sustainability score, high-congestion destinations, redistribution candidates
-- Monthly penalized destinations chart — Bar chart of destinations receiving congestion penalties by month
-- Status breakdown — Animated progress bars showing destination distribution across Excellent / Good / Moderate / Poor sustainability categories
-- Filterable destination table — Full destination list with sustainability score, congestion score, status badge, and search/filter controls
+- **Hero** — Glassmorphism KPI stat cards (destinations monitored, traveler profiles, high-congestion months, destinations at risk) overlaid on a dark gradient. SVG area chart at the bottom shows the redistribution penalty curve across the year.
+- **MonthlyChart** — Clickable bar chart; clicking a month bar calls `setSelectedMonth`. Selected bar renders at full opacity with a glow; others at 32% opacity.
+- **DestinationBars** — Heat tile grid sorted by `sustainability × (1 − congestion/100)` for the selected month. Sidebar filter column (All / Beach / City / Nature / Mixed) with count badges. Tiles animate reorder via Framer Motion `layout` prop when month or filter changes.
+- **Status breakdown** — Animated count cards for Overloaded / High Pressure / Moderate / Opportunity. Status computed dynamically via `getStatusForMonth(dest, selectedMonth)`. Re-animates on month change using `key={${statusKey}-${selectedMonth}}` pattern.
+- **Destination table** — Month-aware monitoring table; congestion score and status badge update per `selectedMonth`. Filterable by status chip.
 
 ### About — `pages/About.tsx`
 
@@ -133,10 +134,11 @@ App.tsx
     │   │   ├── CongestionHeatmap
     │   │   └── ScenarioCard × 3
     │   ├── Analytics.tsx
-    │   │   ├── KpiCard × 4
-    │   │   ├── Monthly penalized chart
-    │   │   ├── Status breakdown bars
-    │   │   └── Destination table
+    │   │   ├── Hero (glassmorphism KPI cards + SVG area chart)
+    │   │   ├── MonthlyChart (interactive, controls selectedMonth)
+    │   │   ├── DestinationBars (heat tiles + sidebar type filter)
+    │   │   ├── Status breakdown (month-aware animated counts)
+    │   │   └── Destination table (month-aware, status filter)
     │   └── About.tsx
     │       ├── Challenge cards
     │       ├── Formula bars

@@ -22,7 +22,7 @@ import AccountBalanceRoundedIcon from "@mui/icons-material/AccountBalanceRounded
 import BeachAccessRoundedIcon from "@mui/icons-material/BeachAccessRounded";
 import SpaRoundedIcon from "@mui/icons-material/SpaRounded";
 import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
-import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
+
 
 import Footer from "../components/layout/Footer";
 import DestinationMap from "../components/map/DestinationMap";
@@ -58,16 +58,37 @@ const ALL_DESTINATIONS: HeatmapDest[] = [
 const DEFAULT_HEATMAP_IDS = ["D001","D002","D004","D013","D014","D015","D019","D020"];
 
 // Destinations penalized (congestion > 80) per month, computed from all 20 destinations
-const PENALIZED_BY_MONTH: Record<number, number> = {
-  1: 0, 2: 0, 3: 0, 4: 8, 5: 8, 6: 0, 7: 12, 8: 12, 9: 0, 10: 8, 11: 0, 12: 0,
-};
 
 // ── Colour helpers ───────────────────────────────────────
 const cellStyle = (score: number) => {
-  if (score <= 30) return { bg: "#DCFCE7", text: "#166534", border: "#BBF7D0" };
-  if (score <= 60) return { bg: "#FEF9C3", text: "#854D0E", border: "#FDE68A" };
-  if (score <= 80) return { bg: "#FFEDD5", text: "#9A3412", border: "#FED7AA" };
-  return { bg: "#FEE2E2", text: "#991B1B", border: "#FECACA" };
+  if (score <= 30) return {
+    bg: "linear-gradient(145deg, #ECFDF5 0%, #DCFCE7 100%)",
+    bgDark: "linear-gradient(145deg, rgba(16,185,129,.18) 0%, rgba(16,185,129,.10) 100%)",
+    text: "#166534", textDark: "#6EE7B7",
+    border: "#BBF7D0", borderDark: "rgba(16,185,129,.28)",
+    bar: "#10B981", glow: "rgba(16,185,129,.35)",
+  };
+  if (score <= 60) return {
+    bg: "linear-gradient(145deg, #FEFCE8 0%, #FEF9C3 100%)",
+    bgDark: "linear-gradient(145deg, rgba(245,158,11,.18) 0%, rgba(245,158,11,.10) 100%)",
+    text: "#854D0E", textDark: "#FCD34D",
+    border: "#FDE68A", borderDark: "rgba(245,158,11,.28)",
+    bar: "#F59E0B", glow: "rgba(245,158,11,.35)",
+  };
+  if (score <= 80) return {
+    bg: "linear-gradient(145deg, #FFF7ED 0%, #FFEDD5 100%)",
+    bgDark: "linear-gradient(145deg, rgba(249,115,22,.18) 0%, rgba(249,115,22,.10) 100%)",
+    text: "#9A3412", textDark: "#FDBA74",
+    border: "#FED7AA", borderDark: "rgba(249,115,22,.28)",
+    bar: "#F97316", glow: "rgba(249,115,22,.35)",
+  };
+  return {
+    bg: "linear-gradient(145deg, #FFF1F2 0%, #FEE2E2 100%)",
+    bgDark: "linear-gradient(145deg, rgba(239,68,68,.18) 0%, rgba(239,68,68,.10) 100%)",
+    text: "#991B1B", textDark: "#FCA5A5",
+    border: "#FECACA", borderDark: "rgba(239,68,68,.28)",
+    bar: "#EF4444", glow: "rgba(239,68,68,.40)",
+  };
 };
 
 
@@ -123,61 +144,71 @@ const CongestionHeatmap = ({
   activeMonth,
   onMonthClick,
   destinations,
+  penalizedByMonth,
 }: {
   activeMonth: number | null;
   onMonthClick: (m: number) => void;
   destinations: HeatmapDest[];
+  penalizedByMonth: Record<number, number>;
 }) => {
   const { locale } = useLanguage();
+  const theme = useTheme();
+  const dark = theme.palette.mode === "dark";
   const ll = locale.insights.heatmap.levelShort;
   const getLevelShort = (score: number) =>
     score <= 30 ? ll.low : score <= 60 ? ll.moderate : score <= 80 ? ll.high : ll.veryHigh;
+
   return (
   <Box sx={{ overflowX: "auto", pb: 1 }}>
-    <Box sx={{ minWidth: 820 }}>
-      {/* Header row — clickeable */}
-      <Box sx={{ display: "grid", gridTemplateColumns: "180px repeat(12, 1fr)", gap: 0.5, mb: 0.5 }}>
+    <Box sx={{ minWidth: 860 }}>
+      {/* Header row */}
+      <Box sx={{ display: "grid", gridTemplateColumns: "190px repeat(12, 1fr)", gap: 0.75, mb: 0.75 }}>
         <Box />
         {locale.search.monthsShort.map((m, i) => {
           const isActive = activeMonth === i + 1;
-          const penalized = PENALIZED_BY_MONTH[i + 1] > 0;
+          const penalizedCount = (penalizedByMonth[i + 1] ?? 0) > 0;
           return (
             <Box
               key={m}
               onClick={() => onMonthClick(i + 1)}
               sx={{
                 textAlign: "center",
-                py: 1,
-                borderRadius: "8px",
+                py: 1.1,
+                borderRadius: "10px",
                 cursor: "pointer",
-                bgcolor: isActive
-                  ? penalized ? "rgba(239,68,68,.12)" : "rgba(37,99,235,.12)"
+                background: isActive
+                  ? penalizedCount
+                    ? "linear-gradient(135deg, rgba(239,68,68,.18), rgba(239,68,68,.08))"
+                    : "linear-gradient(135deg, rgba(37,99,235,.18), rgba(37,99,235,.08))"
                   : "transparent",
                 border: isActive
-                  ? penalized ? "1px solid rgba(239,68,68,.25)" : "1px solid rgba(37,99,235,.2)"
-                  : "1px solid transparent",
+                  ? penalizedCount ? "1.5px solid rgba(239,68,68,.4)" : "1.5px solid rgba(37,99,235,.35)"
+                  : "1.5px solid transparent",
+                boxShadow: isActive
+                  ? penalizedCount ? "0 4px 12px rgba(239,68,68,.15)" : "0 4px 12px rgba(37,99,235,.15)"
+                  : "none",
                 transition: "all .2s ease",
                 "&:hover": {
-                  bgcolor: isActive
-                    ? undefined
-                    : "rgba(128,128,128,.08)",
-                  border: isActive ? undefined : "1px solid rgba(128,128,128,.15)",
+                  background: isActive ? undefined : dark ? "rgba(255,255,255,.06)" : "rgba(0,0,0,.04)",
+                  border: isActive ? undefined : "1.5px solid",
+                  borderColor: isActive ? undefined : "divider",
                 },
               }}
             >
               <Typography sx={{
-                fontSize: ".7rem", fontWeight: 700,
+                fontSize: ".72rem", fontWeight: isActive ? 800 : 600,
                 color: isActive
-                  ? penalized ? "#EF4444" : "#2563EB"
-                  : "#94A3B8",
+                  ? penalizedCount ? "#EF4444" : "#2563EB"
+                  : "text.secondary",
+                letterSpacing: ".03em",
               }}>
                 {m}
               </Typography>
-              {penalized && (
+              {penalizedCount && (
                 <Box sx={{
-                  width: 4, height: 4, borderRadius: "50%",
-                  bgcolor: isActive ? "#EF4444" : "#CBD5E1",
-                  mx: "auto", mt: 0.4,
+                  width: 5, height: 5, borderRadius: "50%",
+                  bgcolor: isActive ? "#EF4444" : dark ? "rgba(239,68,68,.4)" : "#FCA5A5",
+                  mx: "auto", mt: 0.5,
                   transition: "background .2s",
                 }} />
               )}
@@ -187,99 +218,131 @@ const CongestionHeatmap = ({
       </Box>
 
       {/* Data rows */}
-      {destinations.map((dest, dIdx) => (
-        <motion.div
-          key={dest.id}
-          initial={{ opacity: 0, x: -16 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: dIdx * 0.07, ease: "easeOut" }}
-        >
-          <Box sx={{ display: "grid", gridTemplateColumns: "180px repeat(12, 1fr)", gap: 0.5, mb: 0.5 }}>
-            {/* Destination label */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, pr: 1 }}>
-              <Box>
-                <Typography sx={{ fontSize: ".8rem", fontWeight: 700, color: "text.primary", lineHeight: 1.2 }}>
-                  {dest.name}
-                </Typography>
-                <Typography sx={{ fontSize: ".68rem", color: "#94A3B8" }}>
-                  {dest.type}
-                </Typography>
+      {destinations.map((dest, dIdx) => {
+        const typeMeta = DEST_TYPE_META[dest.type] ?? { emoji: "📍", color: "#2563EB" };
+        return (
+          <motion.div
+            key={dest.id}
+            initial={{ opacity: 0, x: -18 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: dIdx * 0.07, ease: "easeOut" }}
+          >
+            <Box sx={{ display: "grid", gridTemplateColumns: "190px repeat(12, 1fr)", gap: 0.75, mb: 0.75 }}>
+              {/* Destination label */}
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, pr: 1 }}>
+                <Box sx={{
+                  width: 8, height: 8, borderRadius: "50%",
+                  bgcolor: typeMeta.color, flexShrink: 0,
+                  boxShadow: `0 0 0 3px ${typeMeta.color}22`,
+                }} />
+                <Box>
+                  <Typography sx={{ fontSize: ".8rem", fontWeight: 700, color: "text.primary", lineHeight: 1.2 }}>
+                    {dest.name}
+                  </Typography>
+                  <Typography sx={{ fontSize: ".65rem", color: "text.secondary", fontWeight: 500 }}>
+                    {dest.type}
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
 
-            {/* Month cells */}
-            {dest.monthly.map((score, mIdx) => {
-              const s = cellStyle(score);
-              const isActive = activeMonth === mIdx + 1;
-              const isPenalized = score > 80;
-              return (
-                <motion.div
-                  key={mIdx}
-                  initial={{ scale: 0.7, opacity: 0 }}
-                  whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: dIdx * 0.05 + mIdx * 0.015 }}
-                >
-                  <Box
-                    sx={{
-                      bgcolor: s.bg,
-                      border: `1px solid ${isActive ? s.text : s.border}`,
-                      borderRadius: "7px",
-                      height: 58,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "2px",
-                      cursor: "default",
-                      boxShadow: isPenalized && isActive ? `0 0 0 2px ${s.text}44` : "none",
-                      transform: isActive ? "scale(1.05)" : "scale(1)",
-                      transition: "all .2s ease",
-                      position: "relative",
-                    }}
+              {/* Month cells */}
+              {dest.monthly.map((score, mIdx) => {
+                const s = cellStyle(score);
+                const isActive = activeMonth === mIdx + 1;
+                const isPenalized = score > 80;
+                const textColor = dark ? s.textDark : s.text;
+                return (
+                  <motion.div
+                    key={mIdx}
+                    initial={{ scale: 0.7, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.28, delay: dIdx * 0.04 + mIdx * 0.012 }}
+                    style={{ position: "relative" }}
                   >
-                    <Typography sx={{ fontSize: ".78rem", fontWeight: 900, color: s.text, lineHeight: 1 }}>
-                      {score}
-                    </Typography>
-                    <Typography sx={{ fontSize: ".58rem", fontWeight: 600, color: s.text, opacity: 0.75, lineHeight: 1 }}>
-                      {getLevelShort(score)}
-                    </Typography>
-                    {isPenalized && (
-                      <Box
-                        sx={{
+                    <Box
+                      sx={{
+                        background: dark ? s.bgDark : s.bg,
+                        border: `1.5px solid ${isActive ? s.bar : (dark ? s.borderDark : s.border)}`,
+                        borderRadius: "10px",
+                        height: 64,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "1px",
+                        cursor: "default",
+                        overflow: "hidden",
+                        boxShadow: isActive
+                          ? `0 0 0 2.5px ${s.glow}, 0 6px 16px ${s.glow}`
+                          : dark ? "none" : "0 1px 4px rgba(0,0,0,.06)",
+                        transform: isActive ? "scale(1.06)" : "scale(1)",
+                        zIndex: isActive ? 1 : 0,
+                        transition: "all .22s ease",
+                        position: "relative",
+                        "&:hover": { transform: isActive ? "scale(1.07)" : "scale(1.04)", zIndex: 2 },
+                      }}
+                    >
+                      {/* Bottom progress bar */}
+                      <Box sx={{
+                        position: "absolute", bottom: 0, left: 0,
+                        height: 3, borderRadius: "0 2px 0 0",
+                        bgcolor: s.bar,
+                        width: `${score}%`,
+                        opacity: 0.6,
+                      }} />
+
+                      <Typography sx={{ fontSize: ".82rem", fontWeight: 900, color: textColor, lineHeight: 1 }}>
+                        {score}
+                      </Typography>
+                      <Typography sx={{ fontSize: ".58rem", fontWeight: 600, color: textColor, opacity: 0.8, lineHeight: 1 }}>
+                        {getLevelShort(score)}
+                      </Typography>
+
+                      {isPenalized && (
+                        <Box sx={{
                           position: "absolute",
-                          top: 3, right: 3,
-                          width: 5, height: 5,
+                          top: 4, right: 4,
+                          width: 6, height: 6,
                           borderRadius: "50%",
-                          bgcolor: s.text,
-                        }}
-                      />
-                    )}
-                  </Box>
-                </motion.div>
-              );
-            })}
-          </Box>
-        </motion.div>
-      ))}
+                          bgcolor: s.bar,
+                          boxShadow: `0 0 0 2px ${s.glow}`,
+                        }} />
+                      )}
+                    </Box>
+                  </motion.div>
+                );
+              })}
+            </Box>
+          </motion.div>
+        );
+      })}
 
       {/* Legend */}
-      <Box sx={{ display: "flex", gap: 2, mt: 2, flexWrap: "wrap" }}>
+      <Box sx={{ display: "flex", gap: 1.5, mt: 2.5, flexWrap: "wrap", alignItems: "center" }}>
         {[
-          { label: locale.insights.heatmap.legend[0], bg: "#DCFCE7", text: "#166534" },
-          { label: locale.insights.heatmap.legend[1], bg: "#FEF9C3", text: "#854D0E" },
-          { label: locale.insights.heatmap.legend[2], bg: "#FFEDD5", text: "#9A3412" },
-          { label: locale.insights.heatmap.legend[3], bg: "#FEE2E2", text: "#991B1B" },
+          { label: locale.insights.heatmap.legend[0], bar: "#10B981", bg: "#DCFCE7", bgDark: "rgba(16,185,129,.15)", text: "#166534", textDark: "#6EE7B7" },
+          { label: locale.insights.heatmap.legend[1], bar: "#F59E0B", bg: "#FEF9C3", bgDark: "rgba(245,158,11,.15)", text: "#854D0E", textDark: "#FCD34D" },
+          { label: locale.insights.heatmap.legend[2], bar: "#F97316", bg: "#FFEDD5", bgDark: "rgba(249,115,22,.15)", text: "#9A3412", textDark: "#FDBA74" },
+          { label: locale.insights.heatmap.legend[3], bar: "#EF4444", bg: "#FEE2E2", bgDark: "rgba(239,68,68,.15)", text: "#991B1B", textDark: "#FCA5A5" },
         ].map((l) => (
-          <Box key={l.label} sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-            <Box sx={{ width: 14, height: 14, borderRadius: "4px", bgcolor: l.bg, border: `1px solid ${l.text}44` }} />
-            <Typography sx={{ fontSize: ".72rem", color: "text.secondary" }}>{l.label}</Typography>
+          <Box
+            key={l.label}
+            sx={{
+              display: "flex", alignItems: "center", gap: 0.75,
+              px: 1.2, py: 0.5, borderRadius: "8px",
+              background: dark ? l.bgDark : l.bg,
+              border: `1px solid ${dark ? l.bar + "33" : l.bar + "44"}`,
+            }}
+          >
+            <Box sx={{ width: 8, height: 8, borderRadius: "3px", bgcolor: l.bar }} />
+            <Typography sx={{ fontSize: ".7rem", fontWeight: 600, color: dark ? l.textDark : l.text }}>{l.label}</Typography>
           </Box>
         ))}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, ml: 1 }}>
-          <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: "#991B1B" }} />
-          <Typography sx={{ fontSize: ".72rem", color: "text.secondary" }}>{locale.insights.heatmap.penaltyDot}</Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, px: 1.2, py: 0.5, borderRadius: "8px", background: dark ? "rgba(239,68,68,.1)" : "#FFF1F2", border: "1px solid rgba(239,68,68,.2)" }}>
+          <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: "#EF4444", boxShadow: "0 0 0 2px rgba(239,68,68,.25)" }} />
+          <Typography sx={{ fontSize: ".7rem", fontWeight: 600, color: dark ? "#FCA5A5" : "#991B1B" }}>{locale.insights.heatmap.penaltyDot}</Typography>
         </Box>
       </Box>
     </Box>
@@ -289,9 +352,9 @@ const CongestionHeatmap = ({
 
 // ── Redistribution scenario card ─────────────────────────
 const ScenarioCard = ({
-  from, to, monthLabel, fromScore, toScore, delay,
+  from, to, labelIdx, fromScore, toScore, delay,
 }: {
-  from: string; to: string; monthLabel: string; fromScore: number; toScore: number; delay: number;
+  from: string; to: string; labelIdx: number; fromScore: number; toScore: number; delay: number;
 }) => {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
@@ -300,55 +363,157 @@ const ScenarioCard = ({
   const ll = locale.insights.heatmap.levelLabels;
   const getLevelLabel = (score: number) =>
     score <= 30 ? ll.low : score <= 60 ? ll.moderate : score <= 80 ? ll.high : ll.veryHigh;
-  const fromS = cellStyle(fromScore);
   const toS = cellStyle(toScore);
+  const reduction = fromScore - toScore;
+
+  const CongestionBar = ({ score, bar }: { score: number; bar: string }) => (
+    <Box sx={{ mt: 1 }}>
+      <Box sx={{ position: "relative", height: 6, borderRadius: "3px", bgcolor: dark ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.07)", overflow: "hidden" }}>
+        <Box sx={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${score}%`, bgcolor: bar, borderRadius: "3px", transition: "width .6s ease" }} />
+      </Box>
+    </Box>
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay, ease: "easeOut" }}
+      style={{ height: "100%" }}
     >
       <Box
         sx={{
-          borderRadius: "20px",
+          borderRadius: "22px",
           border: "1px solid",
-          borderColor: "divider",
-          background: dark
-            ? "linear-gradient(160deg, #1E293B 0%, #111827 100%)"
-            : "linear-gradient(160deg, #FAFBFF 0%, #F5F8FF 100%)",
-          p: 3,
+          borderColor: dark ? "rgba(255,255,255,.09)" : "rgba(0,0,0,.07)",
+          background: dark ? "linear-gradient(160deg, #1A2540 0%, #111827 100%)" : "#FFFFFF",
+          overflow: "hidden",
           height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: dark ? "0 4px 24px rgba(0,0,0,.28)" : "0 4px 24px rgba(0,0,0,.07)",
+          transition: "transform .22s ease, box-shadow .22s ease",
+          "&:hover": {
+            transform: "translateY(-5px)",
+            boxShadow: dark ? "0 16px 40px rgba(0,0,0,.38)" : "0 16px 40px rgba(0,0,0,.12)",
+          },
         }}
       >
-        <Typography sx={{ fontSize: ".72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".12em", color: "#94A3B8", mb: 2 }}>
-          {monthLabel}
-        </Typography>
-
-        {/* FROM */}
-        <Box sx={{ p: 2, borderRadius: "12px", bgcolor: `${fromS.bg}`, border: `1px solid ${fromS.border}`, mb: 1.5 }}>
-          <Typography sx={{ fontSize: ".68rem", fontWeight: 600, color: fromS.text, mb: 0.25, textTransform: "uppercase", letterSpacing: ".1em" }}>
-            {sc.overSaturated}
+        {/* Header with month label */}
+        <Box sx={{
+          px: 2.5, py: 1.5,
+          background: dark
+            ? "linear-gradient(135deg, rgba(37,99,235,.18) 0%, rgba(14,163,181,.10) 100%)"
+            : "linear-gradient(135deg, rgba(37,99,235,.07) 0%, rgba(14,163,181,.04) 100%)",
+          borderBottom: "1px solid",
+          borderColor: dark ? "rgba(37,99,235,.18)" : "rgba(37,99,235,.10)",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}>
+          <Typography sx={{ fontSize: ".72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".12em", color: "#2563EB" }}>
+            {sc.labels[labelIdx]}
           </Typography>
-          <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1rem" }}>{from}</Typography>
-          <Typography sx={{ fontSize: ".75rem", color: fromS.text, fontWeight: 700 }}>
-            {sc.congestionLabel} {fromScore} — {getLevelLabel(fromScore)}
-          </Typography>
+          {reduction > 0 && (
+            <Box sx={{
+              display: "flex", alignItems: "center", gap: 0.4,
+              px: 1, py: 0.3, borderRadius: "8px",
+              bgcolor: "rgba(16,185,129,.12)", border: "1px solid rgba(16,185,129,.25)",
+            }}>
+              <Typography sx={{ fontSize: ".65rem", fontWeight: 800, color: "#059669" }}>
+                −{reduction} pts
+              </Typography>
+            </Box>
+          )}
         </Box>
 
-        <Box sx={{ display: "flex", justifyContent: "center", my: 1 }}>
-          <SwapHorizRoundedIcon sx={{ color: "#2563EB", fontSize: 22 }} />
-        </Box>
+        <Box sx={{ p: 2.5, display: "flex", flexDirection: "column", gap: 0, flex: 1 }}>
+          {/* FROM — over-saturated */}
+          <Box sx={{
+            p: 2, borderRadius: "14px",
+            background: dark
+              ? `linear-gradient(135deg, rgba(239,68,68,.14) 0%, rgba(239,68,68,.07) 100%)`
+              : "linear-gradient(135deg, #FFF1F2 0%, #FEE2E2 100%)",
+            border: `1.5px solid ${dark ? "rgba(239,68,68,.22)" : "#FECACA"}`,
+          }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: 0.75 }}>
+              <Box sx={{ width: 18, height: 18, borderRadius: "5px", bgcolor: "rgba(239,68,68,.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Typography sx={{ fontSize: ".6rem", fontWeight: 900, color: "#EF4444" }}>✕</Typography>
+              </Box>
+              <Typography sx={{ fontSize: ".62rem", fontWeight: 700, color: "#EF4444", textTransform: "uppercase", letterSpacing: ".1em" }}>
+                {sc.overSaturated}
+              </Typography>
+            </Box>
+            <Typography sx={{ fontWeight: 800, color: dark ? "#FCA5A5" : "#B91C1C", fontSize: "1.05rem", lineHeight: 1.2 }}>
+              {from}
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 0.5 }}>
+              <Typography sx={{ fontSize: ".72rem", color: dark ? "#FCA5A5" : "#991B1B", fontWeight: 600 }}>
+                {getLevelLabel(fromScore)}
+              </Typography>
+              <Typography sx={{ fontSize: ".8rem", fontWeight: 900, color: "#EF4444" }}>
+                {fromScore}/100
+              </Typography>
+            </Box>
+            <CongestionBar score={fromScore} bar="#EF4444" />
+          </Box>
 
-        {/* TO */}
-        <Box sx={{ p: 2, borderRadius: "12px", bgcolor: `${toS.bg}`, border: `1px solid ${toS.border}` }}>
-          <Typography sx={{ fontSize: ".68rem", fontWeight: 600, color: toS.text, mb: 0.25, textTransform: "uppercase", letterSpacing: ".1em" }}>
-            {sc.horizonRecommends}
-          </Typography>
-          <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1rem" }}>{to}</Typography>
-          <Typography sx={{ fontSize: ".75rem", color: toS.text, fontWeight: 700 }}>
-            {sc.congestionLabel} {toScore} — {getLevelLabel(toScore)}
-          </Typography>
+          {/* Connector */}
+          <Box sx={{ py: 1.5, display: "flex", alignItems: "center", gap: 1 }}>
+            <Box sx={{ flex: 1, height: "1px", bgcolor: dark ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.08)" }} />
+            <Box sx={{
+              display: "flex", alignItems: "center", gap: 0.5,
+              px: 1.5, py: 0.5, borderRadius: "20px",
+              bgcolor: dark ? "rgba(37,99,235,.12)" : "rgba(37,99,235,.08)",
+              border: "1px solid rgba(37,99,235,.18)",
+            }}>
+              <SwapHorizRoundedIcon sx={{ fontSize: 13, color: "#2563EB" }} />
+              <Typography sx={{ fontSize: ".6rem", fontWeight: 700, color: "#2563EB", textTransform: "uppercase", letterSpacing: ".08em" }}>
+                {sc.redirects}
+              </Typography>
+            </Box>
+            <Box sx={{ flex: 1, height: "1px", bgcolor: dark ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.08)" }} />
+          </Box>
+
+          {/* TO — recommended */}
+          <Box sx={{
+            p: 2, borderRadius: "14px",
+            background: dark
+              ? `linear-gradient(135deg, ${toS.bgDark} 0%, rgba(0,0,0,.1) 100%)`
+              : `linear-gradient(135deg, ${toScore <= 30 ? "#F0FDF4" : toScore <= 60 ? "#FEFCE8" : toScore <= 80 ? "#FFF7ED" : "#FFF1F2"} 0%, ${toScore <= 30 ? "#DCFCE7" : toScore <= 60 ? "#FEF9C3" : toScore <= 80 ? "#FFEDD5" : "#FEE2E2"} 100%)`,
+            border: `1.5px solid ${dark ? toS.borderDark : toS.border}`,
+          }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: 0.75 }}>
+              <Box sx={{ width: 18, height: 18, borderRadius: "5px", bgcolor: `${toS.bar}22`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Typography sx={{ fontSize: ".6rem", fontWeight: 900, color: toS.bar }}>✓</Typography>
+              </Box>
+              <Typography sx={{ fontSize: ".62rem", fontWeight: 700, color: toS.bar, textTransform: "uppercase", letterSpacing: ".1em" }}>
+                {sc.horizonRecommends}
+              </Typography>
+            </Box>
+            <Typography sx={{ fontWeight: 800, color: dark ? toS.textDark : toS.text, fontSize: "1.05rem", lineHeight: 1.2 }}>
+              {to}
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 0.5 }}>
+              <Typography sx={{ fontSize: ".72rem", color: dark ? toS.textDark : toS.text, fontWeight: 600 }}>
+                {getLevelLabel(toScore)}
+              </Typography>
+              <Typography sx={{ fontSize: ".8rem", fontWeight: 900, color: toS.bar }}>
+                {toScore}/100
+              </Typography>
+            </Box>
+            <CongestionBar score={toScore} bar={toS.bar} />
+          </Box>
+
+          {/* Bottom insight */}
+          {reduction > 0 && (
+            <Box sx={{ mt: 1.5, px: 0.5, display: "flex", alignItems: "center", gap: 0.75 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "#10B981", flexShrink: 0 }} />
+              <Typography sx={{ fontSize: ".68rem", color: "text.secondary", lineHeight: 1.4 }}>
+                <Box component="span" sx={{ fontWeight: 700, color: "#059669" }}>−{reduction} pts</Box>
+                {" "}{sc.ptsLess}
+              </Typography>
+            </Box>
+          )}
         </Box>
       </Box>
     </motion.div>
@@ -367,6 +532,14 @@ const getBestOffPeak = (monthly: number[], months: string[], count = 2): Array<{
     .sort((a, b) => a.score - b.score)
     .slice(0, count);
 
+// ── Low Season card helpers ───────────────────────────────
+const DEST_TYPE_META: Record<string, { emoji: string; color: string }> = {
+  Beach:  { emoji: "🏖️", color: "#0EA5E9" },
+  City:   { emoji: "🏛️", color: "#8B5CF6" },
+  Nature: { emoji: "🌿", color: "#10B981" },
+  Mixed:  { emoji: "✨", color: "#F59E0B" },
+};
+
 // ── Low Season card ───────────────────────────────────────
 const LowSeasonCard = ({ dest, delay }: { dest: HeatmapDest; delay: number }) => {
   const theme = useTheme();
@@ -375,6 +548,7 @@ const LowSeasonCard = ({ dest, delay }: { dest: HeatmapDest; delay: number }) =>
   const peak = getPeakMonth(dest.monthly, locale.search.monthsShort);
   const offPeak = getBestOffPeak(dest.monthly, locale.search.monthsShort);
   const drop = Math.round(((peak.score - offPeak[0].score) / peak.score) * 100);
+  const meta = DEST_TYPE_META[dest.type] ?? { emoji: "📍", color: "#2563EB" };
 
   return (
     <motion.div
@@ -382,63 +556,155 @@ const LowSeasonCard = ({ dest, delay }: { dest: HeatmapDest; delay: number }) =>
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.45, delay, ease: "easeOut" }}
+      style={{ height: "100%" }}
     >
       <Box
         sx={{
-          borderRadius: "18px",
+          borderRadius: "20px",
           border: "1px solid",
-          borderColor: "divider",
-          background: dark
-            ? "linear-gradient(160deg, #1E293B 0%, #111827 100%)"
-            : "linear-gradient(160deg, #FAFBFF 0%, #F5F8FF 100%)",
-          p: 2.5,
+          borderColor: dark ? "rgba(255,255,255,.09)" : "rgba(0,0,0,.07)",
+          background: dark ? "linear-gradient(160deg, #1A2540 0%, #111827 100%)" : "#FFFFFF",
+          overflow: "hidden",
           height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: dark ? "0 4px 20px rgba(0,0,0,.28)" : "0 4px 20px rgba(0,0,0,.06)",
+          transition: "transform .22s ease, box-shadow .22s ease",
+          "&:hover": {
+            transform: "translateY(-5px)",
+            boxShadow: dark ? "0 16px 40px rgba(0,0,0,.38)" : "0 16px 40px rgba(0,0,0,.12)",
+          },
         }}
       >
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
-          <Box>
-            <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: ".95rem", lineHeight: 1.2 }}>
-              {dest.name}
-            </Typography>
-            <Typography sx={{ fontSize: ".72rem", color: "#94A3B8" }}>{dest.region}</Typography>
+        {/* Colored top stripe */}
+        <Box sx={{ height: 4, background: `linear-gradient(90deg, ${meta.color}, ${meta.color}66)` }} />
+
+        {/* Header */}
+        <Box sx={{ px: 2.5, pt: 2, pb: 1.5, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
+            <Box sx={{
+              width: 38, height: 38, borderRadius: "11px",
+              bgcolor: `${meta.color}18`,
+              border: `1px solid ${meta.color}28`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "1.1rem",
+              flexShrink: 0,
+            }}>
+              {meta.emoji}
+            </Box>
+            <Box>
+              <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1rem", lineHeight: 1.2 }}>
+                {dest.name}
+              </Typography>
+              <Typography sx={{ fontSize: ".7rem", color: "text.secondary", mt: 0.15 }}>
+                {dest.region}
+              </Typography>
+            </Box>
           </Box>
           <Chip
-            label={locale.insights.optimizer.congestionDrop.replace("{n}", String(drop))}
+            label={`−${drop}%`}
             size="small"
-            icon={<TrendingUpRoundedIcon style={{ fontSize: 12, transform: "rotate(180deg)" }} />}
+            icon={<TrendingDownRoundedIcon style={{ fontSize: 13 }} />}
             sx={{
-              height: 22, fontSize: ".68rem", fontWeight: 700,
-              bgcolor: "rgba(16,185,129,.1)", color: "#059669",
-              border: "1px solid rgba(16,185,129,.2)",
+              height: 24, fontSize: ".72rem", fontWeight: 800,
+              bgcolor: "rgba(16,185,129,.12)", color: "#059669",
+              border: "1px solid rgba(16,185,129,.28)",
+              borderRadius: "8px",
+              "& .MuiChip-icon": { color: "#059669" },
             }}
           />
         </Box>
 
-        {/* Peak */}
-        <Box sx={{ p: 1.5, borderRadius: "10px", bgcolor: "#FEE2E2", border: "1px solid #FECACA", mb: 1 }}>
-          <Typography sx={{ fontSize: ".66rem", fontWeight: 700, color: "#991B1B", textTransform: "uppercase", letterSpacing: ".08em", mb: 0.25 }}>
-            {locale.insights.optimizer.peak}
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <Typography sx={{ fontWeight: 800, color: "#7F1D1D", fontSize: ".88rem" }}>{peak.name}</Typography>
-            <Typography sx={{ fontWeight: 700, color: "#991B1B", fontSize: ".82rem" }}>
-              {peak.score}/100
+        {/* Comparison bar */}
+        <Box sx={{ px: 2.5, pb: 1.5 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.6 }}>
+            <Typography sx={{ fontSize: ".62rem", color: "#EF4444", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".07em" }}>
+              ☀️ {peak.score}/100
             </Typography>
+            <Typography sx={{ fontSize: ".62rem", color: "#10B981", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".07em" }}>
+              ❄️ {offPeak[0].score}/100
+            </Typography>
+          </Box>
+          <Box sx={{ position: "relative", height: 7, borderRadius: "4px", bgcolor: dark ? "rgba(255,255,255,.06)" : "#F1F5F9" }}>
+            <Box sx={{
+              position: "absolute", left: 0, top: 0, bottom: 0,
+              width: `${peak.score}%`,
+              background: "linear-gradient(90deg, #10B981 0%, #F59E0B 55%, #EF4444 100%)",
+              borderRadius: "4px",
+              opacity: 0.28,
+            }} />
+            <Box sx={{
+              position: "absolute", left: 0, top: 0, bottom: 0,
+              width: `${offPeak[0].score}%`,
+              background: "linear-gradient(90deg, #059669, #10B981)",
+              borderRadius: "4px",
+            }} />
           </Box>
         </Box>
 
-        {/* Best months */}
-        <Box sx={{ p: 1.5, borderRadius: "10px", bgcolor: "#DCFCE7", border: "1px solid #BBF7D0" }}>
-          <Typography sx={{ fontSize: ".66rem", fontWeight: 700, color: "#166534", textTransform: "uppercase", letterSpacing: ".08em", mb: 0.5 }}>
-            {locale.insights.optimizer.lowSeason}
-          </Typography>
-          <Box sx={{ display: "flex", gap: 0.75 }}>
-            {offPeak.map((m) => (
-              <Box key={m.name} sx={{ flex: 1, textAlign: "center", p: 0.75, borderRadius: "8px", bgcolor: "rgba(22,163,74,.1)" }}>
-                <Typography sx={{ fontWeight: 800, color: "#15803D", fontSize: ".85rem" }}>{m.name}</Typography>
-                <Typography sx={{ fontWeight: 600, color: "#166534", fontSize: ".72rem" }}>{m.score}/100</Typography>
+        <Box sx={{ px: 2, pb: 2, display: "flex", flexDirection: "column", gap: 1, flex: 1 }}>
+          {/* Peak month */}
+          <Box sx={{
+            p: 1.5, borderRadius: "12px",
+            bgcolor: dark ? "rgba(239,68,68,.09)" : "#FFF5F5",
+            border: `1px solid ${dark ? "rgba(239,68,68,.16)" : "#FECACA"}`,
+          }}>
+            <Typography sx={{ fontSize: ".63rem", fontWeight: 700, color: "#EF4444", textTransform: "uppercase", letterSpacing: ".09em", mb: 0.5 }}>
+              {locale.insights.optimizer.peak}
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <Typography sx={{ fontWeight: 800, color: dark ? "#FCA5A5" : "#B91C1C", fontSize: ".92rem" }}>
+                {peak.name}
+              </Typography>
+              <Box sx={{ px: 1, py: 0.2, borderRadius: "6px", bgcolor: dark ? "rgba(239,68,68,.14)" : "#FEE2E2" }}>
+                <Typography sx={{ fontWeight: 700, color: "#EF4444", fontSize: ".78rem" }}>
+                  {peak.score}/100
+                </Typography>
               </Box>
-            ))}
+            </Box>
+          </Box>
+
+          {/* Best months */}
+          <Box sx={{
+            p: 1.5, borderRadius: "12px",
+            bgcolor: dark ? "rgba(16,185,129,.09)" : "#F0FDF4",
+            border: `1px solid ${dark ? "rgba(16,185,129,.16)" : "#BBF7D0"}`,
+          }}>
+            <Typography sx={{ fontSize: ".63rem", fontWeight: 700, color: "#059669", textTransform: "uppercase", letterSpacing: ".09em", mb: 0.75 }}>
+              {locale.insights.optimizer.lowSeason}
+            </Typography>
+            <Box sx={{ display: "flex", gap: 0.75 }}>
+              {offPeak.map((m) => (
+                <Box key={m.name} sx={{
+                  flex: 1, textAlign: "center", py: 0.75,
+                  borderRadius: "9px",
+                  bgcolor: dark ? "rgba(16,185,129,.12)" : "rgba(22,163,74,.08)",
+                  border: "1px solid rgba(16,185,129,.22)",
+                }}>
+                  <Typography sx={{ fontWeight: 800, color: "#059669", fontSize: ".9rem", lineHeight: 1 }}>
+                    {m.name}
+                  </Typography>
+                  <Typography sx={{ fontWeight: 600, color: dark ? "#6EE7B7" : "#166534", fontSize: ".7rem", mt: 0.25 }}>
+                    {m.score}/100
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+
+          {/* Insight tip */}
+          <Box sx={{
+            mt: "auto", pt: 0.75, px: 0.5,
+            display: "flex", alignItems: "flex-start", gap: 0.75,
+          }}>
+            <Typography sx={{ fontSize: ".69rem", color: "text.secondary", lineHeight: 1.5 }}>
+              💡{" "}
+              <Box component="span" sx={{ fontWeight: 700, color: "#059669" }}>
+                {offPeak[0].name}
+              </Box>
+              {" · "}{locale.insights.optimizer.congestionDrop.replace("{n}", String(drop))}
+              {" · "}{locale.insights.optimizer.cheaperTip}
+            </Typography>
           </Box>
         </Box>
       </Box>
@@ -460,14 +726,18 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
   const [activeMonth, setActiveMonth] = useState<number | null>(initialMonth);
   const [mapFilter, setMapFilter] = useState<"low" | "moderate" | "high" | "veryHigh" | null>(null);
 
-  const penalized = activeMonth ? PENALIZED_BY_MONTH[activeMonth] : 0;
-
   const hasRecs = recommendations.length > 0;
   const displayedDestinations = hasRecs
     ? ALL_DESTINATIONS.filter((d) =>
         recommendations.some((r) => r.destination_name === d.name)
       )
     : ALL_DESTINATIONS.filter((d) => DEFAULT_HEATMAP_IDS.includes(d.id));
+
+  const penalizedByMonth: Record<number, number> = {};
+  for (let m = 1; m <= 12; m++) {
+    penalizedByMonth[m] = displayedDestinations.filter((d) => d.monthly[m - 1] > 80).length;
+  }
+  const penalized = activeMonth ? penalizedByMonth[activeMonth] : 0;
 
   return (
     <>
@@ -806,7 +1076,7 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
           <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1, mb: 4 }}>
             {locale.search.monthsShort.map((m, i) => {
               const monthNum = i + 1;
-              const p = PENALIZED_BY_MONTH[monthNum];
+              const p = penalizedByMonth[monthNum] ?? 0;
               const isActive = activeMonth === monthNum;
               return (
                 <Chip
@@ -906,6 +1176,7 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
             activeMonth={activeMonth}
             onMonthClick={(m) => setActiveMonth((prev) => (prev === m ? null : m))}
             destinations={displayedDestinations}
+            penalizedByMonth={penalizedByMonth}
           />
         </Container>
       </Box>
@@ -933,7 +1204,7 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <ScenarioCard
               from="Mallorca" to="Picos de Europa"
-              monthLabel="July — Peak Season"
+              labelIdx={0}
               fromScore={95} toScore={85}
               delay={0}
             />
@@ -941,7 +1212,7 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <ScenarioCard
               from="Barcelona" to="Sierra Nevada"
-              monthLabel="May — Spring Peak"
+              labelIdx={1}
               fromScore={90} toScore={55}
               delay={0.1}
             />
@@ -949,7 +1220,7 @@ const Insights = ({ initialMonth = 7, recommendations = [] }: InsightsProps) => 
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <ScenarioCard
               from="Ibiza" to="Sierra Nevada"
-              monthLabel="August — Summer Peak"
+              labelIdx={2}
               fromScore={100} toScore={90}
               delay={0.2}
             />

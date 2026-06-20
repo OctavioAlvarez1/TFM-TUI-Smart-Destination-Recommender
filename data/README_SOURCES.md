@@ -53,14 +53,21 @@ Raw FRONTUR data saved to `data/enriched/frontur_ccaa.csv`.
 | Dataset | Climatologías Normales 30 años — temperatura, precipitación, insolación |
 | Authentication | Free API key required |
 | Registration | https://opendata.aemet.es/centrodedescargas/altaUsuario |
-| API | `https://opendata.aemet.es/opendata/api/climatologias/normales30/estacion/{id}` |
+| API | `https://opendata.aemet.es/opendata/api/valores/climatologicos/mensualesanuales/datos/anioini/{year}/aniofin/{year}/estacion/{id}` |
 
 **Activation:** Once you have an API key, run:
 ```bash
+# Windows PowerShell
+$env:AEMET_API_KEY = "your_key"
+python data/scripts/fetch_open_data.py
+
+# Linux / macOS
 AEMET_API_KEY=<your_key> python data/scripts/fetch_open_data.py
 ```
 
-Climate data (temperature, precipitation, sunshine hours) is used to apply a seasonality pressure modifier to local business sustainability scores: destinations with >8 warm months per year experience higher year-round tourism pressure.
+**Note on rate limits:** AEMET's free API key has a strict per-hour quota. If the script reports 429 errors, wait ~1 hour and retry. The script handles rate limit retries automatically with a 20s backoff.
+
+The script fetches monthly climate values for 2014–2023, averages them by month-of-year to derive seasonal normals, and saves to `data/enriched/aemet_climate.csv`. Climate data is used to apply a seasonality pressure modifier to local business sustainability scores: destinations with >8 warm months per year experience higher year-round tourism pressure.
 
 ---
 
