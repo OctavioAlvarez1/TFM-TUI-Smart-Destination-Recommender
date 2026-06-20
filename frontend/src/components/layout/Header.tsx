@@ -9,8 +9,11 @@ import {
 
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import ES from "country-flag-icons/react/3x2/ES";
+import US from "country-flag-icons/react/3x2/US";
 
 import { useThemeContext } from "../../theme/ThemeProvider";
+import { useLanguage } from "../../context/LanguageContext";
 
 import horizonLogo from "../../assets/logo/horizon-logo.svg";
 
@@ -21,15 +24,18 @@ interface HeaderProps {
   onNavigate: (page: Page) => void;
 }
 
-const NAV_ITEMS: { label: string; page: Page }[] = [
-  { label: "Destinations", page: "home" },
-  { label: "Insights",     page: "insights" },
-  { label: "Analytics",   page: "analytics" },
-  { label: "About",        page: "about" },
-];
+const NAV_PAGES: Page[] = ["home", "insights", "analytics", "about"];
 
 const Header = ({ currentPage, onNavigate }: HeaderProps) => {
   const { darkMode, toggleTheme } = useThemeContext();
+  const { lang, toggleLanguage, locale } = useLanguage();
+
+  const navLabels: Record<Page, string> = {
+    home:      locale.nav.destinations,
+    insights:  locale.nav.insights,
+    analytics: locale.nav.analytics,
+    about:     locale.nav.about,
+  };
 
   return (
     <AppBar
@@ -70,11 +76,12 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
 
         {/* Nav items */}
         <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3 }}>
-          {NAV_ITEMS.map(({ label, page }) => {
+          {NAV_PAGES.map((page) => {
+            const label = navLabels[page];
             const isActive = currentPage === page;
             return (
               <Button
-                key={label}
+                key={page}
                 onClick={() => onNavigate(page)}
                 sx={{
                   color: isActive ? "#38BDF8" : "#FFFFFF",
@@ -108,11 +115,33 @@ const Header = ({ currentPage, onNavigate }: HeaderProps) => {
           })}
         </Box>
 
+        {/* Language toggle */}
+        <Box
+          onClick={toggleLanguage}
+          sx={{
+            ml: 2.5,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 0.5,
+            border: "1px solid rgba(255,255,255,0.15)",
+            borderRadius: "8px",
+            px: 1,
+            py: 0.6,
+            transition: "border-color .2s",
+            "&:hover": { borderColor: "rgba(255,255,255,0.4)" },
+          }}
+        >
+          <US style={{ width: 22, opacity: lang === "en" ? 1 : 0.3, transition: "opacity .2s", borderRadius: 2, display: "block" }} title="English" />
+          <Typography sx={{ fontSize: ".65rem", color: "rgba(255,255,255,.28)", lineHeight: 1 }}>|</Typography>
+          <ES style={{ width: 22, opacity: lang === "es" ? 1 : 0.3, transition: "opacity .2s", borderRadius: 2, display: "block" }} title="Español" />
+        </Box>
+
         {/* Theme toggle */}
         <IconButton
           onClick={toggleTheme}
           sx={{
-            ml: 3, color: "#FFFFFF", width: 42, height: 42,
+            ml: 1.5, color: "#FFFFFF", width: 42, height: 42,
             border: "1px solid rgba(255,255,255,0.15)",
           }}
         >

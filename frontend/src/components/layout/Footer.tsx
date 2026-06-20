@@ -8,23 +8,14 @@ import {
 } from "@mui/material";
 
 import horizonLogo from "../../assets/logo/horizon-logo.svg";
-
-const footerLinks = {
-  Features: [
-    "Sustainability Score",
-    "Congestion Index",
-    "Preference Match",
-    "AI Explanation",
-  ],
-  Technology: [
-    "FastAPI Backend",
-    "React + TypeScript",
-    "Scikit-learn ML",
-    "Synthetic Datasets",
-  ],
-};
+import { useLanguage } from "../../context/LanguageContext";
 
 const Footer = () => {
+  const { locale } = useLanguage();
+  const footerLinks = [
+    { heading: locale.footer.features.heading, items: locale.footer.features.items },
+    { heading: locale.footer.technology.heading, items: locale.footer.technology.items },
+  ];
   return (
     <Box
       component="footer"
@@ -68,7 +59,7 @@ const Footer = () => {
                 mb: 2.5,
               }}
             >
-              Smart Destination Recommender
+              {locale.footer.tagline}
             </Typography>
 
             <Typography
@@ -80,10 +71,7 @@ const Footer = () => {
                 mb: 3.5,
               }}
             >
-              AI-powered system for sustainable tourism
-              demand redistribution. Built as part of
-              the TUI Care Foundation target 8.9
-              open innovation challenge.
+              {locale.footer.description}
             </Typography>
 
             <Stack direction="row" spacing={1.5} sx={{ flexWrap: "wrap" }}>
@@ -110,44 +98,37 @@ const Footer = () => {
           </Grid>
 
           {/* FEATURES + TECHNOLOGY */}
-          {Object.entries(footerLinks).map(
-            ([section, items]) => (
-              <Grid
-                key={section}
-                size={{ xs: 6, md: 2 }}
+          {footerLinks.map(({ heading, items }) => (
+            <Grid key={heading} size={{ xs: 6, md: 2 }}>
+              <Typography
+                sx={{
+                  fontWeight: 700,
+                  mb: 3,
+                  fontSize: ".8rem",
+                  textTransform: "uppercase",
+                  letterSpacing: ".12em",
+                  color: "rgba(255,255,255,.35)",
+                }}
               >
+                {heading}
+              </Typography>
+              {items.map((item) => (
                 <Typography
+                  key={item}
                   sx={{
-                    fontWeight: 700,
-                    mb: 3,
-                    fontSize: ".8rem",
-                    textTransform: "uppercase",
-                    letterSpacing: ".12em",
-                    color: "rgba(255,255,255,.35)",
+                    color: "rgba(255,255,255,.55)",
+                    mb: 1.5,
+                    fontSize: ".9rem",
+                    cursor: "default",
+                    transition: "color .2s",
+                    "&:hover": { color: "#38BDF8" },
                   }}
                 >
-                  {section}
+                  {item}
                 </Typography>
-                {items.map((item) => (
-                  <Typography
-                    key={item}
-                    sx={{
-                      color: "rgba(255,255,255,.55)",
-                      mb: 1.5,
-                      fontSize: ".9rem",
-                      cursor: "default",
-                      transition: "color .2s",
-                      "&:hover": {
-                        color: "#38BDF8",
-                      },
-                    }}
-                  >
-                    {item}
-                  </Typography>
-                ))}
-              </Grid>
-            )
-          )}
+              ))}
+            </Grid>
+          ))}
 
           {/* PROJECT */}
           <Grid size={{ xs: 12, md: 4 }}>
@@ -161,7 +142,7 @@ const Footer = () => {
                 color: "rgba(255,255,255,.35)",
               }}
             >
-              About the Project
+              {locale.footer.project.heading}
             </Typography>
 
             <Typography
@@ -172,7 +153,7 @@ const Footer = () => {
                 mb: 1,
               }}
             >
-              TFM — Universidad Complutense de Madrid
+              {locale.footer.project.university}
             </Typography>
 
             <Typography
@@ -183,9 +164,7 @@ const Footer = () => {
                 mb: 3,
               }}
             >
-              Reto 2: Motor de recomendaciones con IA
-              y redistribución de demanda turística para
-              combatir el sobreturismo en España.
+              {locale.footer.project.description}
             </Typography>
 
             <Box
@@ -204,7 +183,7 @@ const Footer = () => {
                   mb: 1.5,
                 }}
               >
-                Problem Statement
+                {locale.footer.project.problemTitle}
               </Typography>
               <Typography
                 sx={{
@@ -213,11 +192,7 @@ const Footer = () => {
                   lineHeight: 1.75,
                 }}
               >
-                85% of tourists visit only 10% of
-                destinations. Horizon uses AI to
-                redistribute demand toward sustainable,
-                less-saturated alternatives — without
-                sacrificing traveler satisfaction.
+                {locale.footer.project.problemText}
               </Typography>
             </Box>
           </Grid>
@@ -242,11 +217,11 @@ const Footer = () => {
               fontSize: ".82rem",
             }}
           >
-            © 2025 Horizon — TFM UCM × TUI Care Foundation
+            {locale.footer.copyright}
           </Typography>
 
           <Stack direction="row" spacing={3}>
-            {["About", "Methodology", "Data Sources"].map(
+            {locale.footer.bottomLinks.map(
               (item) => (
                 <Typography
                   key={item}

@@ -4,6 +4,7 @@
 // Fully dark-mode aware — backgrounds, borders and text adapt to the active theme.
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useLanguage } from "../../context/LanguageContext";
 import {
   Paper,
   Box,
@@ -16,9 +17,9 @@ import {
 } from "@mui/material";
 
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
-import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
-import TravelExploreRoundedIcon from "@mui/icons-material/TravelExploreRounded";
+import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
+import FlightTakeoffRoundedIcon from "@mui/icons-material/FlightTakeoffRounded";
+import AddLocationAltRoundedIcon from "@mui/icons-material/AddLocationAltRounded";
 import { getUserProfile, type UserProfile } from "../../api/recommendationApi";
 
 // ── Profile chip colours ─────────────────────────────────
@@ -53,20 +54,6 @@ interface SearchBarHeroProps {
   onSearch: () => void;
 }
 
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 
 const SearchBarHero = ({
   userId,
@@ -79,6 +66,7 @@ const SearchBarHero = ({
 }: SearchBarHeroProps) => {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
+  const { locale } = useLanguage();
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -130,13 +118,13 @@ const SearchBarHero = ({
         borderRadius: "36px",
 
         p: {
-          xs: 2.5,
-          md: 3.5,
+          xs: 2,
+          md: 2.5,
         },
 
         background: dark
           ? "rgba(17,24,39,0.97)"
-          : "rgba(255,255,255,0.98)",
+          : "rgba(244,248,255,0.98)",
 
         border: "1px solid",
         borderColor: "divider",
@@ -184,49 +172,27 @@ const SearchBarHero = ({
         <Box
           sx={{
             display: "flex",
-
             alignItems: "center",
-
-            gap: 3,
-
+            gap: 2.5,
             px: 3,
-
-            py: 1.5,
-
-            borderRight: {
-              lg: "1px solid",
-            },
-            borderRightColor: {
-              lg: "divider",
-            },
+            py: 1,
+            borderRight: { lg: "1px solid" },
+            borderRightColor: { lg: "divider" },
           }}
         >
           <Box
             sx={{
-              width: 76,
-
-              height: 76,
-
-              borderRadius: "50%",
-
-              background: dark
-                ? "rgba(37,99,235,.12)"
-                : "rgba(37,99,235,.06)",
-
+              width: 52,
+              height: 52,
+              borderRadius: "14px",
+              background: dark ? "rgba(37,99,235,.15)" : "rgba(37,99,235,.08)",
               display: "flex",
-
               alignItems: "center",
-
-              justifyContent:
-                "center",
+              justifyContent: "center",
+              flexShrink: 0,
             }}
           >
-            <PersonOutlineRoundedIcon
-              sx={{
-                color: "#2563EB",
-                fontSize: 34,
-              }}
-            />
+            <AccountCircleRoundedIcon sx={{ color: "#2563EB", fontSize: 28 }} />
           </Box>
 
           <Box sx={{ flex: 1 }}>
@@ -234,11 +200,11 @@ const SearchBarHero = ({
               sx={{
                 color: "text.secondary",
                 fontWeight: 600,
-                fontSize: ".9rem",
-                mb: 0.75,
+                fontSize: ".85rem",
+                mb: 0.5,
               }}
             >
-              Traveler Profile
+              {locale.search.travelerProfile}
             </Typography>
 
             <TextField
@@ -249,7 +215,7 @@ const SearchBarHero = ({
               slotProps={{
                 input: { disableUnderline: true },
                 htmlInput: {
-                  style: { fontSize: "1.3rem", fontWeight: 700, color: dark ? "#F1F5F9" : "#0F172A" },
+                  style: { fontSize: "1.15rem", fontWeight: 700, color: dark ? "#F1F5F9" : "#0F172A" },
                 },
               }}
             />
@@ -268,7 +234,7 @@ const SearchBarHero = ({
                   }}
                 />
                 <Chip
-                  label={`${profile.budget_level} budget`}
+                  label={`${profile.budget_level} ${locale.search.budget}`}
                   size="small"
                   sx={{
                     fontSize: ".68rem", fontWeight: 700, height: 20,
@@ -278,7 +244,7 @@ const SearchBarHero = ({
                   }}
                 />
                 <Chip
-                  label={`Eco: ${profile.sustainability_preference}`}
+                  label={`${locale.search.eco}: ${profile.sustainability_preference}`}
                   size="small"
                   sx={{
                     fontSize: ".68rem", fontWeight: 700, height: 20,
@@ -307,49 +273,27 @@ const SearchBarHero = ({
         <Box
           sx={{
             display: "flex",
-
             alignItems: "center",
-
-            gap: 3,
-
+            gap: 2.5,
             px: 3,
-
-            py: 1.5,
-
-            borderRight: {
-              lg: "1px solid",
-            },
-            borderRightColor: {
-              lg: "divider",
-            },
+            py: 1,
+            borderRight: { lg: "1px solid" },
+            borderRightColor: { lg: "divider" },
           }}
         >
           <Box
             sx={{
-              width: 76,
-
-              height: 76,
-
-              borderRadius: "50%",
-
-              background: dark
-                ? "rgba(37,99,235,.12)"
-                : "rgba(37,99,235,.06)",
-
+              width: 52,
+              height: 52,
+              borderRadius: "14px",
+              background: dark ? "rgba(14,165,233,.15)" : "rgba(14,165,233,.08)",
               display: "flex",
-
               alignItems: "center",
-
-              justifyContent:
-                "center",
+              justifyContent: "center",
+              flexShrink: 0,
             }}
           >
-            <CalendarMonthRoundedIcon
-              sx={{
-                color: "#2563EB",
-                fontSize: 34,
-              }}
-            />
+            <FlightTakeoffRoundedIcon sx={{ color: "#0EA5E9", fontSize: 28 }} />
           </Box>
 
           <Box sx={{ flex: 1 }}>
@@ -364,7 +308,7 @@ const SearchBarHero = ({
                 mb: 0.75,
               }}
             >
-              Travel Month
+              {locale.search.travelMonth}
             </Typography>
 
             <TextField
@@ -382,19 +326,13 @@ const SearchBarHero = ({
               slotProps={{
                 input: { disableUnderline: true },
                 htmlInput: {
-                  style: { fontSize: "1.3rem", fontWeight: 700, color: dark ? "#F1F5F9" : "#0F172A" },
+                  style: { fontSize: "1.15rem", fontWeight: 700, color: dark ? "#F1F5F9" : "#0F172A" },
                 },
               }}
             >
-              {months.map(
-                (
-                  monthName,
-                  index
-                ) => (
-                  <MenuItem
-                    key={index + 1}
-                    value={index + 1}
-                  >
+              {locale.search.months.map(
+                (monthName, index) => (
+                  <MenuItem key={index + 1} value={index + 1}>
                     {monthName}
                   </MenuItem>
                 )
@@ -408,42 +346,25 @@ const SearchBarHero = ({
         <Box
           sx={{
             display: "flex",
-
             alignItems: "center",
-
-            gap: 3,
-
+            gap: 2.5,
             px: 3,
-
-            py: 1.5,
+            py: 1,
           }}
         >
           <Box
             sx={{
-              width: 76,
-
-              height: 76,
-
-              borderRadius: "50%",
-
-              background: dark
-                ? "rgba(37,99,235,.12)"
-                : "rgba(37,99,235,.06)",
-
+              width: 52,
+              height: 52,
+              borderRadius: "14px",
+              background: dark ? "rgba(16,185,129,.15)" : "rgba(16,185,129,.08)",
               display: "flex",
-
               alignItems: "center",
-
-              justifyContent:
-                "center",
+              justifyContent: "center",
+              flexShrink: 0,
             }}
           >
-            <TravelExploreRoundedIcon
-              sx={{
-                color: "#2563EB",
-                fontSize: 34,
-              }}
-            />
+            <AddLocationAltRoundedIcon sx={{ color: "#10B981", fontSize: 28 }} />
           </Box>
 
           <Box sx={{ flex: 1 }}>
@@ -458,7 +379,7 @@ const SearchBarHero = ({
                 mb: 0.75,
               }}
             >
-              Destinations
+              {locale.search.destinations}
             </Typography>
 
             <TextField
@@ -473,7 +394,7 @@ const SearchBarHero = ({
                 input: { disableUnderline: true },
                 htmlInput: {
                   min: 1,
-                  style: { fontSize: "1.3rem", fontWeight: 700, color: dark ? "#F1F5F9" : "#0F172A" },
+                  style: { fontSize: "1.15rem", fontWeight: 700, color: dark ? "#F1F5F9" : "#0F172A" },
                 },
               }}
             />
@@ -500,17 +421,17 @@ const SearchBarHero = ({
               <SearchRoundedIcon />
             }
             sx={{
-              width: 280,
+              width: 240,
 
-              height: 78,
+              height: 64,
 
-              borderRadius: "22px",
+              borderRadius: "18px",
 
               color: "#FFF",
 
               fontWeight: 700,
 
-              fontSize: "1.15rem",
+              fontSize: "1.05rem",
 
               textTransform:
                 "none",
@@ -536,7 +457,7 @@ const SearchBarHero = ({
               },
             }}
           >
-            Search
+            {locale.search.searchButton}
           </Button>
         </Box>
       </Box>

@@ -17,53 +17,19 @@ import TravelExploreRoundedIcon from "@mui/icons-material/TravelExploreRounded";
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import { useLanguage } from "../../context/LanguageContext";
 
-const features = [
-  {
-    icon: (
-      <TravelExploreRoundedIcon
-        sx={{ fontSize: 34 }}
-      />
-    ),
-    title: "Sustainability Intelligence",
-    description:
-      "Evaluate destinations through environmental impact indicators, sustainability scoring and responsible tourism metrics.",
-  },
-  {
-    icon: (
-      <PersonOutlineRoundedIcon
-        sx={{ fontSize: 34 }}
-      />
-    ),
-    title: "Traveler Satisfaction",
-    description:
-      "Leverage traveler behavior and preference signals to identify destinations that consistently deliver exceptional experiences.",
-  },
-  {
-    icon: (
-      <CalendarMonthRoundedIcon
-        sx={{ fontSize: 34 }}
-      />
-    ),
-    title: "Congestion Analytics",
-    description:
-      "Monitor tourism pressure and crowd dynamics to promote balanced destination distribution and better visitor experiences.",
-  },
-  {
-    icon: (
-      <SearchRoundedIcon
-        sx={{ fontSize: 34 }}
-      />
-    ),
-    title: "AI Recommendation Engine",
-    description:
-      "Generate explainable destination recommendations by combining traveler preferences, sustainability and congestion insights.",
-  },
+const FEATURE_ICONS = [
+  <TravelExploreRoundedIcon sx={{ fontSize: 34 }} />,
+  <PersonOutlineRoundedIcon sx={{ fontSize: 34 }} />,
+  <CalendarMonthRoundedIcon sx={{ fontSize: 34 }} />,
+  <SearchRoundedIcon sx={{ fontSize: 34 }} />,
 ];
 
 const FeatureSection = () => {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
+  const { locale } = useLanguage();
 
   return (
     <Box
@@ -96,7 +62,7 @@ const FeatureSection = () => {
               mb: 2,
             }}
           >
-            Built For Smart Travelers
+            {locale.features.badge}
           </Typography>
 
           <Typography
@@ -117,8 +83,7 @@ const FeatureSection = () => {
               mb: 2,
             }}
           >
-            AI-Powered. Sustainable.
-            Personalized.
+            {locale.features.heading}
           </Typography>
 
           <Typography
@@ -137,16 +102,12 @@ const FeatureSection = () => {
               mb: 6,
             }}
           >
-            Horizon combines artificial intelligence,
-            sustainability metrics and traveler insights
-            to recommend destinations that create
-            better outcomes for travelers and local
-            communities.
+            {locale.features.subtitle}
           </Typography>
         </motion.div>
 
         <Grid container spacing={3}>
-          {features.map((feature, index) => (
+          {locale.features.items.map((feature, index) => (
             <Grid
               key={feature.title}
               size={{
@@ -254,7 +215,7 @@ const FeatureSection = () => {
                         mb: 3,
                       }}
                     >
-                      {feature.icon}
+                      {FEATURE_ICONS[index]}
                     </Box>
 
                     <Typography

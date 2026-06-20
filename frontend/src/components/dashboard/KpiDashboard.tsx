@@ -3,6 +3,7 @@
 // and a demand-redistribution banner listing how many destinations were penalised.
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useLanguage } from "../../context/LanguageContext";
 import {
   Box,
   Card,
@@ -50,16 +51,18 @@ const FillBar = ({ value, color, delay = 0 }: { value: number; color: string; de
 // ── Status pill ─────────────────────────────────────────
 type MetricType = "sustainability" | "confidence" | "congestion";
 
-const getStatus = (value: number, type: MetricType) => {
+import type { Locale } from "../../locales/en";
+
+const getStatus = (value: number, type: MetricType, sl: Locale["kpi"]["statusLabels"]) => {
   if (type === "congestion") {
-    if (value < 35) return { label: "Low pressure", color: "#10B981" };
-    if (value < 65) return { label: "Moderate", color: "#F59E0B" };
-    return { label: "High pressure", color: "#EF4444" };
+    if (value < 35) return { label: sl.lowPressure, color: "#10B981" };
+    if (value < 65) return { label: sl.moderate,    color: "#F59E0B" };
+    return { label: sl.highPressure, color: "#EF4444" };
   }
-  if (value >= 80) return { label: "Excellent", color: "#10B981" };
-  if (value >= 60) return { label: "Good", color: "#6366F1" };
-  if (value >= 40) return { label: "Moderate", color: "#F59E0B" };
-  return { label: "Low", color: "#EF4444" };
+  if (value >= 80) return { label: sl.excellent, color: "#10B981" };
+  if (value >= 60) return { label: sl.good,      color: "#6366F1" };
+  if (value >= 40) return { label: sl.moderate,  color: "#F59E0B" };
+  return { label: sl.low, color: "#EF4444" };
 };
 
 // ── Metric card ─────────────────────────────────────────
@@ -84,7 +87,8 @@ const MetricCard = ({
   animDelay,
   barDelay,
 }: MetricCardProps) => {
-  const status = getStatus(value, type);
+  const { locale } = useLanguage();
+  const status = getStatus(value, type, locale.kpi.statusLabels);
 
   return (
     <motion.div
@@ -215,7 +219,9 @@ const TopDestCard = ({
   name: string;
   score: number;
   animDelay: number;
-}) => (
+}) => {
+  const { locale } = useLanguage();
+  return (
   <motion.div
     initial={{ opacity: 0, y: 28 }}
     animate={{ opacity: 1, y: 0 }}
@@ -280,7 +286,7 @@ const TopDestCard = ({
               mb: 1,
             }}
           >
-            Top Pick
+            {locale.kpi.topPick}
           </Typography>
 
           {/* Destination name */}
@@ -299,7 +305,7 @@ const TopDestCard = ({
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "rgba(255,255,255,.45)", mb: 3 }}>
             <LocationOnRoundedIcon sx={{ fontSize: 14 }} />
-            <Typography sx={{ fontSize: ".82rem" }}>Spain</Typography>
+            <Typography sx={{ fontSize: ".82rem" }}>{locale.kpi.country}</Typography>
           </Box>
         </Box>
 
@@ -316,7 +322,7 @@ const TopDestCard = ({
           }}
         >
           <Typography sx={{ color: "rgba(255,255,255,.55)", fontSize: ".82rem", fontWeight: 600 }}>
-            Match Score
+            {locale.kpi.matchScore}
           </Typography>
           <Typography
             sx={{
@@ -332,7 +338,8 @@ const TopDestCard = ({
       </CardContent>
     </Card>
   </motion.div>
-);
+  );
+};
 
 // ── Main ────────────────────────────────────────────────
 interface KpiDashboardProps {
@@ -340,6 +347,7 @@ interface KpiDashboardProps {
 }
 
 const KpiDashboard = ({ recommendations }: KpiDashboardProps) => {
+  const { locale } = useLanguage();
   if (recommendations.length === 0) return null;
 
   const avg = (key: keyof Recommendation) =>
@@ -372,7 +380,7 @@ const KpiDashboard = ({ recommendations }: KpiDashboardProps) => {
               mb: 1,
             }}
           >
-            AI Analysis
+            {locale.kpi.badge}
           </Typography>
           <Typography
             sx={{
@@ -382,7 +390,7 @@ const KpiDashboard = ({ recommendations }: KpiDashboardProps) => {
               lineHeight: 1.1,
             }}
           >
-            Results Overview
+            {locale.kpi.heading}
           </Typography>
         </Box>
       </motion.div>
@@ -390,8 +398,8 @@ const KpiDashboard = ({ recommendations }: KpiDashboardProps) => {
       <Grid container spacing={3}>
       <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
         <MetricCard
-          title="Sustainability"
-          subtitle="Avg environmental score"
+          title={locale.kpi.sustainability.title}
+          subtitle={locale.kpi.sustainability.subtitle}
           value={sustainability}
           type="sustainability"
           color="#10B981"
@@ -403,8 +411,8 @@ const KpiDashboard = ({ recommendations }: KpiDashboardProps) => {
 
       <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
         <MetricCard
-          title="Confidence"
-          subtitle="Model certainty level"
+          title={locale.kpi.confidence.title}
+          subtitle={locale.kpi.confidence.subtitle}
           value={confidence}
           type="confidence"
           color="#6366F1"
@@ -416,8 +424,8 @@ const KpiDashboard = ({ recommendations }: KpiDashboardProps) => {
 
       <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
         <MetricCard
-          title="Congestion"
-          subtitle="Avg tourism pressure"
+          title={locale.kpi.congestion.title}
+          subtitle={locale.kpi.congestion.subtitle}
           value={congestion}
           type="congestion"
           color={congestionColor}

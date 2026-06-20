@@ -8,13 +8,16 @@ import "leaflet/dist/leaflet.css";
 import App from "./App";
 
 import ThemeProvider from "./theme/ThemeProvider";
+import { LanguageProvider } from "./context/LanguageContext";
 
 createRoot(
   document.getElementById("root")!
 ).render(
   <StrictMode>
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </LanguageProvider>
   </StrictMode>
 );

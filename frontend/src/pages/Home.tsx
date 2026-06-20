@@ -2,7 +2,8 @@
 // Renders the SearchBarHero input form and the RecommendationGrid results.
 // Manages recommendation fetch state, loading/error handling and demand redistribution banner.
 // Passes the selected month and results up to App for cross-page sharing.
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useLanguage } from "../context/LanguageContext";
 import { motion } from "framer-motion";
 
 import {
@@ -35,10 +36,6 @@ const PENALIZED_BY_MONTH: Record<number, number> = {
   1: 0, 2: 0, 3: 0, 4: 8, 5: 8, 6: 0, 7: 12, 8: 12, 9: 0, 10: 8, 11: 0, 12: 0,
 };
 
-const MONTH_NAMES = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
-];
 
 interface HomeProps {
   month: number;
@@ -51,10 +48,12 @@ const Home = ({ month, setMonth, recommendations, setRecommendations }: HomeProp
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState("U001");
   const [topN, setTopN] = useState(5);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const handleGenerateRecommendations = async () => {
     try {
       setLoading(true);
+      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       const response = await getRecommendations(userId, month, topN);
       setRecommendations(response.recommendations);
     } catch (error) {
@@ -64,8 +63,9 @@ const Home = ({ month, setMonth, recommendations, setRecommendations }: HomeProp
     }
   };
 
+  const { locale } = useLanguage();
   const penalized = PENALIZED_BY_MONTH[month] ?? 0;
-  const monthName = MONTH_NAMES[month - 1];
+  const monthName = locale.search.months[month - 1];
 
   return (
     <>
@@ -99,7 +99,7 @@ const Home = ({ month, setMonth, recommendations, setRecommendations }: HomeProp
           <DestinationShowcase />
         </Box>
 
-        <Box sx={{ mt: { xs: 8, md: 10 } }}>
+        <Box ref={resultsRef} sx={{ mt: { xs: 8, md: 10 } }}>
           {loading ? (
             <LoadingSkeleton />
           ) : recommendations.length === 0 ? (
@@ -145,23 +145,23 @@ const Home = ({ month, setMonth, recommendations, setRecommendations }: HomeProp
                   <Box sx={{ flex: 1, minWidth: 200 }}>
                     <Typography sx={{ fontSize: ".88rem", color: "text.primary", lineHeight: 1.6 }}>
                       <Box component="span" sx={{ fontWeight: 700 }}>
-                        Demand Redistribution Active
+                        {locale.home.redistribution.title}
                       </Box>
                       {penalized > 0 ? (
                         <>
-                          {" "}— Horizon applied congestion penalties to{" "}
+                          {" "}{locale.home.redistribution.penalizedPrefix}{" "}
                           <Box component="span" sx={{ fontWeight: 700, color: "#EF4444" }}>
-                            {penalized} destinations
+                            {penalized} {locale.home.redistribution.penalizedSuffix}
                           </Box>{" "}
-                          with Very High saturation in{" "}
+                          {locale.home.redistribution.withSaturation}{" "}
                           <Box component="span" sx={{ fontWeight: 700 }}>{monthName}</Box>.
-                          {" "}The results below prioritize sustainable alternatives.
+                          {" "}{locale.home.redistribution.resultsNote}
                         </>
                       ) : (
                         <>
-                          {" "}— All destinations are within sustainable limits in{" "}
+                          {" "}{locale.home.redistribution.allSustainable}{" "}
                           <Box component="span" sx={{ fontWeight: 700 }}>{monthName}</Box>.
-                          {" "}No congestion penalties applied.
+                          {" "}{locale.home.redistribution.noPenalties}
                         </>
                       )}
                     </Typography>
@@ -169,7 +169,7 @@ const Home = ({ month, setMonth, recommendations, setRecommendations }: HomeProp
 
                   {penalized > 0 && (
                     <Chip
-                      label={`${penalized} penalized`}
+                      label={`${penalized} ${locale.home.redistribution.penalizedChip}`}
                       size="small"
                       sx={{
                         fontWeight: 700, fontSize: ".75rem",
@@ -201,10 +201,10 @@ const Home = ({ month, setMonth, recommendations, setRecommendations }: HomeProp
                         lineHeight: 1.1,
                       }}
                     >
-                      Your Top Recommendations
+                      {locale.home.results.heading}
                     </Typography>
                     <Chip
-                      label={`${recommendations.length} results`}
+                      label={`${recommendations.length} ${locale.home.results.resultsChip}`}
                       size="small"
                       sx={{
                         fontWeight: 700,
@@ -216,11 +216,11 @@ const Home = ({ month, setMonth, recommendations, setRecommendations }: HomeProp
                   </Stack>
 
                   <Typography sx={{ color: "text.secondary", fontSize: ".95rem" }}>
-                    Showing{" "}
+                    {locale.home.results.showing}{" "}
                     <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
-                      {recommendations.length} destinations
+                      {recommendations.length} {locale.home.results.destinations}
                     </Box>{" "}
-                    for profile{" "}
+                    {locale.home.results.forProfile}{" "}
                     <Box component="span" sx={{ fontWeight: 700, color: "#2563EB" }}>
                       {userId}
                     </Box>{" "}
@@ -228,7 +228,7 @@ const Home = ({ month, setMonth, recommendations, setRecommendations }: HomeProp
                     <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>
                       {monthName}
                     </Box>{" "}
-                    · ranked by AI match score
+                    {locale.home.results.ranked}
                   </Typography>
                 </Box>
               </motion.div>

@@ -5,6 +5,7 @@ import {
   Container,
   Typography,
 } from "@mui/material";
+import { useLanguage } from "../../context/LanguageContext";
 
 import heroImage from "../../assets/hero/hero.jpg";
 
@@ -29,6 +30,7 @@ const itemVariants = {
 
 const HeroSection = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const { locale } = useLanguage();
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -54,7 +56,7 @@ const HeroSection = () => {
       <motion.div
         style={{
           position: "absolute",
-          inset: "-15%",
+          inset: "-20%",
           backgroundImage: `
             linear-gradient(rgba(0,0,0,0.40), rgba(0,0,0,0.50)),
             url(${heroImage})
@@ -64,6 +66,16 @@ const HeroSection = () => {
           backgroundRepeat: "no-repeat",
           y: imageY,
           zIndex: 0,
+        }}
+        animate={{
+          scale: [1, 1.07],
+          x: ["0%", "1.8%"],
+        }}
+        transition={{
+          duration: 14,
+          ease: "easeInOut",
+          repeat: Infinity,
+          repeatType: "reverse",
         }}
       />
 
@@ -120,7 +132,7 @@ const HeroSection = () => {
                   backdropFilter: "blur(10px)",
                 }}
               >
-                AI-POWERED SUSTAINABLE TOURISM
+                {locale.hero.badge}
               </Typography>
             </motion.div>
 
@@ -140,7 +152,7 @@ const HeroSection = () => {
                   },
                 }}
               >
-                Discover Better Destinations in Spain
+                {locale.hero.title}
               </Typography>
             </motion.div>
 
@@ -155,9 +167,7 @@ const HeroSection = () => {
                   fontSize: { xs: "1rem", md: "1.15rem" },
                 }}
               >
-                Explore destinations that balance traveler satisfaction,
-                sustainability performance and congestion management
-                through intelligent recommendations.
+                {locale.hero.subtitle}
               </Typography>
             </motion.div>
           </Box>

@@ -6,7 +6,6 @@ import {
   Card,
   Typography,
   Stack,
-  Divider,
   Box,
   Grid,
   Chip,
@@ -17,10 +16,24 @@ import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
 import CalendarTodayRoundedIcon from "@mui/icons-material/CalendarTodayRounded";
 
 import type { Recommendation } from "../../types/recommendation";
+import { useLanguage } from "../../context/LanguageContext";
 
 import SustainabilityBadge from "./SustainabilityBadge";
 import ConfidenceBadge from "./ConfidenceBadge";
 import CongestionBadge from "./CongestionBadge";
+
+import imgLanzarote from "../../assets/destinations/lanzarote.jpg";
+import imgMallorca from "../../assets/destinations/mallorca.png";
+import imgMenorca from "../../assets/destinations/menorca.jpg";
+import imgSanSebastian from "../../assets/destinations/san-sebastian.jpeg";
+
+const DEST_IMAGES: Record<string, string> = {
+  "Lanzarote":      imgLanzarote,
+  "Mallorca":       imgMallorca,
+  "Menorca":        imgMenorca,
+  "San Sebastián":  imgSanSebastian,
+  "San Sebastian":  imgSanSebastian,
+};
 
 // ── Monthly congestion scores (INE EOH data) ─────────────
 const MONTHLY_SCORES: Record<string, number[]> = {
@@ -46,9 +59,7 @@ const MONTHLY_SCORES: Record<string, number[]> = {
   D020: [14, 15, 18, 22, 25, 28, 33, 36, 29, 24, 18, 17],
 };
 
-const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-const getBestMonths = (destId: string, count = 3): string[] => {
+const getBestMonths = (destId: string, monthNames: string[], count = 3): string[] => {
   const scores = MONTHLY_SCORES[destId];
   if (!scores) return [];
   return scores
@@ -56,7 +67,7 @@ const getBestMonths = (destId: string, count = 3): string[] => {
     .sort((a, b) => a.score - b.score)
     .slice(0, count)
     .sort((a, b) => a.i - b.i)
-    .map(({ i }) => MONTH_NAMES[i]);
+    .map(({ i }) => monthNames[i]);
 };
 
 // ── Rank colour palette ─────────────────────────────────
@@ -100,23 +111,31 @@ const MetricTile = ({
   value,
   color,
   delay = 0,
+  dark = false,
 }: {
   label: string;
   value: number;
   color: string;
   delay?: number;
+  dark?: boolean;
 }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.88 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.4, delay, ease: "easeOut" }}
+    style={{ height: "100%" }}
   >
     <Box
       sx={{
         borderRadius: "14px",
         p: { xs: 1.75, md: 2 },
-        bgcolor: `${color}0D`,
-        border: `1px solid ${color}22`,
+        background: dark
+          ? `rgba(15,23,42,0.72)`
+          : `rgba(255,255,255,0.82)`,
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        border: `1px solid ${color}35`,
+        boxShadow: `0 2px 12px ${color}12`,
         height: "100%",
       }}
     >
@@ -168,19 +187,23 @@ interface RecommendationCardProps {
 const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
+  const { locale } = useLanguage();
   const rank = rankMeta(recommendation.recommendation_rank, dark);
 
   const metrics = [
-    { label: "Preference",    value: recommendation.preference_score,    color: "#6366F1" },
-    { label: "Sustainability", value: recommendation.sustainability_score, color: "#10B981" },
-    { label: "Popularity",    value: recommendation.popularity_score,    color: "#F59E0B" },
-    { label: "Congestion",    value: recommendation.congestion_score,    color: "#EF4444" },
+    { label: locale.card.metrics.preference,    value: recommendation.preference_score,    color: "#6366F1" },
+    { label: locale.card.metrics.sustainability, value: recommendation.sustainability_score, color: "#10B981" },
+    { label: locale.card.metrics.popularity,    value: recommendation.popularity_score,    color: "#F59E0B" },
+    { label: locale.card.metrics.congestion,    value: recommendation.congestion_score,    color: "#EF4444" },
   ];
+
+  const destImage = DEST_IMAGES[recommendation.destination_name];
 
   return (
     <Card
       elevation={0}
       sx={{
+        position: "relative",
         borderRadius: "24px",
         border: "1px solid",
         borderColor: "divider",
@@ -195,7 +218,29 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
         },
       }}
     >
-      <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }}>
+      {/* Destination photo — faded right side */}
+      {destImage && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            width: { xs: "55%", md: "42%" },
+            height: "100%",
+            backgroundImage: `url(${destImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "blur(1px) saturate(0.85)",
+            transform: "scale(1.04)",
+            opacity: dark ? 0.52 : 0.75,
+            maskImage: "linear-gradient(to right, transparent 10%, rgba(0,0,0,0.5) 38%, black 58%)",
+            WebkitMaskImage: "linear-gradient(to right, transparent 10%, rgba(0,0,0,0.5) 38%, black 58%)",
+            zIndex: 0,
+          }}
+        />
+      )}
+
+      <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, position: "relative", zIndex: 1 }}>
 
         {/* ── LEFT RANK PANEL ── */}
         <Box
@@ -225,7 +270,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
                 mb: 0.25,
               }}
             >
-              Rank
+              {locale.card.rank}
             </Typography>
             <Typography
               sx={{
@@ -265,7 +310,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
                 letterSpacing: ".1em",
               }}
             >
-              Match Score
+              {locale.card.matchScore}
             </Typography>
           </Box>
         </Box>
@@ -288,7 +333,7 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "text.secondary", mb: 2.5 }}>
             <LocationOnRoundedIcon sx={{ fontSize: 14 }} />
-            <Typography sx={{ fontSize: ".82rem" }}>Spain</Typography>
+            <Typography sx={{ fontSize: ".82rem" }}>{locale.card.country}</Typography>
           </Box>
 
           {/* Badges */}
@@ -307,16 +352,15 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
                   value={m.value}
                   color={m.color}
                   delay={0.12 + i * 0.08}
+                  dark={dark}
                 />
               </Grid>
             ))}
           </Grid>
 
-          <Divider sx={{ mb: 2 }} />
-
           {/* Why */}
           <Typography sx={{ fontSize: ".8rem", fontWeight: 700, color: "text.primary", mb: 1.25 }}>
-            Why Horizon Recommended This
+            {locale.card.whyRecommended}
           </Typography>
 
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
@@ -328,36 +372,36 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
                 sx={{
                   height: "auto",
                   py: 0.6,
-                  borderRadius: "10px",
+                  borderRadius: "20px",
                   "& .MuiChip-label": {
                     whiteSpace: "normal",
                     fontSize: ".74rem",
-                    fontWeight: 500,
-                    color: "text.secondary",
+                    fontWeight: 600,
+                    color: "#059669",
                     lineHeight: 1.5,
                   },
-                  bgcolor: "rgba(37,99,235,.07)",
-                  border: "1px solid rgba(37,99,235,.14)",
+                  bgcolor: "rgba(16,185,129,.10)",
+                  border: "1px solid rgba(16,185,129,.28)",
                 }}
               />
             ))}
           </Box>
 
           {/* Best months — low season boost */}
-          {getBestMonths(recommendation.destination_id).length > 0 && (
+          {getBestMonths(recommendation.destination_id, locale.search.monthsShort).length > 0 && (
             <>
-              <Divider sx={{ my: 2 }} />
+              <Box sx={{ mt: 2 }} />
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
                 <CalendarTodayRoundedIcon sx={{ fontSize: 14, color: "#10B981" }} />
                 <Typography sx={{ fontSize: ".78rem", fontWeight: 700, color: "text.primary" }}>
-                  Best Months to Visit
+                  {locale.card.bestMonths}
                 </Typography>
                 <Typography sx={{ fontSize: ".72rem", color: "text.secondary" }}>
-                  — lowest congestion, best value
+                  {locale.card.bestMonthsSub}
                 </Typography>
               </Box>
               <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
-                {getBestMonths(recommendation.destination_id).map((m) => (
+                {getBestMonths(recommendation.destination_id, locale.search.monthsShort).map((m) => (
                   <Chip
                     key={m}
                     label={m}

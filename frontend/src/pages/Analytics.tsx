@@ -4,6 +4,7 @@
 // and a filterable table of all 20 monitored destinations.
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useLanguage } from "../context/LanguageContext";
 import {
   Box,
   Container,
@@ -25,7 +26,6 @@ import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import Footer from "../components/layout/Footer";
 
 // ── Data ─────────────────────────────────────────────────
-const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 // Congestion penalized destinations per month (congestion > 80, from 20 total)
 const PENALIZED: Record<number, number> = {
@@ -115,6 +115,7 @@ const KpiCard = ({
 
 // Monthly bar chart (CSS only)
 const MonthlyChart = () => {
+  const { locale } = useLanguage();
   const max = 12;
   return (
 
@@ -143,7 +144,7 @@ const MonthlyChart = () => {
         })}
       </Box>
       <Box sx={{ display: "flex", gap: { xs: 0.5, sm: 1 } }}>
-        {MONTHS_SHORT.map((m) => (
+        {locale.search.monthsShort.map((m) => (
           <Box key={m} sx={{ flex: 1, textAlign: "center" }}>
             <Typography sx={{ fontSize: ".65rem", color: "text.secondary", fontWeight: 600 }}>{m}</Typography>
           </Box>
@@ -157,6 +158,7 @@ const MonthlyChart = () => {
 const DestRow = ({ dest, index }: { dest: typeof DESTINATIONS[0]; index: number }) => {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
+  const { locale } = useLanguage();
   const status = getStatus(dest);
   const meta = STATUS_META[status];
   return (
@@ -190,7 +192,7 @@ const DestRow = ({ dest, index }: { dest: typeof DESTINATIONS[0]; index: number 
         {/* July congestion bar */}
         <Box sx={{ flex: "1 1 100px", minWidth: 100 }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.4 }}>
-            <Typography sx={{ fontSize: ".68rem", color: "text.secondary", fontWeight: 600 }}>July</Typography>
+            <Typography sx={{ fontSize: ".68rem", color: "text.secondary", fontWeight: 600 }}>{locale.search.months[6]}</Typography>
             <Typography sx={{ fontSize: ".68rem", fontWeight: 800, color: dest.julyCongestion >= 90 ? "#EF4444" : dest.julyCongestion >= 80 ? "#F59E0B" : "#6366F1" }}>
               {dest.julyCongestion}
             </Typography>
@@ -214,11 +216,11 @@ const DestRow = ({ dest, index }: { dest: typeof DESTINATIONS[0]; index: number 
           <Typography sx={{ fontSize: ".75rem", fontWeight: 900, color: sustColor(dest.sustainability) }}>
             {dest.sustainability}
           </Typography>
-          <Typography sx={{ fontSize: ".62rem", color: "text.secondary" }}>Sustain.</Typography>
+          <Typography sx={{ fontSize: ".62rem", color: "text.secondary" }}>{locale.analytics.table.sustainLabel}</Typography>
         </Box>
 
         {/* Status badge */}
-        <Chip label={meta.label} size="small" sx={{
+        <Chip label={locale.analytics.table.statusLabels[status]} size="small" sx={{
           fontWeight: 700, fontSize: ".7rem",
           color: meta.color, bgcolor: meta.bg,
           border: `1px solid ${meta.color}25`, minWidth: 110,
@@ -240,6 +242,8 @@ const peakPenalizedMonths = Object.values(PENALIZED).filter(v => v > 0).length;
 const Analytics = () => {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
+  const { locale } = useLanguage();
+  const loc = locale.analytics;
   const [filter, setFilter] = useState<StatusKey | "all">("all");
 
   const filtered = filter === "all"
@@ -294,15 +298,13 @@ const Analytics = () => {
               textTransform: "uppercase", letterSpacing: ".2em", mb: 3,
               border: "1px solid rgba(99,102,241,.2)", background: "rgba(99,102,241,.06)",
             }}>
-              Governance · Layer 5 / TUI Care Foundation
+              {loc.badge}
             </Typography>
             <Typography sx={{ color: "#FFFFFF", fontWeight: 900, lineHeight: 1.05, fontSize: { xs: "2.5rem", md: "3.5rem" }, maxWidth: 800, mb: 2.5 }}>
-              Analytics Dashboard
+              {loc.title}
             </Typography>
             <Typography sx={{ color: "rgba(255,255,255,.65)", fontSize: { xs: "1rem", md: "1.1rem" }, maxWidth: 680, lineHeight: 1.8 }}>
-              System-level governance view of all 20 monitored destinations.
-              Track demand redistribution activity, congestion risks and sustainable opportunity zones
-              across Spain's tourism network in real time.
+              {loc.subtitle}
             </Typography>
           </motion.div>
         </Container>
@@ -313,10 +315,10 @@ const Analytics = () => {
         {/* KPIs */}
         <Grid container spacing={2.5} sx={{ mb: 8 }}>
           {[
-            { value: "20", label: "Destinations Monitored", sub: "Active in Horizon's scoring engine", icon: <PlaceRoundedIcon sx={{ fontSize: 22 }} />, color: "#6366F1", delay: 0 },
-            { value: "100", label: "Traveler Profiles", sub: "Synthetic GDPR-compliant user dataset", icon: <PeopleRoundedIcon sx={{ fontSize: 22 }} />, color: "#2563EB", delay: 0.08 },
-            { value: `${peakPenalizedMonths}/12`, label: "High-Congestion Months", sub: "Months where redistribution penalties are active", icon: <TrendingDownRoundedIcon sx={{ fontSize: 22 }} />, color: "#F59E0B", delay: 0.16 },
-            { value: `${overloaded + highPressure}`, label: "Destinations at Risk", sub: "Exceeding sustainable congestion threshold in July", icon: <TrendingUpRoundedIcon sx={{ fontSize: 22 }} />, color: "#EF4444", delay: 0.24 },
+            { value: "20",                          ...loc.kpis[0], icon: <PlaceRoundedIcon sx={{ fontSize: 22 }} />,        color: "#6366F1", delay: 0 },
+            { value: "100",                         ...loc.kpis[1], icon: <PeopleRoundedIcon sx={{ fontSize: 22 }} />,        color: "#2563EB", delay: 0.08 },
+            { value: `${peakPenalizedMonths}/12`,   ...loc.kpis[2], icon: <TrendingDownRoundedIcon sx={{ fontSize: 22 }} />, color: "#F59E0B", delay: 0.16 },
+            { value: `${overloaded + highPressure}`,...loc.kpis[3], icon: <TrendingUpRoundedIcon sx={{ fontSize: 22 }} />,   color: "#EF4444", delay: 0.24 },
           ].map((k) => (
             <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={k.label}>
               <KpiCard {...k} />
@@ -331,21 +333,21 @@ const Analytics = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, ease: "easeOut" }}>
               <Box sx={{ p: { xs: 3, md: 4 }, borderRadius: "24px", border: "1px solid", borderColor: "divider", background: dark ? "linear-gradient(160deg, #1E293B 0%, #111827 100%)" : "#FAFBFF", height: "100%" }}>
                 <Typography sx={{ fontSize: ".78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".15em", color: "#6366F1", mb: 0.75 }}>
-                  Redistribution Activity
+                  {loc.redistribution.badge}
                 </Typography>
                 <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1.15rem", mb: 0.5 }}>
-                  Penalized Destinations by Month
+                  {loc.redistribution.title}
                 </Typography>
                 <Typography sx={{ fontSize: ".8rem", color: "text.secondary", mb: 3.5 }}>
-                  Number of destinations exceeding the congestion threshold ({">"} 80) — triggering −10% scoring penalty
+                  {loc.redistribution.subtitle}
                 </Typography>
                 <MonthlyChart />
 
                 <Stack direction="row" spacing={2} sx={{ mt: 3, flexWrap: "wrap", gap: 1.5 }}>
                   {[
-                    { color: "#10B981", label: "Sustainable (0 penalized)" },
-                    { color: "#F59E0B", label: "Moderate pressure (8)" },
-                    { color: "#EF4444", label: "Peak pressure (12)" },
+                    { color: "#10B981", label: loc.redistribution.legend[0] },
+                    { color: "#F59E0B", label: loc.redistribution.legend[1] },
+                    { color: "#EF4444", label: loc.redistribution.legend[2] },
                   ].map((l) => (
                     <Box key={l.label} sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                       <Box sx={{ width: 10, height: 10, borderRadius: "3px", bgcolor: l.color }} />
@@ -362,10 +364,10 @@ const Analytics = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}>
               <Box sx={{ p: { xs: 3, md: 4 }, borderRadius: "24px", border: "1px solid", borderColor: "divider", background: dark ? "linear-gradient(160deg, #1E293B 0%, #111827 100%)" : "#FAFBFF", height: "100%" }}>
                 <Typography sx={{ fontSize: ".78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".15em", color: "#6366F1", mb: 0.75 }}>
-                  Destination Status
+                  {loc.statusBreakdown.badge}
                 </Typography>
                 <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1.15rem", mb: 3.5 }}>
-                  July Peak — Distribution
+                  {loc.statusBreakdown.title}
                 </Typography>
 
                 {[
@@ -378,7 +380,7 @@ const Analytics = () => {
                   return (
                     <Box key={key} sx={{ mb: 2.5 }}>
                       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
-                        <Typography sx={{ fontSize: ".82rem", fontWeight: 700, color: "text.primary" }}>{meta.label}</Typography>
+                        <Typography sx={{ fontSize: ".82rem", fontWeight: 700, color: "text.primary" }}>{loc.table.statusLabels[key]}</Typography>
                         <Typography sx={{ fontSize: ".82rem", fontWeight: 900, color: meta.color }}>{count} / 20</Typography>
                       </Box>
                       <Box sx={{ height: 8, borderRadius: "999px", bgcolor: "rgba(128,128,128,.12)", overflow: "hidden" }}>
@@ -399,13 +401,13 @@ const Analytics = () => {
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                   <Box sx={{ p: 1.5, borderRadius: "12px", bgcolor: "rgba(16,185,129,.07)", border: "1px solid rgba(16,185,129,.15)", flex: 1, textAlign: "center" }}>
                     <SpaRoundedIcon sx={{ color: "#10B981", fontSize: 20, mb: 0.5 }} />
-                    <Typography sx={{ fontSize: ".72rem", fontWeight: 700, color: "#10B981" }}>SDG 8.9 Target</Typography>
-                    <Typography sx={{ fontSize: ".68rem", color: "text.secondary", lineHeight: 1.5 }}>5–10% demand redistribution</Typography>
+                    <Typography sx={{ fontSize: ".72rem", fontWeight: 700, color: "#10B981" }}>{loc.statusBreakdown.sdgTarget}</Typography>
+                    <Typography sx={{ fontSize: ".68rem", color: "text.secondary", lineHeight: 1.5 }}>{loc.statusBreakdown.sdgSub}</Typography>
                   </Box>
                   <Box sx={{ p: 1.5, borderRadius: "12px", bgcolor: "rgba(99,102,241,.07)", border: "1px solid rgba(99,102,241,.15)", flex: 1, textAlign: "center" }}>
                     <VerifiedRoundedIcon sx={{ color: "#6366F1", fontSize: 20, mb: 0.5 }} />
-                    <Typography sx={{ fontSize: ".72rem", fontWeight: 700, color: "#6366F1" }}>Engine Status</Typography>
-                    <Typography sx={{ fontSize: ".68rem", color: "text.secondary", lineHeight: 1.5 }}>Active · All modules online</Typography>
+                    <Typography sx={{ fontSize: ".72rem", fontWeight: 700, color: "#6366F1" }}>{loc.statusBreakdown.engineStatus}</Typography>
+                    <Typography sx={{ fontSize: ".68rem", color: "text.secondary", lineHeight: 1.5 }}>{loc.statusBreakdown.engineSub}</Typography>
                   </Box>
                 </Box>
               </Box>
@@ -417,11 +419,11 @@ const Analytics = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, ease: "easeOut" }}>
           <Box sx={{ mb: 3 }}>
             <Typography sx={{ fontSize: ".78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".15em", color: "#6366F1", mb: 0.75 }}>
-              Destination Monitor
+              {loc.table.badge}
             </Typography>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 2 }}>
               <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1.15rem" }}>
-                All 20 Destinations · July Snapshot
+                {loc.table.title}
               </Typography>
               <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
                 {(["all", "overloaded", "high", "moderate", "opportunity"] as const).map((f) => {
@@ -430,7 +432,7 @@ const Analytics = () => {
                   return (
                     <Chip
                       key={f}
-                      label={f === "all" ? "All" : meta!.label}
+                      label={f === "all" ? loc.table.allFilter : loc.table.statusLabels[f]}
                       onClick={() => setFilter(f)}
                       size="small"
                       sx={{
@@ -458,7 +460,7 @@ const Analytics = () => {
               borderBottomColor: "divider",
               flexWrap: "wrap",
             }}>
-              {["Destination", "Type", "July Congestion", "Sustainability", "Status"].map((h) => (
+              {loc.table.headers.map((h) => (
                 <Typography key={h} sx={{ fontSize: ".72rem", fontWeight: 700, color: "text.secondary", textTransform: "uppercase", letterSpacing: ".08em", flex: h === "Destination" ? "1 1 140px" : h === "July Congestion" ? "1 1 100px" : "0 0 auto", minWidth: h === "Destination" ? 160 : undefined }}>
                   {h}
                 </Typography>
@@ -471,7 +473,7 @@ const Analytics = () => {
 
             {filtered.length === 0 && (
               <Box sx={{ py: 6, textAlign: "center" }}>
-                <Typography sx={{ color: "text.secondary" }}>No destinations match this filter.</Typography>
+                <Typography sx={{ color: "text.secondary" }}>{loc.table.noResults}</Typography>
               </Box>
             )}
           </Box>

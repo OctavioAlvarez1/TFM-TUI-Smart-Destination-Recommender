@@ -3,6 +3,7 @@
 // 5-layer system architecture, project scope (in-scope Reto 2 vs out-of-scope retos),
 // and institutional context (UCM TFM + TUI Care Foundation).
 import { motion } from "framer-motion";
+import { useLanguage } from "../context/LanguageContext";
 import {
   Box,
   Container,
@@ -105,6 +106,8 @@ const LayerCard = ({
 const About = () => {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
+  const { locale } = useLanguage();
+  const loc = locale.about;
   return (
   <>
     {/* PAGE HEADER */}
@@ -138,7 +141,7 @@ const About = () => {
               background: "rgba(16,185,129,.06)",
             }}
           >
-            TFM · UCM · Future Shapers Spain
+            {loc.badge}
           </Typography>
 
           <Typography
@@ -148,7 +151,7 @@ const About = () => {
               maxWidth: 800, mb: 2.5,
             }}
           >
-            About This Project
+            {loc.title}
           </Typography>
 
           <Typography
@@ -157,9 +160,7 @@ const About = () => {
               maxWidth: 680, lineHeight: 1.8,
             }}
           >
-            Horizon is a final-year Master's thesis at Universidad Complutense de Madrid,
-            developed in collaboration with TUI Care Foundation's target 8.9 program
-            to address over-tourism in Spain through AI-powered demand redistribution.
+            {loc.subtitle}
           </Typography>
         </motion.div>
       </Container>
@@ -177,20 +178,17 @@ const About = () => {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
-              The Challenge
+              {loc.challenge.badge}
             </Typography>
             <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "text.primary", lineHeight: 1.1, mb: 3 }}>
-              Challenge 2: AI Recommendation Engine & Demand Redistribution
+              {loc.challenge.title}
             </Typography>
             <Typography sx={{ color: "text.secondary", lineHeight: 1.9, mb: 2.5, fontSize: ".95rem" }}>
-              Most recommendation systems are designed to maximize user satisfaction by showing what's most
-              likely to please you. This works well for selling more — but it causes 1,000,000 people to end
-              up visiting the same places, creating overcrowding, infrastructure saturation and economic leakage.
+              {loc.challenge.body1}
             </Typography>
             <Typography sx={{ color: "text.secondary", lineHeight: 1.9, fontSize: ".95rem" }}>
-              <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>The question Horizon answers:</Box>{" "}
-              Can we use artificial intelligence to recommend attractive experiences for the traveler
-              while simultaneously distributing tourism demand more sustainably across Spain's territory?
+              <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>{loc.challenge.question}</Box>{" "}
+              {loc.challenge.body2}
             </Typography>
           </motion.div>
         </Grid>
@@ -198,10 +196,10 @@ const About = () => {
         <Grid size={{ xs: 12, md: 6 }}>
           <Grid container spacing={2}>
             {[
-              { icon: <SchoolRoundedIcon />, title: "Universidad Complutense de Madrid", desc: "Trabajo Final de Máster — academic framework and research methodology", color: "#6366F1" },
-              { icon: <PublicRoundedIcon />, title: "TUI Care Foundation · target 8.9", desc: "Open innovation program aligned with UN SDG 8.9 — sustainable tourism and decent work", color: "#10B981" },
-              { icon: <PeopleRoundedIcon />, title: "Future Shapers Spain", desc: "TUI + Telefónica accelerator connecting universities with real tourism industry challenges", color: "#F59E0B" },
-              { icon: <PsychologyRoundedIcon />, title: "AI & Open Data", desc: "Built with FastAPI, React and public open data sources (INE, datos.gob.es) — GDPR compliant", color: "#2563EB" },
+              { icon: <SchoolRoundedIcon />, ...loc.challenge.cards[0], color: "#6366F1" },
+              { icon: <PublicRoundedIcon />, ...loc.challenge.cards[1], color: "#10B981" },
+              { icon: <PeopleRoundedIcon />, ...loc.challenge.cards[2], color: "#F59E0B" },
+              { icon: <PsychologyRoundedIcon />, ...loc.challenge.cards[3], color: "#2563EB" },
             ].map((card, i) => (
               <Grid size={{ xs: 12, sm: 6 }} key={card.title}>
                 <motion.div
@@ -246,15 +244,13 @@ const About = () => {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
-              AI Scoring Formula
+              {loc.scoring.badge}
             </Typography>
             <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.2rem" }, fontWeight: 800, color: "text.primary", lineHeight: 1.1, mb: 2.5 }}>
-              How Horizon Scores Each Destination
+              {loc.scoring.title}
             </Typography>
             <Typography sx={{ color: "text.secondary", lineHeight: 1.9, mb: 3, fontSize: ".9rem" }}>
-              Every recommendation is computed by combining four independent scoring modules,
-              each measuring a different dimension of destination quality. Sustainability criteria
-              receive a significant weight to incentivize greener choices.
+              {loc.scoring.subtitle}
             </Typography>
 
             {/* Formula box */}
@@ -290,21 +286,21 @@ const About = () => {
           >
             <Box sx={{ p: { xs: 3, md: 4 }, borderRadius: "24px", border: "1px solid", borderColor: "divider", background: dark ? "linear-gradient(160deg, #1E293B 0%, #111827 100%)" : "#FAFBFF" }}>
               <Typography sx={{ fontWeight: 700, color: "text.primary", mb: 3, fontSize: "1rem" }}>
-                Score Weight Distribution
+                {loc.scoring.weightLabel}
               </Typography>
-              <FormulaBar label="Preference Match" weight={0.45} color="#6366F1" delay={0} />
-              <FormulaBar label="Sustainability Score" weight={0.25} color="#10B981" delay={0.1} />
-              <FormulaBar label="Popularity Score" weight={0.15} color="#F59E0B" delay={0.2} />
-              <FormulaBar label="Congestion Adjustment" weight={0.15} color="#EF4444" delay={0.3} />
+              <FormulaBar label={loc.scoring.formulaLabels.preference} weight={0.45} color="#6366F1" delay={0} />
+              <FormulaBar label={loc.scoring.formulaLabels.sustainability} weight={0.25} color="#10B981" delay={0.1} />
+              <FormulaBar label={loc.scoring.formulaLabels.popularity} weight={0.15} color="#F59E0B" delay={0.2} />
+              <FormulaBar label={loc.scoring.formulaLabels.congestion} weight={0.15} color="#EF4444" delay={0.3} />
 
               <Divider sx={{ my: 3 }} />
 
               <Stack spacing={1.5}>
                 {[
-                  { icon: <BarChartRoundedIcon sx={{ fontSize: 16 }} />, text: "Preference: matches user's travel style, budget and interests against destination attributes", color: "#6366F1" },
-                  { icon: <SpaRoundedIcon sx={{ fontSize: 16 }} />, text: "Sustainability: carbon footprint, local business support, public transport, ESG overall score", color: "#10B981" },
-                  { icon: <PeopleRoundedIcon sx={{ fontSize: 16 }} />, text: "Popularity: 70% booking volume + 30% rating score — ensures recommended quality", color: "#F59E0B" },
-                  { icon: <PeopleRoundedIcon sx={{ fontSize: 16 }} />, text: "Congestion: monthly over-tourism index — penalizes saturated destinations in peak periods", color: "#EF4444" },
+                  { icon: <BarChartRoundedIcon sx={{ fontSize: 16 }} />, text: loc.scoring.descriptions[0], color: "#6366F1" },
+                  { icon: <SpaRoundedIcon sx={{ fontSize: 16 }} />, text: loc.scoring.descriptions[1], color: "#10B981" },
+                  { icon: <PeopleRoundedIcon sx={{ fontSize: 16 }} />, text: loc.scoring.descriptions[2], color: "#F59E0B" },
+                  { icon: <PeopleRoundedIcon sx={{ fontSize: 16 }} />, text: loc.scoring.descriptions[3], color: "#EF4444" },
                 ].map((item, i) => (
                   <Box key={i} sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
                     <Box sx={{ color: item.color, mt: 0.2, flexShrink: 0 }}>{item.icon}</Box>
@@ -327,24 +323,23 @@ const About = () => {
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
-          System Architecture
+          {loc.architecture.badge}
         </Typography>
         <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "text.primary", lineHeight: 1.1, mb: 1.5 }}>
-          5-Layer Pipeline
+          {loc.architecture.title}
         </Typography>
         <Typography sx={{ color: "text.secondary", fontSize: ".95rem", lineHeight: 1.8, maxWidth: 680, mb: 6 }}>
-          Horizon is built as a layered system, each layer handling a specific responsibility —
-          from raw data ingestion to governance and monitoring.
+          {loc.architecture.subtitle}
         </Typography>
       </motion.div>
 
       <Grid container spacing={2}>
         {[
-          { num: "L1", title: "Unified Ingestion (Foundation)", desc: "Consolidates open data sources, synthetic datasets, IoT sensors and demand signals into a unified data layer.", color: "#6366F1", delay: 0 },
-          { num: "L2", title: "Prediction Engine (Intelligence)", desc: "Historical booking patterns, sentiment analysis, seasonality modeling. Our FastAPI recommendation engine lives here.", color: "#10B981", delay: 0.08 },
-          { num: "L3", title: "Intervention Triggers (Action)", desc: "Automation layer that decides when to activate alternative recommendations based on real-time congestion thresholds.", color: "#F59E0B", delay: 0.16 },
-          { num: "L4", title: "Personalization (Interface)", desc: "'Invisible interface' — conversational flow using user context. Recommends alternatives without saying 'this destination is full'.", color: "#2563EB", delay: 0.24 },
-          { num: "L5", title: "Governance (Control Panel)", desc: "Monitoring dashboard for regional authorities and sustainability teams — tracks demand redistribution and congestion KPIs.", color: "#EF4444", delay: 0.32 },
+          { ...loc.architecture.layers[0], color: "#6366F1", delay: 0 },
+          { ...loc.architecture.layers[1], color: "#10B981", delay: 0.08 },
+          { ...loc.architecture.layers[2], color: "#F59E0B", delay: 0.16 },
+          { ...loc.architecture.layers[3], color: "#2563EB", delay: 0.24 },
+          { ...loc.architecture.layers[4], color: "#EF4444", delay: 0.32 },
         ].map((l) => (
           <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={l.num}>
             <LayerCard {...l} />
@@ -361,13 +356,13 @@ const About = () => {
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <Typography sx={{ fontSize: ".82rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".2em", color: "#2563EB", mb: 1 }}>
-          Project Scope
+          {loc.scope.badge}
         </Typography>
         <Typography sx={{ fontSize: { xs: "1.8rem", md: "2.4rem" }, fontWeight: 800, color: "text.primary", lineHeight: 1.1, mb: 1.5 }}>
-          What This TFM Covers — and What It Doesn't
+          {loc.scope.title}
         </Typography>
         <Typography sx={{ color: "text.secondary", fontSize: ".95rem", lineHeight: 1.8, maxWidth: 720, mb: 6 }}>
-          Future Shapers Spain is a multi-reto challenge. Horizon is scoped to <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>Reto 2</Box> — AI recommendation engine and demand redistribution. Other retos are handled by separate teams and are out of scope for this project.
+          {loc.scope.subtitlePrefix} <Box component="span" sx={{ fontWeight: 700, color: "text.primary" }}>Reto 2</Box> {loc.scope.subtitleSuffix}
         </Typography>
       </motion.div>
 
@@ -386,20 +381,11 @@ const About = () => {
                   <CheckCircleOutlineRoundedIcon sx={{ color: "#10B981", fontSize: 20 }} />
                 </Box>
                 <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1rem" }}>
-                  In Scope — Reto 2
+                  {loc.scope.inScopeTitle}
                 </Typography>
               </Box>
               <Stack spacing={1.5}>
-                {[
-                  "AI-powered destination recommendation engine (FastAPI + scoring pipeline)",
-                  "Demand redistribution via congestion penalties and sustainability weights",
-                  "Low-season boost — best months to visit based on INE congestion data",
-                  "Open data integration: INE EOH (hotel travelers), FRONTUR (international), AEMET (climate normals)",
-                  "Interactive georreferenced map with real-time month/congestion overlay",
-                  "User profile matching (travel style, budget, sustainability preference)",
-                  "Explainability layer — human-readable reasoning for each recommendation",
-                  "React dashboard with sustainability KPIs and congestion heatmap",
-                ].map((item, i) => (
+                {loc.scope.inScopeItems.map((item, i) => (
                   <Box key={i} sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
                     <CheckCircleOutlineRoundedIcon sx={{ fontSize: 15, color: "#10B981", mt: 0.2, flexShrink: 0 }} />
                     <Typography sx={{ fontSize: ".82rem", color: "text.secondary", lineHeight: 1.65 }}>{item}</Typography>
@@ -424,16 +410,11 @@ const About = () => {
                   <RadioButtonUncheckedRoundedIcon sx={{ color: "text.secondary", fontSize: 20 }} />
                 </Box>
                 <Typography sx={{ fontWeight: 800, color: "text.primary", fontSize: "1rem" }}>
-                  Out of Scope — Other Retos
+                  {loc.scope.outScopeTitle}
                 </Typography>
               </Box>
               <Stack spacing={1.5}>
-                {[
-                  { text: "Sentiment analysis & traveler review processing — scoped to Reto 1 (NLP & social listening)", reto: "Reto 1" },
-                  { text: "Transport time & multimodal route optimization — scoped to Reto 4 (mobility layer)", reto: "Reto 4" },
-                  { text: "Real-time IoT sensor feeds and live crowd detection — infrastructure handled by Reto 3", reto: "Reto 3" },
-                  { text: "Conversational booking assistant & chatbot interface — Reto 4 personalization layer", reto: "Reto 4" },
-                ].map((item, i) => (
+                {loc.scope.outScopeItems.map((item, i) => (
                   <Box key={i} sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
                     <RadioButtonUncheckedRoundedIcon sx={{ fontSize: 15, color: "#94A3B8", mt: 0.2, flexShrink: 0 }} />
                     <Box>
@@ -445,7 +426,7 @@ const About = () => {
               </Stack>
               <Box sx={{ mt: 3, p: 2, borderRadius: "12px", bgcolor: "rgba(37,99,235,.04)", border: "1px solid rgba(37,99,235,.10)" }}>
                 <Typography sx={{ fontSize: ".78rem", color: "#2563EB", lineHeight: 1.7 }}>
-                  These are listed in the TFM document as <Box component="span" sx={{ fontWeight: 700 }}>desirable future data sources</Box>, not as deliverables of this reto. Horizon's scope is intentionally focused on Reto 2 to deliver a complete, production-ready AI engine.
+                  {loc.scope.disclaimer} <Box component="span" sx={{ fontWeight: 700 }}>{loc.scope.disclaimerBold}</Box>{loc.scope.disclaimerSuffix}
                 </Typography>
               </Box>
             </Box>

@@ -2,8 +2,10 @@ import {
   Box,
   Typography,
 } from "@mui/material";
+import { useLanguage } from "../../context/LanguageContext";
 
 const EmptyState = () => {
+  const { locale } = useLanguage();
   return (
     <Box
       sx={{
@@ -25,8 +27,7 @@ const EmptyState = () => {
         gutterBottom
         sx={{ fontWeight: 600 }}
       >
-        Ready to Discover Sustainable
-        Destinations?
+        {locale.empty.title}
       </Typography>
 
       <Typography
@@ -37,10 +38,7 @@ const EmptyState = () => {
           mx: "auto",
         }}
       >
-        Generate personalized destination
-        recommendations powered by artificial
-        intelligence, sustainability metrics and
-        congestion-aware travel intelligence.
+        {locale.empty.subtitle}
       </Typography>
     </Box>
   );
