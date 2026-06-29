@@ -1,17 +1,28 @@
 # TUI Smart Destination Recommender – Project Context
 
+## New Additions (Latest Release)
+
+The following features have been added since the initial implementation phase:
+
+- **Docker Containerization**: `Dockerfile.backend`, `Dockerfile.frontend` (Node + Nginx), `nginx.conf`, `docker-compose.yml`, `.dockerignore`. Run the full stack with `docker compose up --build`. Backend on port 8000, frontend on port 80.
+- **RAG Chatbot**: `src/api/rag.py` — FAISS + OpenAI `text-embedding-3-small` + GPT-4o-mini. Endpoint `POST /chat`. Requires `OPENAI_API_KEY` env var; graceful fallback message if missing.
+- **ChatWidget**: `frontend/src/components/chat/ChatWidget.tsx` — floating Fab button with a Drawer conversation UI, present on all pages.
+- **TFM Report**: `docs/TFM_HORIZON.md` + `docs/TFM_HORIZON.pdf` — full academic report for the TFM submission.
+
+---
+
 ## Project Overview
 
-This project is being developed as a complete AI-powered tourism recommendation platform for the TUI Smart Destination Challenge.
+This project is a complete AI-powered tourism recommendation platform for the TUI Smart Destination Challenge.
 
-The solution aims to recommend sustainable destinations while balancing:
+The solution recommends sustainable destinations while balancing:
 
 * User preferences
 * Sustainability performance
 * Destination popularity
 * Tourism congestion management
 
-The project follows an enterprise architecture approach and is being built incrementally from design through implementation.
+The project follows an enterprise architecture approach and has been built incrementally from design through full-stack deployment.
 
 ---
 
@@ -47,9 +58,15 @@ Main project folders:
 
 ```text
 data/
+docs/
+frontend/
 notebooks/
 src/
 tests/
+docker-compose.yml
+Dockerfile.backend
+Dockerfile.frontend
+nginx.conf
 ```
 
 ---
@@ -461,6 +478,136 @@ Current output:
 
 ---
 
+## Explainability Engine
+
+File:
+
+```text
+src/recommendation/explainability.py
+```
+
+Generates plain-language explanation strings for each recommendation, surfacing the dominant scoring factors to the user.
+
+Status: **Completed**
+
+---
+
+## Confidence Score Engine
+
+File:
+
+```text
+src/recommendation/confidence.py
+```
+
+Formula: `0.50 × preference + 0.30 × popularity + 0.20 × sustainability`
+
+Output: per-recommendation confidence score (0–100).
+
+Status: **Completed**
+
+---
+
+## FastAPI REST API
+
+Files:
+
+```text
+src/api/app.py
+src/api/models.py
+```
+
+Endpoints:
+
+* `POST /recommendations` — ranked destination list for a user/month
+* `GET /health` — liveness check
+* `GET /users/:id` — user profile lookup
+* `POST /chat` — RAG-powered chatbot (see below)
+
+Status: **Completed**
+
+---
+
+## RAG Chatbot
+
+File:
+
+```text
+src/api/rag.py
+```
+
+Technology: FAISS IndexFlatIP + OpenAI `text-embedding-3-small` + GPT-4o-mini.
+
+Endpoint: `POST /chat`
+
+Behavior: On first request, builds an in-memory FAISS vector store from `destinations.csv`, `sustainability_scores.csv`, and `congestion_scores.csv`. Subsequent queries use similarity search to retrieve context and generate answers via GPT-4o-mini.
+
+Requires: `OPENAI_API_KEY` environment variable. If missing, returns a graceful fallback message.
+
+Status: **Completed**
+
+---
+
+## Streamlit Dashboard
+
+File:
+
+```text
+src/dashboard/app.py
+```
+
+Separate process (read-only). Start with:
+
+```bash
+streamlit run src/dashboard/app.py
+```
+
+Status: **Completed**
+
+---
+
+## React SPA Frontend
+
+Directory:
+
+```text
+frontend/
+```
+
+Stack: React 19 · TypeScript · Vite · Material UI v9 · Leaflet
+
+Pages: Home, Insights, Analytics, About
+
+Key components: ChatWidget (RAG chat), DestinationMap (Leaflet), RecommendationCard, KpiDashboard
+
+Status: **Completed**
+
+---
+
+## Docker Deployment
+
+Files:
+
+```text
+Dockerfile.backend
+Dockerfile.frontend
+nginx.conf
+docker-compose.yml
+.dockerignore
+```
+
+Run the full stack:
+
+```bash
+docker compose up --build
+```
+
+Backend available at `http://localhost:8000`. Frontend available at `http://localhost:80`.
+
+Status: **Completed**
+
+---
+
 # Tests Implemented
 
 Files:
@@ -493,48 +640,24 @@ Completed:
 * Congestion Engine
 * Scoring Engine
 * Recommendation Engine MVP
-
-Partially completed:
-
-* Explainability Framework (design only)
-
-Not implemented yet:
-
 * Explainability Engine
 * Confidence Score Engine
-* recommendation_demo.ipynb
-* Streamlit Dashboard MVP
-* Executive KPI Dashboard
-* Packaging and deployment assets
-
----
-
-# Next Development Phase
-
-Before continuing implementation:
-
-1. Audit repository structure.
-2. Compare implementation against Documents 1–15.
-3. Identify gaps between design and implementation.
-4. Validate datasets and scoring logic.
-5. Continue with:
-
-```text
-Explainability Engine
-Confidence Score Engine
-Recommendation Demo Notebook
-Streamlit Dashboard MVP
-```
+* Streamlit Dashboard
+* FastAPI REST API
+* React SPA Frontend
+* Docker containerization
+* RAG Chatbot (`POST /chat`)
+* TFM Report (`docs/TFM_HORIZON.md` + `docs/TFM_HORIZON.pdf`)
 
 ---
 
 # Important Notes
 
-The next chat should first perform a complete project audit before implementing additional features.
+The full stack is deployed and functional. All design documents (01–15) have been implemented.
 
-The goal is to ensure:
+The goal has been achieved:
 
 * Full consistency between documentation and code.
 * No divergence from the original architecture.
 * Enterprise-grade project quality.
-* Readiness for final presentation and submission.
+* Readiness for final presentation and TFM submission.

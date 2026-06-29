@@ -1,22 +1,19 @@
 """
 FastAPI application entry point.
-Exposes POST /recommendations and GET /health endpoints.
+Exposes POST /recommendations, GET /health, GET /users/:id, and POST /chat endpoints.
 CORS configured for localhost:5173 (React frontend).
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from fastapi import HTTPException
-
 from src.api.models import (
-    RecommendationRequest
+    RecommendationRequest,
+    ChatRequest,
+    ChatResponse,
 )
 
-from src.recommendation.recommendation_engine import (
-    RecommendationEngine
-)
-
+from src.recommendation.recommendation_engine import RecommendationEngine
 from src.data.data_loader import DataLoader
 
 app = FastAPI(
@@ -31,7 +28,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173"
+        "http://localhost:5173",   # Vite dev server
+        "http://localhost",        # Docker nginx (port 80)
+        "http://localhost:80",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -39,11 +38,28 @@ app.add_middleware(
 )
 
 # =====================================================
-# Recommendation Engine
+# Eagerly-initialised singletons
 # =====================================================
 
 engine = RecommendationEngine()
 _users_df = DataLoader.load_users()
+
+# =====================================================
+# Lazy RAG singleton — built only on first /chat call
+# because the FAISS index + OpenAI embedding batch is slow.
+# =====================================================
+
+_rag = None  # type: ignore[assignment]
+
+
+def _get_rag():
+    """Return the TourismRAG singleton, building it on first access."""
+    global _rag
+    if _rag is None:
+        from src.api.rag import TourismRAG  # local import keeps startup fast
+        _rag = TourismRAG()
+    return _rag
+
 
 # =====================================================
 # Endpoints
@@ -51,58 +67,33 @@ _users_df = DataLoader.load_users()
 
 @app.get("/")
 def root():
-    """
-    Root endpoint.
-    """
-
+    """Root endpoint."""
     return {
-        "application":
-            "TUI Smart Destination Recommender",
-
-        "status":
-            "running"
+        "application": "TUI Smart Destination Recommender",
+        "status": "running",
     }
 
 
 @app.get("/health")
 def health():
-    """
-    Health check endpoint.
-    """
-
-    return {
-        "status":
-            "ok"
-    }
+    """Health check endpoint."""
+    return {"status": "ok"}
 
 
 @app.post("/recommendations")
-def get_recommendations(
-    request: RecommendationRequest
-):
-    """
-    Generate recommendations.
-    """
-
-    recommendations = (
-        engine.recommend(
-            user_id=request.user_id,
-            month=request.month,
-            top_n=request.top_n
-        )
+def get_recommendations(request: RecommendationRequest):
+    """Generate destination recommendations for a user."""
+    recommendations = engine.recommend(
+        user_id=request.user_id,
+        month=request.month,
+        top_n=request.top_n,
     )
-
-    return {
-        "recommendations":
-            recommendations
-    }
+    return {"recommendations": recommendations}
 
 
 @app.get("/users/{user_id}")
 def get_user(user_id: str):
-    """
-    Return profile for a single user.
-    """
+    """Return the profile for a single user."""
     row = _users_df[_users_df["user_id"] == user_id]
     if row.empty:
         raise HTTPException(status_code=404, detail=f"User {user_id} not found")
@@ -119,7 +110,23 @@ def get_user(user_id: str):
 
 @app.get("/users")
 def list_users():
-    """
-    Return all user IDs.
-    """
+    """Return all user IDs."""
     return {"user_ids": _users_df["user_id"].tolist()}
+
+
+@app.post("/chat", response_model=ChatResponse)
+def chat(request: ChatRequest) -> ChatResponse:
+    """
+    RAG-powered chat endpoint.
+
+    Accepts the latest user message plus prior conversation history,
+    retrieves relevant destination context via FAISS, and returns a
+    GPT-4o-mini generated reply.
+
+    If OPENAI_API_KEY is not configured the RAG module returns a friendly
+    fallback message instead of raising an error.
+    """
+    rag = _get_rag()
+    history_dicts = [msg.model_dump() for msg in request.history]
+    reply = rag.chat(history=history_dicts, user_message=request.message)
+    return ChatResponse(reply=reply)

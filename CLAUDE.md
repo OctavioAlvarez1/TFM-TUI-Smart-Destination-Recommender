@@ -32,6 +32,9 @@ pip install -r requirements.txt
 
 # Refresh open data from INE/FRONTUR APIs
 python data/scripts/fetch_open_data.py
+
+# Run full stack with Docker (backend on :8000, frontend on :80)
+docker compose up --build
 ```
 
 ### Frontend
@@ -54,8 +57,9 @@ Independent scoring modules orchestrated by `RecommendationEngine`:
 ```
 src/
 ├── api/
-│   ├── app.py              # FastAPI entry point — POST /recommendations, GET /health, GET /users/:id
-│   └── models.py           # Pydantic request/response models
+│   ├── app.py              # FastAPI entry point — POST /recommendations, GET /health, GET /users/:id, POST /chat
+│   ├── models.py           # Pydantic request/response models
+│   └── rag.py              # RAG chatbot — FAISS + text-embedding-3-small + GPT-4o-mini; POST /chat
 ├── config/settings.py      # Absolute paths to all 5 CSVs (pathlib — no hardcoding)
 ├── data/data_loader.py     # Centralised CSV → DataFrame access layer
 ├── recommendation/
@@ -110,6 +114,7 @@ frontend/src/
 │   ├── recommendations/    # RecommendationCard, Grid, Badges (Sustainability/Confidence/Congestion)
 │   ├── map/DestinationMap.tsx  # Leaflet map — switches tile layer between light_all/dark_all
 │   ├── dashboard/KpiDashboard.tsx  # Summary metrics after a search
+│   ├── chat/ChatWidget.tsx # Floating Fab + Drawer RAG chat UI — present on all pages
 │   ├── layout/             # Header, Footer, MainLayout, MegaMenu
 │   └── common/             # ThemeToggle, LoadingSpinner, EmptyState, ErrorMessage
 ├── theme/
@@ -146,6 +151,12 @@ All color values must use MUI theme tokens in `sx` props (not hardcoded hex):
 ### State Sharing
 
 `activeMonth` and `recommendations` live in `App.tsx` and flow down as props. The Insights page uses both to highlight the user's searched destinations on the map and heatmap.
+
+### RAG Chatbot — POST /chat
+
+`src/api/rag.py` implements a retrieval-augmented generation chatbot. On the first `/chat` request it builds a FAISS `IndexFlatIP` from `destinations.csv`, `sustainability_scores.csv`, and `congestion_scores.csv` (one rich-text document per destination, embedded via `text-embedding-3-small`). Queries retrieve top-k documents and pass them as context to GPT-4o-mini.
+
+`OPENAI_API_KEY` must be set as an environment variable before starting the server. If missing, the endpoint returns a graceful fallback message without raising an exception.
 
 ### AEMET API Key
 

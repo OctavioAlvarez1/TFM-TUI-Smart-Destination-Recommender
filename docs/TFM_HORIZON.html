@@ -1,0 +1,2572 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Horizon — TUI Smart Destination Recommender</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Horizon — TUI Smart Destination Recommender</h1>
+</header>
+<h1
+id="horizon-sistema-inteligente-de-recomendación-de-destinos-turísticos-sostenibles-en-españa">HORIZON:
+Sistema Inteligente de Recomendación de Destinos Turísticos Sostenibles
+en España</h1>
+<p><strong>Trabajo Fin de Máster</strong> Máster Universitario en Data
+Science y Big Data Universidad Complutense de Madrid</p>
+<hr />
+<p><strong>Autor:</strong> Octavio Álvarez <strong>Correo:</strong>
+octavio.alvarez@accenture.com <strong>Tutor académico:</strong> TUI Care
+Foundation — Future Shapers Spain <strong>Convocatoria:</strong> Curso
+académico 2025–2026</p>
+<hr />
+<h2 id="resumen">Resumen</h2>
+<p>El sobreturismo en España representa uno de los principales desafíos
+medioambientales y sociales de la última década. En 2024, España recibió
+un récord de 93,8 millones de turistas internacionales, de los cuales
+aproximadamente el 85% concentró su visita en apenas el 10% del
+territorio nacional. Esta hipersaturación provoca degradación
+medioambiental, incremento desmedido del coste de vida y una pérdida
+progresiva de identidad cultural en los destinos más visitados, mientras
+que cientos de localidades con un enorme potencial turístico permanecen
+infravaloradas y subutilizadas.</p>
+<p><strong>Horizon</strong> es un sistema full-stack de inteligencia
+artificial diseñado para abordar este problema de raíz: recomendar
+destinos turísticos sostenibles y menos saturados en España,
+personalizados según el perfil del viajero y el mes de viaje. El sistema
+integra un motor de recomendación basado en filtrado por contenido con
+fórmula de scoring multivariable, un sistema RAG
+(<em>Retrieval-Augmented Generation</em>) conversacional, una API REST
+construida sobre FastAPI, y una interfaz de usuario reactiva
+desarrollada con React 19 y Material UI v9.</p>
+<p>La fórmula de scoring pondera cuatro dimensiones: preferencia del
+usuario (45%), sostenibilidad (25%), popularidad (15%) y congestión
+(15%), con reglas de negocio multiplicativas que penalizan destinos
+superpoblados y premian aquellos con bajo impacto medioambiental. El
+sistema opera sobre cinco conjuntos de datos —sintéticos y de fuentes
+abiertas del INE y FRONTUR— y se distribuye en contenedores Docker para
+garantizar portabilidad y reproducibilidad.</p>
+<p>Los resultados demuestran la viabilidad técnica de aplicar criterios
+de redistribución turística mediante sistemas de recomendación guiados
+por datos, contribuyendo al cumplimiento de los Objetivos de Desarrollo
+Sostenible (ODS) 8, 11 y 12 de Naciones Unidas.</p>
+<p><strong>Palabras clave:</strong> sistemas de recomendación, turismo
+sostenible, sobreturismo, scoring multivariable, RAG, FastAPI, React,
+España.</p>
+<hr />
+<h2 id="abstract">Abstract</h2>
+<p>Over-tourism in Spain represents one of the most pressing
+environmental and social challenges of the past decade. In 2024, Spain
+welcomed a record 93.8 million international tourists, with
+approximately 85% concentrating their visits in just 10% of the national
+territory. This hypersaturation triggers environmental degradation,
+excessive cost-of-living increases, and progressive cultural erosion in
+top destinations, while hundreds of localities with remarkable tourism
+potential remain undervalued and underutilised.</p>
+<p><strong>Horizon</strong> is a full-stack artificial intelligence
+system designed to address this problem at its root: recommending
+sustainable, less-saturated Spanish destinations personalised by
+traveller profile and travel month. The system integrates a
+content-based filtering recommendation engine with a multivariable
+scoring formula, a conversational Retrieval-Augmented Generation (RAG)
+system, a REST API built on FastAPI, and a reactive user interface
+developed with React 19 and Material UI v9.</p>
+<p>The scoring formula weights four dimensions: user preference (45%),
+sustainability (25%), popularity (15%), and congestion (15%), with
+multiplicative business rules that penalise overcrowded destinations and
+reward those with low environmental impact. The system operates on five
+datasets —synthetic and sourced from Spain’s INE and FRONTUR open data—
+and is distributed as Docker containers to guarantee portability and
+reproducibility.</p>
+<p>Results demonstrate the technical viability of applying tourist
+redistribution criteria through data-driven recommendation systems,
+contributing to the fulfilment of the United Nations Sustainable
+Development Goals (SDGs) 8, 11, and 12.</p>
+<p><strong>Keywords:</strong> recommendation systems, sustainable
+tourism, over-tourism, multivariable scoring, RAG, FastAPI, React,
+Spain.</p>
+<hr />
+<h2 id="índice-general">Índice general</h2>
+<ol type="1">
+<li><a href="#1-introducción">Introducción</a>
+<ul>
+<li>1.1 Contexto y motivación</li>
+<li>1.2 Objetivos del trabajo</li>
+</ul></li>
+<li><a href="#2-marco-conceptual">Marco conceptual</a>
+<ul>
+<li>2.1 Sistemas de recomendación</li>
+<li>2.2 Turismo sostenible y métricas de congestión</li>
+<li>2.3 Retrieval-Augmented Generation (RAG)</li>
+<li>2.4 Visualización de datos geoespaciales</li>
+</ul></li>
+<li><a href="#3-descripción-de-datos">Descripción de datos</a>
+<ul>
+<li>3.1 Datos sintéticos de TUI</li>
+<li>3.2 Enriquecimiento con OpenData</li>
+<li>3.3 Limpieza y preparación</li>
+</ul></li>
+<li><a href="#4-motor-de-recomendación">Motor de recomendación</a>
+<ul>
+<li>4.1 Arquitectura del motor</li>
+<li>4.2 Fórmula de scoring</li>
+<li>4.3 Reglas de negocio</li>
+<li>4.4 Explicabilidad de las recomendaciones</li>
+</ul></li>
+<li><a href="#5-sistema-rag-conversacional">Sistema RAG
+conversacional</a>
+<ul>
+<li>5.1 Embeddings y almacenamiento vectorial</li>
+<li>5.2 Fase de recuperación</li>
+<li>5.3 Fase de generación</li>
+<li>5.4 Integración con la API</li>
+</ul></li>
+<li><a href="#6-arquitectura-técnica">Arquitectura técnica</a>
+<ul>
+<li>6.1 Backend</li>
+<li>6.2 Frontend</li>
+<li>6.3 API REST</li>
+</ul></li>
+<li><a href="#7-despliegue-y-productivización">Despliegue y
+productivización</a>
+<ul>
+<li>7.1 Contenerización con Docker</li>
+<li>7.2 Variables de entorno y seguridad</li>
+<li>7.3 Escalabilidad y próximos pasos cloud</li>
+</ul></li>
+<li><a href="#8-resultados-y-validación">Resultados y validación</a>
+<ul>
+<li>8.1 Validación del motor de scoring</li>
+<li>8.2 Casos de uso demostrados</li>
+<li>8.3 Análisis de impacto en redistribución turística</li>
+</ul></li>
+<li><a href="#9-conclusiones">Conclusiones</a>
+<ul>
+<li>9.1 Conclusiones principales</li>
+<li>9.2 Limitaciones</li>
+<li>9.3 Líneas futuras</li>
+</ul></li>
+<li><a href="#10-bibliografía">Bibliografía</a></li>
+<li><a href="#11-anexos">Anexos</a>
+<ul>
+<li>Anexo A: Tabla de endpoints de la API</li>
+<li>Anexo B: Esquemas de los CSV</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="introducción">1. Introducción</h2>
+<h3 id="contexto-y-motivación">1.1 Contexto y motivación</h3>
+<p>El turismo es uno de los motores económicos más importantes de
+España. Según el Instituto Nacional de Estadística (INE) y FRONTUR, en
+2024 España batió su propio récord histórico al recibir <strong>93,8
+millones de turistas internacionales</strong>, consolidándose como el
+segundo destino más visitado del mundo por detrás de Francia. El sector
+genera aproximadamente el 12,4% del PIB nacional y emplea a más de 2,6
+millones de personas directamente.</p>
+<p>Sin embargo, este éxito cuantitativo oculta una profunda disfunción
+estructural: la concentración geográfica. Estudios de la Secretaría de
+Estado de Turismo y del Consejo Superior de Investigaciones Científicas
+(CSIC) estiman que <strong>el 85% de los turistas internacionales que
+visitan España se concentran en apenas el 10% del territorio</strong>,
+fundamentalmente en cuatro grandes focos: las Islas Baleares (Mallorca,
+Ibiza), las Islas Canarias (Tenerife, Gran Canaria), la costa
+mediterránea (Costa del Sol, Costa Blanca, Cataluña) y las dos
+principales ciudades (Madrid y Barcelona).</p>
+<p>Esta hiperconcentración turística genera consecuencias negativas bien
+documentadas:</p>
+<ul>
+<li><strong>Degradación medioambiental</strong>: sobreexplotación de
+recursos hídricos, deterioro de ecosistemas frágiles y producción masiva
+de residuos sólidos en periodos pico.</li>
+<li><strong>Tensión social</strong>: incremento acelerado del precio de
+la vivienda, gentrificación y pérdida de identidad cultural en los
+barrios históricos de Barcelona, Palma y Málaga.</li>
+<li><strong>Deterioro de la experiencia turística</strong>: saturación
+de playas, monumentos y servicios públicos durante los meses de verano,
+lo que paradójicamente reduce la calidad percibida por el propio
+turista.</li>
+<li><strong>Subdesarrollo de territorios con potencial</strong>:
+mientras los destinos saturados colapsan, provincias como Asturias,
+Castilla-La Mancha, Extremadura o el interior de Galicia registran tasas
+de ocupación hotelera por debajo del 35%, con un potencial
+medioambiental y cultural desaprovechado.</li>
+</ul>
+<p>El reto planteado por <strong>TUI Care Foundation</strong> a través
+del programa <em>Future Shapers Spain</em> interpela directamente a esta
+problemática: ¿es posible diseñar un sistema de inteligencia artificial
+que, partiendo del perfil individual del viajero, recomiende destinos
+sostenibles y menos saturados como alternativa atractiva y argumentada
+frente a los destinos de masas habituales?</p>
+<p><strong>Horizon</strong> nace como respuesta a ese reto. El nombre
+hace referencia a la idea de ampliar el horizonte del viajero más allá
+de los destinos conocidos y masificados, ofreciendo alternativas de
+valor respaldadas por datos reales de sostenibilidad y congestión
+turística.</p>
+<p>El proyecto se alinea con tres Objetivos de Desarrollo Sostenible
+(ODS) de la Agenda 2030 de Naciones Unidas: - <strong>ODS 8</strong>
+(Trabajo decente y crecimiento económico): distribuir la actividad
+turística para generar empleo en territorios menos desarrollados. -
+<strong>ODS 11</strong> (Ciudades y comunidades sostenibles): reducir la
+presión turística sobre los núcleos urbanos y costeros más saturados. -
+<strong>ODS 12</strong> (Producción y consumo responsables): fomentar el
+turismo de bajo impacto y el respeto por los recursos locales.</p>
+<h3 id="objetivos-del-trabajo">1.2 Objetivos del trabajo</h3>
+<p>Este Trabajo Fin de Máster persigue los siguientes objetivos
+específicos:</p>
+<p><strong>Objetivo principal:</strong> Diseñar, implementar y validar
+un sistema full-stack de recomendación de destinos turísticos en España
+que integre criterios de sostenibilidad y redistribución de la demanda
+como elementos diferenciadores frente a los sistemas de recomendación
+convencionales basados únicamente en popularidad o precio.</p>
+<p><strong>Objetivos específicos:</strong></p>
+<ol type="1">
+<li><p>Diseñar una <strong>fórmula de scoring multivariable</strong> que
+pondere de forma explícita y justificada las dimensiones de preferencia
+del usuario, sostenibilidad medioambiental, popularidad relativa y
+congestión mensual.</p></li>
+<li><p>Construir un <strong>motor de recomendación modular</strong> en
+Python que separe responsabilidades en submódulos independientes y
+testeables (popularidad, sostenibilidad, congestión, confianza,
+explicabilidad).</p></li>
+<li><p>Integrar <strong>datos abiertos de fuentes
+institucionales</strong> (INE-EOH y FRONTUR) para enriquecer el análisis
+de congestión y flujos turísticos internacionales.</p></li>
+<li><p>Desarrollar un <strong>sistema RAG conversacional</strong> que
+permita al usuario interactuar en lenguaje natural con el sistema de
+recomendación, utilizando FAISS como almacén vectorial y modelos de
+OpenAI para embeddings y generación.</p></li>
+<li><p>Exponer el motor de recomendación a través de una <strong>API
+REST</strong> construida con FastAPI, con documentación automática
+OpenAPI.</p></li>
+<li><p>Desarrollar una <strong>interfaz de usuario</strong> moderna y
+accesible en React 19 con soporte de modo oscuro/claro, visualización
+cartográfica interactiva (Leaflet) y panel de análisis de redistribución
+turística.</p></li>
+<li><p><strong>Contenerizar</strong> el sistema completo con Docker para
+garantizar reproducibilidad y facilitar el despliegue en entornos
+cloud.</p></li>
+<li><p><strong>Validar</strong> el sistema mediante una suite de pruebas
+unitarias y análisis de casos de uso que demuestren el impacto
+redistributivo de las recomendaciones.</p></li>
+</ol>
+<hr />
+<h2 id="marco-conceptual">2. Marco conceptual</h2>
+<h3 id="sistemas-de-recomendación">2.1 Sistemas de recomendación</h3>
+<p>Los sistemas de recomendación son algoritmos que predicen la
+preferencia de un usuario por un ítem —en este caso, un destino
+turístico— basándose en información disponible sobre el usuario, sobre
+el ítem o sobre ambos. La literatura académica distingue tres grandes
+paradigmas:</p>
+<p><strong>Filtrado colaborativo (<em>collaborative
+filtering</em>):</strong> Infiere preferencias a partir del
+comportamiento histórico de usuarios similares. Requiere grandes
+volúmenes de interacciones pasadas y sufre el conocido problema del
+<em>cold start</em> cuando el historial de un usuario es escaso.</p>
+<p><strong>Filtrado basado en contenido (<em>content-based
+filtering</em>):</strong> Genera recomendaciones comparando los
+atributos del ítem con las preferencias declaradas del usuario. No
+depende de datos de otros usuarios y es transparente en su razonamiento.
+Es el paradigma adoptado en Horizon, dado que el sistema opera sobre
+perfiles sintéticos con atributos explícitos (estilo de viaje, nivel
+presupuestario, preferencia de sostenibilidad) y destinos con
+características cuantificadas (puntuación de playa, cultura, naturaleza,
+vida nocturna, etc.).</p>
+<p><strong>Sistemas híbridos:</strong> Combinan ambos enfoques para
+compensar sus debilidades individuales. Horizon incorpora elementos
+híbridos al integrar datos de popularidad derivados del historial
+colectivo de reservas junto con el perfil individual del usuario.</p>
+<p>La aproximación de Horizon se fundamenta conceptualmente en el
+trabajo de Lops et al. (2011) sobre filtrado basado en contenido y en el
+modelo de scoring explícito propuesto por Burke (2002) para sistemas de
+recomendación basados en conocimiento (<em>knowledge-based recommender
+systems</em>). Este último paradigma resulta especialmente adecuado
+cuando los criterios de recomendación incorporan restricciones de
+dominio —como los umbrales de sostenibilidad y congestión— que deben ser
+respetados independientemente de las preferencias individuales.</p>
+<p>La <strong>explicabilidad</strong> (<em>explainability</em>) de las
+recomendaciones es otro eje conceptual fundamental. Frente a los modelos
+de caja negra (redes neuronales profundas, factorización matricial),
+Horizon opta por una arquitectura completamente transparente: cada
+puntuación final puede descomponerse en sus cuatro componentes y cada
+recomendación incluye un conjunto de cadenas de texto en lenguaje
+natural que explican los motivos de la selección. Esto se alinea con el
+principio de IA Explicable (XAI) y con los requisitos del Reglamento
+General de Protección de Datos (RGPD) sobre el derecho del ciudadano a
+recibir explicaciones comprensibles de las decisiones automatizadas.</p>
+<h3 id="turismo-sostenible-y-métricas-de-congestión">2.2 Turismo
+sostenible y métricas de congestión</h3>
+<p>La Organización Mundial del Turismo (OMT) define el turismo
+sostenible como “el turismo que tiene plenamente en cuenta las
+repercusiones actuales y futuras, económicas, sociales y
+medioambientales para satisfacer las necesidades de los visitantes, de
+la industria, del entorno y de las comunidades anfitrionas”.</p>
+<p>Para operacionalizar este concepto en un sistema cuantitativo,
+Horizon utiliza cuatro dimensiones de sostenibilidad:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Dimensión</th>
+<th>Descripción</th>
+<th>Rango</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>carbon_score</code></td>
+<td>Huella de carbono del destino (transporte, alojamiento)</td>
+<td>0–100</td>
+</tr>
+<tr>
+<td><code>local_business_score</code></td>
+<td>Porcentaje de ingresos que quedan en el tejido empresarial
+local</td>
+<td>0–100</td>
+</tr>
+<tr>
+<td><code>public_transport_score</code></td>
+<td>Calidad y disponibilidad del transporte público</td>
+<td>0–100</td>
+</tr>
+<tr>
+<td><code>sustainability_score</code></td>
+<td>Puntuación compuesta (media ponderada de las anteriores)</td>
+<td>0–100</td>
+</tr>
+</tbody>
+</table>
+<p>La congestión turística se mide como la ocupación hotelera mensual
+normalizada a escala 0–100, derivada de los datos de la Encuesta de
+Ocupación Hotelera (EOH) del INE. Esta métrica captura la estacionalidad
+característica del turismo español: destinos de sol y playa presentan
+congestión máxima en julio–agosto (valores de 95–100 en Mallorca, Costa
+del Sol o Benidorm) mientras que los mismos destinos registran valores
+mínimos en enero–febrero (12–25), lo que ofrece oportunidades de
+redistribución de la demanda hacia temporada baja.</p>
+<p>La congestión se clasifica en tres niveles: - <strong>Baja</strong>
+(&lt; 40): baja presión turística, ideal para experiencia sin
+masificación. - <strong>Moderada</strong> (40–70): nivel de ocupación
+razonable, servicios funcionando con normalidad. - <strong>Alta</strong>
+(&gt; 70): presión turística elevada, riesgo de saturación de
+infraestructuras.</p>
+<h3 id="retrieval-augmented-generation-rag">2.3 Retrieval-Augmented
+Generation (RAG)</h3>
+<p>El paradigma RAG (<em>Retrieval-Augmented Generation</em>),
+introducido por Lewis et al. (2020) en Meta AI Research, combina la
+capacidad de recuperación de información de sistemas de búsqueda
+semántica con la capacidad generativa de los grandes modelos de lenguaje
+(LLM). El flujo operativo consta de dos fases:</p>
+<ol type="1">
+<li><p><strong>Recuperación (<em>retrieval</em>):</strong> Dada una
+consulta del usuario, el sistema la codifica en un vector de embeddings
+y recupera los fragmentos de texto más semánticamente similares de una
+base de conocimiento vectorial (en Horizon: FAISS).</p></li>
+<li><p><strong>Generación (<em>generation</em>):</strong> Los fragmentos
+recuperados se concatenan al <em>prompt</em> enviado al LLM como
+contexto adicional, permitiendo que el modelo genere respuestas
+informadas por información específica del dominio que no estaba presente
+en su entrenamiento general.</p></li>
+</ol>
+<p>En Horizon, el sistema RAG actúa como guía conversacional del sistema
+de recomendación. El corpus de conocimiento incluye descripciones de los
+20 destinos, explicaciones de la fórmula de scoring, métricas de
+sostenibilidad por destino e información contextual sobre el problema
+del sobreturismo en España. Esto permite al usuario formular preguntas
+en lenguaje natural como “¿Por qué se recomienda Picos de Europa en
+lugar de Mallorca en agosto?” y recibir una respuesta argumentada y
+coherente.</p>
+<p>La elección de <strong>FAISS</strong> (<em>Facebook AI Similarity
+Search</em>) como almacén vectorial responde a su eficiencia en búsqueda
+aproximada de vecinos más próximos (ANN) en espacios de alta
+dimensionalidad, con capacidad para indexar millones de vectores en
+memoria con latencias de búsqueda inferiores a 10 ms. Para los
+embeddings se utiliza el modelo <code>text-embedding-3-small</code> de
+OpenAI, que produce vectores de 1.536 dimensiones y ofrece una relación
+coste/rendimiento óptima para corpus de tamaño reducido. La fase de
+generación utiliza <code>gpt-4o-mini</code>, elegido por su capacidad de
+razonamiento superior a GPT-3.5-turbo manteniendo un coste por token muy
+competitivo.</p>
+<h3 id="visualización-de-datos-geoespaciales">2.4 Visualización de datos
+geoespaciales</h3>
+<p>La visualización cartográfica es un componente esencial de Horizon
+para comunicar la dimensión territorial del sobreturismo. El sistema
+integra <strong>Leaflet.js</strong> a través de la librería
+<code>react-leaflet</code>, utilizando teselas cartográficas
+(<em>tiles</em>) de CartoCDN en dos variantes adaptadas al modo de color
+de la interfaz:</p>
+<ul>
+<li><strong>Modo claro:</strong>
+<code>https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png</code></li>
+<li><strong>Modo oscuro:</strong>
+<code>https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png</code></li>
+</ul>
+<p>Cada destino se representa como un marcador circular cuyo color
+refleja el nivel de congestión en el mes seleccionado (verde: baja;
+ámbar: moderada; rojo: alta). Al hacer clic sobre un marcador, el
+usuario accede a un panel detallado con todas las puntuaciones del
+destino.</p>
+<p>La página de Insights incorpora adicionalmente un <strong>mapa de
+calor mensual</strong> (<em>heatmap</em>) que permite visualizar la
+evolución temporal de la congestión en los 20 destinos a lo largo de los
+12 meses del año, facilitando la identificación de patrones estacionales
+y ventanas de redistribución.</p>
+<hr />
+<h2 id="descripción-de-datos">3. Descripción de datos</h2>
+<h3 id="datos-sintéticos-de-tui">3.1 Datos sintéticos de TUI</h3>
+<p>El sistema opera sobre cinco conjuntos de datos en formato CSV
+almacenados en <code>data/raw/</code>. Los datos relativos a usuarios y
+reservas son sintéticos, generados siguiendo especificaciones de TUI
+Care Foundation y construidos para cumplir los principios del RGPD
+(anonimización, sin datos personales reales).</p>
+<h4 id="destinations.csv-20-destinos-españoles">3.1.1
+<code>destinations.csv</code> — 20 destinos españoles</h4>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>destination_id</code></td>
+<td>string</td>
+<td>Identificador único (D001–D020)</td>
+</tr>
+<tr>
+<td><code>destination_name</code></td>
+<td>string</td>
+<td>Nombre del destino</td>
+</tr>
+<tr>
+<td><code>region</code></td>
+<td>string</td>
+<td>Comunidad autónoma o archipiélago</td>
+</tr>
+<tr>
+<td><code>destination_type</code></td>
+<td>string</td>
+<td>Categoría (Beach / City / Nature / Mixed)</td>
+</tr>
+<tr>
+<td><code>beach_score</code></td>
+<td>int (1–10)</td>
+<td>Atractivo de playa</td>
+</tr>
+<tr>
+<td><code>culture_score</code></td>
+<td>int (1–10)</td>
+<td>Riqueza cultural</td>
+</tr>
+<tr>
+<td><code>nature_score</code></td>
+<td>int (1–10)</td>
+<td>Entorno natural</td>
+</tr>
+<tr>
+<td><code>nightlife_score</code></td>
+<td>int (1–10)</td>
+<td>Vida nocturna</td>
+</tr>
+<tr>
+<td><code>family_friendly_score</code></td>
+<td>int (1–10)</td>
+<td>Adecuación familiar</td>
+</tr>
+<tr>
+<td><code>avg_price_per_day</code></td>
+<td>float (€)</td>
+<td>Coste medio diario por persona</td>
+</tr>
+</tbody>
+</table>
+<p>Los 20 destinos cubren la geografía turística española de forma
+representativa:</p>
+<table>
+<thead>
+<tr>
+<th>Destino</th>
+<th>Región</th>
+<th>Tipo</th>
+<th>Precio/día</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mallorca</td>
+<td>Islas Baleares</td>
+<td>Beach</td>
+<td>145 €</td>
+</tr>
+<tr>
+<td>Ibiza</td>
+<td>Islas Baleares</td>
+<td>Beach</td>
+<td>190 €</td>
+</tr>
+<tr>
+<td>Menorca</td>
+<td>Islas Baleares</td>
+<td>Beach</td>
+<td>135 €</td>
+</tr>
+<tr>
+<td>Tenerife</td>
+<td>Islas Canarias</td>
+<td>Mixed</td>
+<td>140 €</td>
+</tr>
+<tr>
+<td>Gran Canaria</td>
+<td>Islas Canarias</td>
+<td>Mixed</td>
+<td>135 €</td>
+</tr>
+<tr>
+<td>Lanzarote</td>
+<td>Islas Canarias</td>
+<td>Nature</td>
+<td>125 €</td>
+</tr>
+<tr>
+<td>Costa del Sol</td>
+<td>Andalucía</td>
+<td>Beach</td>
+<td>130 €</td>
+</tr>
+<tr>
+<td>Marbella</td>
+<td>Andalucía</td>
+<td>Beach</td>
+<td>210 €</td>
+</tr>
+<tr>
+<td>Málaga</td>
+<td>Andalucía</td>
+<td>City</td>
+<td>120 €</td>
+</tr>
+<tr>
+<td>Valencia</td>
+<td>Comunidad Valenciana</td>
+<td>City</td>
+<td>115 €</td>
+</tr>
+<tr>
+<td>Alicante</td>
+<td>Comunidad Valenciana</td>
+<td>Beach</td>
+<td>110 €</td>
+</tr>
+<tr>
+<td>Benidorm</td>
+<td>Comunidad Valenciana</td>
+<td>Beach</td>
+<td>95 €</td>
+</tr>
+<tr>
+<td>Barcelona</td>
+<td>Cataluña</td>
+<td>City</td>
+<td>170 €</td>
+</tr>
+<tr>
+<td>Madrid</td>
+<td>Comunidad de Madrid</td>
+<td>City</td>
+<td>160 €</td>
+</tr>
+<tr>
+<td>Sevilla</td>
+<td>Andalucía</td>
+<td>City</td>
+<td>125 €</td>
+</tr>
+<tr>
+<td>Granada</td>
+<td>Andalucía</td>
+<td>City</td>
+<td>120 €</td>
+</tr>
+<tr>
+<td>Bilbao</td>
+<td>País Vasco</td>
+<td>City</td>
+<td>140 €</td>
+</tr>
+<tr>
+<td>San Sebastián</td>
+<td>País Vasco</td>
+<td>Mixed</td>
+<td>175 €</td>
+</tr>
+<tr>
+<td>Picos de Europa</td>
+<td>Asturias</td>
+<td>Nature</td>
+<td>90 €</td>
+</tr>
+<tr>
+<td>Sierra Nevada</td>
+<td>Andalucía</td>
+<td>Nature</td>
+<td>105 €</td>
+</tr>
+</tbody>
+</table>
+<p>Los destinos de naturaleza (Picos de Europa, Sierra Nevada,
+Lanzarote) destacan por su coste reducido y sus altas puntuaciones en
+<code>nature_score</code> (10/10), representando alternativas
+económicamente accesibles y medioambientalmente más responsables.</p>
+<h4 id="users.csv-100-perfiles-de-viajeros">3.1.2 <code>users.csv</code>
+— 100 perfiles de viajeros</h4>
+<p>El conjunto de usuarios comprende 100 perfiles sintéticos que
+representan la base de clientes europeos de TUI:</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Valores posibles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>user_id</code></td>
+<td>string</td>
+<td>U001–U100</td>
+</tr>
+<tr>
+<td><code>country</code></td>
+<td>string</td>
+<td>Germany, UK, Netherlands, France, etc.</td>
+</tr>
+<tr>
+<td><code>age_group</code></td>
+<td>string</td>
+<td>18-24, 25-34, 35-44, 45-54, 55-64, 65+</td>
+</tr>
+<tr>
+<td><code>budget_level</code></td>
+<td>string</td>
+<td>Low, Medium, High</td>
+</tr>
+<tr>
+<td><code>travel_style</code></td>
+<td>string</td>
+<td>Nature, Relax, Family, Nightlife, Culture</td>
+</tr>
+<tr>
+<td><code>sustainability_preference</code></td>
+<td>string</td>
+<td>Low, Medium, High</td>
+</tr>
+</tbody>
+</table>
+<p>La distribución de <code>travel_style</code> es equiprobable (20
+usuarios por estilo), garantizando que el motor de recomendación sea
+evaluable equitativamente para todos los arquetipos de viajero. El campo
+<code>country</code> refleja la distribución real de turistas
+internacionales en España: Alemania, Reino Unido y Países Bajos
+concentran el mayor volumen de llegadas según FRONTUR.</p>
+<h4 id="bookings_history.csv-1.000-reservas-históricas">3.1.3
+<code>bookings_history.csv</code> — ~1.000 reservas históricas</h4>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>booking_id</code></td>
+<td>string</td>
+<td>Identificador único de reserva (B0001–B1000)</td>
+</tr>
+<tr>
+<td><code>user_id</code></td>
+<td>string</td>
+<td>Usuario que realizó la reserva</td>
+</tr>
+<tr>
+<td><code>destination_id</code></td>
+<td>string</td>
+<td>Destino reservado</td>
+</tr>
+<tr>
+<td><code>booking_date</code></td>
+<td>date</td>
+<td>Fecha de creación de la reserva</td>
+</tr>
+<tr>
+<td><code>travel_month</code></td>
+<td>int</td>
+<td>Mes de viaje (1–12)</td>
+</tr>
+<tr>
+<td><code>stay_days</code></td>
+<td>int</td>
+<td>Duración de la estancia</td>
+</tr>
+<tr>
+<td><code>total_price</code></td>
+<td>float</td>
+<td>Precio total de la reserva (€)</td>
+</tr>
+<tr>
+<td><code>user_rating</code></td>
+<td>int (1–5)</td>
+<td>Valoración del viajero tras el viaje</td>
+</tr>
+</tbody>
+</table>
+<p>Este conjunto se utiliza exclusivamente para el cálculo del
+<strong>motor de popularidad</strong>, que deriva una puntuación de
+0–100 por destino combinando el volumen de reservas normalizado y la
+valoración media de los usuarios.</p>
+<h4 id="sustainability_scores.csv-puntuaciones-de-sostenibilidad">3.1.4
+<code>sustainability_scores.csv</code> — Puntuaciones de
+sostenibilidad</h4>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>destination_id</code></td>
+<td>string</td>
+<td>Referencia al destino</td>
+</tr>
+<tr>
+<td><code>carbon_score</code></td>
+<td>float (0–100)</td>
+<td>Puntuación de huella de carbono</td>
+</tr>
+<tr>
+<td><code>local_business_score</code></td>
+<td>float (0–100)</td>
+<td>Integración económica local</td>
+</tr>
+<tr>
+<td><code>public_transport_score</code></td>
+<td>float (0–100)</td>
+<td>Accesibilidad en transporte público</td>
+</tr>
+<tr>
+<td><code>sustainability_score</code></td>
+<td>float (0–100)</td>
+<td>Puntuación compuesta</td>
+</tr>
+</tbody>
+</table>
+<p>Las ciudades con red de transporte público desarrollada (Madrid,
+Barcelona, Sevilla, Valencia) presentan
+<code>public_transport_score</code> elevados (85/100), mientras que
+destinos naturales insulares (Lanzarote) puntúan bajo (35/100) por su
+dependencia del transporte privado. El destino con mayor sostenibilidad
+compuesta es <strong>Menorca</strong> (88,0), reconocida por la UNESCO
+como Reserva de la Biosfera y que ha implementado políticas activas de
+limitación del turismo masivo.</p>
+<h4 id="congestion_scores.csv-congestión-mensual">3.1.5
+<code>congestion_scores.csv</code> — Congestión mensual</h4>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>destination_id</code></td>
+<td>string</td>
+<td>Referencia al destino</td>
+</tr>
+<tr>
+<td><code>month</code></td>
+<td>int (1–12)</td>
+<td>Mes del año</td>
+</tr>
+<tr>
+<td><code>congestion_score</code></td>
+<td>float (0–100)</td>
+<td>Nivel de congestión</td>
+</tr>
+<tr>
+<td><code>congestion_level</code></td>
+<td>string</td>
+<td>Low / Moderate / High / Very High</td>
+</tr>
+</tbody>
+</table>
+<p>Este CSV contiene 240 registros (20 destinos × 12 meses). El caso más
+extremo es <strong>Mallorca en julio y agosto</strong>, donde la
+congestión alcanza el valor máximo (100/100), lo que activa el
+penalizador de −10% en la fórmula de scoring. En contraste,
+<strong>Picos de Europa</strong> en enero registra un valor de
+congestión de tan sólo 8/100, lo que activa el bono de +5% y lo
+convierte en una alternativa muy valorada para viajeros de naturaleza en
+temporada baja.</p>
+<h3 id="enriquecimiento-con-opendata">3.2 Enriquecimiento con
+OpenData</h3>
+<p>Además de los datos sintéticos, Horizon integra dos conjuntos de
+datos abiertos de fuentes institucionales españolas, almacenados en
+<code>data/enriched/</code>:</p>
+<h4
+id="frontur_ccaa.csv-frontur-llegadas-internacionales-por-ccaa"><code>frontur_ccaa.csv</code>
+— FRONTUR: llegadas internacionales por CCAA</h4>
+<p>FRONTUR (<em>Movimientos Turísticos en Fronteras</em>) es la encuesta
+del INE que mide las entradas de turistas internacionales a España por
+punto de acceso y comunidad autónoma. Los datos utilizados corresponden
+a 2023–2024, con desglose mensual y geográfico. Esta fuente permite
+contextualizar los flujos reales de visitantes internacionales hacia
+cada CCAA y validar cualitativamente los niveles de congestión
+modelizados en el CSV sintético.</p>
+<p><strong>Variables clave utilizadas:</strong> - Llegadas de turistas
+internacionales por CCAA y mes - País de origen predominante por CCAA -
+Gasto medio por turista y día</p>
+<h4
+id="ine_eoh_monthly.csv-ine-eoh-ocupación-hotelera-mensual"><code>ine_eoh_monthly.csv</code>
+— INE-EOH: ocupación hotelera mensual</h4>
+<p>La Encuesta de Ocupación Hotelera (EOH) del INE proporciona datos
+mensuales de viajeros alojados y pernoctaciones en establecimientos
+hoteleros por provincia. Es la fuente primaria para la construcción de
+los <code>congestion_scores</code>, que se derivan normalizando la serie
+de pernoctaciones mensuales de cada provincia a la escala 0–100.</p>
+<p><strong>Fórmula de normalización aplicada:</strong></p>
+<pre><code>congestion_score(destino, mes) = (pernoctaciones(destino, mes) / max_pernoctaciones(destino)) × 100</code></pre>
+<p>Este enfoque garantiza que la puntuación de congestión sea relativa
+al comportamiento histórico de cada destino, evitando distorsiones por
+diferencias absolutas de capacidad hotelera entre una gran ciudad como
+Madrid y un destino de nicho como Picos de Europa.</p>
+<h3 id="limpieza-y-preparación">3.3 Limpieza y preparación</h3>
+<p>El acceso a todos los conjuntos de datos se centraliza en
+<code>src/data/data_loader.py</code>, que expone métodos estáticos
+tipados para cada CSV. Este patrón garantiza que ningún módulo acceda
+directamente al sistema de ficheros, simplificando el mantenimiento y
+los tests.</p>
+<p>Las transformaciones de limpieza aplicadas son: - <strong>Eliminación
+de columnas anónimas</strong>:
+<code>df.loc[:, ~df.columns.str.contains("^Unnamed")]</code> elimina
+columnas vacías introducidas accidentalmente por exportaciones desde
+Excel. - <strong>Tipos inferidos automáticamente</strong> por pandas al
+cargar los CSV; no se requiere coerción adicional dado que los tipos de
+datos son homogéneos dentro de cada columna. - <strong>Resolución de
+rutas absolutas</strong> mediante
+<code>pathlib.Path(__file__).resolve().parents[2]</code> en
+<code>src/config/settings.py</code>, eliminando cualquier dependencia
+del directorio de trabajo desde el que se lance el proceso.</p>
+<hr />
+<h2 id="motor-de-recomendación">4. Motor de recomendación</h2>
+<h3 id="arquitectura-del-motor">4.1 Arquitectura del motor</h3>
+<p>El motor de recomendación de Horizon está construido siguiendo el
+<strong>principio de responsabilidad única</strong> (<em>Single
+Responsibility Principle</em>): cada módulo Python se responsabiliza de
+un único aspecto del cálculo, facilitando el testing unitario, la
+sustitución de algoritmos y la comprensión del código.</p>
+<p>La orquestación recae en <code>RecommendationEngine</code>
+(<code>src/recommendation/recommendation_engine.py</code>), que en su
+inicialización carga los cinco conjuntos de datos y precalcula las
+puntuaciones de popularidad para todos los destinos. Al recibir una
+solicitud, itera sobre los 20 destinos, invoca secuencialmente cada
+submódulo de scoring y agrega los resultados en una lista ordenada de
+mayor a menor puntuación final.</p>
+<p>El flujo de ejecución por destino es el siguiente:</p>
+<pre><code>Usuario (user_id) + Mes (month)
+        │
+        ▼
+┌───────────────────────────┐
+│   ScoringEngine           │  →  preference_score (0–100)
+│   calculate_preference_   │     (travel_style × destination attributes)
+│   score(user, destination)│
+└───────────────────────────┘
+        │
+        ▼
+┌───────────────────────────┐
+│   PopularityEngine        │  →  popularity_score (0–100)
+│   get_destination_        │     (70% booking volume + 30% avg rating)
+│   popularity(id, df)      │
+└───────────────────────────┘
+        │
+        ▼
+┌───────────────────────────┐
+│   SustainabilityEngine    │  →  sustainability_score (0–100)
+│   get_sustainability_     │     (composite from sustainability_scores.csv)
+│   score(id, df)           │
+└───────────────────────────┘
+        │
+        ▼
+┌───────────────────────────┐
+│   CongestionEngine        │  →  congestion_score (0–100)
+│   get_congestion_         │     (monthly INE-derived score)
+│   score(id, month, df)    │
+└───────────────────────────┘
+        │
+        ▼
+┌───────────────────────────┐
+│   ScoringEngine           │  →  final_score (0–100+)
+│   calculate_final_score() │     (weighted formula + business rules)
+└───────────────────────────┘
+        │
+        ▼
+┌───────────────────────────┐
+│   ConfidenceEngine        │  →  confidence_score (0–100)
+│   calculate_confidence()  │
+└───────────────────────────┘
+        │
+        ▼
+┌───────────────────────────┐
+│   ExplainabilityEngine    │  →  explanations: List[str]
+│   generate_explanations() │
+└───────────────────────────┘
+        │
+        ▼
+  Resultado final (dict) → agregado a lista → ordenado → top_n devuelto</code></pre>
+<h3 id="fórmula-de-scoring">4.2 Fórmula de scoring</h3>
+<p>La <strong>fórmula de scoring</strong> es el núcleo intelectual del
+sistema y representa la codificación explícita de las prioridades de TUI
+Care Foundation respecto al turismo sostenible:</p>
+<pre><code>Final Score = 0.45 × Preference + 0.25 × Sustainability + 0.15 × Popularity + 0.15 × (100 − Congestion)</code></pre>
+<p>Donde: - <strong>Preference (45%):</strong> Es el factor con mayor
+peso, garantizando que el sistema siempre priorice la compatibilidad con
+las preferencias del viajero. Se calcula mapeando el
+<code>travel_style</code> del usuario al atributo de destino
+correspondiente y escalando a 0–100: - <code>Nature</code> →
+<code>nature_score × 10</code> - <code>Relax</code> →
+<code>beach_score × 10</code> - <code>Family</code> →
+<code>family_friendly_score × 10</code> - <code>Nightlife</code> →
+<code>nightlife_score × 10</code> - <code>Culture</code> →
+<code>culture_score × 10</code></p>
+<ul>
+<li><p><strong>Sustainability (25%):</strong> Segundo factor en
+importancia, reflejando el compromiso de TUI Care Foundation con el
+turismo responsable. Utiliza la puntuación compuesta de
+<code>sustainability_scores.csv</code>.</p></li>
+<li><p><strong>Popularity (15%):</strong> Factor moderador que considera
+la aceptación del destino por viajeros con intereses similares. Su peso
+reducido evita que el sistema refuerce el efecto “el destino popular es
+más popular”, que es precisamente el ciclo que perpetúa el
+sobreturismo.</p></li>
+<li><p><strong>Congestion Adjustment (15%):</strong> La congestión cruda
+se invierte (<code>100 − congestion_score</code>) para que destinos
+menos congestionados reciban puntuaciones más altas. El peso del 15%
+equivale al de la popularidad, creando un balance entre la tracción
+histórica del destino y su situación de saturación actual.</p></li>
+</ul>
+<h4 id="justificación-de-los-pesos">Justificación de los pesos</h4>
+<p>La distribución de pesos responde a tres principios:</p>
+<ol type="1">
+<li><p><strong>El viajero es el actor principal.</strong> El 45%
+dedicado a preferencia asegura que ningún destino, por muy sostenible
+que sea, sea recomendado si no se ajusta al tipo de viaje buscado. Un
+turista de naturaleza no recibirá Benidorm como primera
+recomendación.</p></li>
+<li><p><strong>La sostenibilidad es una prioridad estratégica, no
+cosmética.</strong> Al ponderarla con el 25%, el sistema garantiza que
+destinos con malas prácticas medioambientales vean reducida su
+puntuación de forma significativa y visible.</p></li>
+<li><p><strong>La congestión y la popularidad se equilibran
+mutuamente.</strong> Ambas valen el 15%. La popularidad actúa como señal
+de calidad percibida; la congestión como penalizador de saturación. En
+julio, Mallorca puede tener alta popularidad pero también congestión
+máxima, resultando en una puntuación neta inferior a la de Menorca o
+Picos de Europa en el mismo mes.</p></li>
+</ol>
+<h3 id="reglas-de-negocio">4.3 Reglas de negocio</h3>
+<p>Sobre la puntuación base se aplican <strong>modificadores
+multiplicativos</strong> que refuerzan los extremos del espectro
+sostenibilidad-congestión:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sustainability boost</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> sustainability_score <span class="op">&gt;</span> <span class="dv">85</span>:</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    final_score <span class="op">*=</span> <span class="fl">1.05</span>    <span class="co"># +5%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> sustainability_score <span class="op">&lt;</span> <span class="dv">50</span>:</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    final_score <span class="op">*=</span> <span class="fl">0.90</span>    <span class="co"># −10%</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Low congestion boost</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> congestion_score <span class="op">&lt;</span> <span class="dv">40</span>:</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    final_score <span class="op">*=</span> <span class="fl">1.05</span>    <span class="co"># +5%</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># High congestion penalty (redistribution trigger)</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> congestion_score <span class="op">&gt;</span> <span class="dv">80</span>:</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    final_score <span class="op">*=</span> <span class="fl">0.90</span>    <span class="co"># −10%</span></span></code></pre></div>
+<p>Estas reglas operan de forma <strong>acumulativa</strong>: un destino
+con sostenibilidad &gt; 85 y congestión &lt; 40 simultáneamente
+recibiría un bonus total de ×1.05 × ×1.05 = ×1.1025 (+10,25%), mientras
+que un destino con sostenibilidad &lt; 50 y congestión &gt; 80 sería
+penalizado con ×0.90 × ×0.90 = ×0.81 (−19%).</p>
+<p>La <strong>regla de redistribución</strong> (penalización por
+congestión &gt; 80) es el mecanismo central de política turística del
+sistema. Se activa cuando la congestión mensual supera el umbral crítico
+y está directamente inspirada en el concepto de <em>carrying
+capacity</em> (capacidad de carga turística) utilizado por la OMT y la
+Unión Europea en sus marcos de gestión de destinos.</p>
+<p><strong>Análisis de cobertura de las reglas:</strong> - En el mes de
+julio, 12 de los 20 destinos superan el umbral de congestión 80 (datos
+de <code>congestion_scores.csv</code> y <code>Analytics.tsx</code>),
+activando la penalización en el 60% del catálogo. - Solo
+<strong>Menorca</strong> (88,0) alcanza el umbral de sostenibilidad &gt;
+85 para activar el bono de +5%. - En temporada baja (enero–marzo), 0
+destinos superan el umbral de congestión 80, lo que implica que el
+sistema se comporta de forma más neutral en esos meses, dependiendo
+fundamentalmente de la preferencia del usuario y la sostenibilidad.</p>
+<h3 id="explicabilidad-de-las-recomendaciones">4.4 Explicabilidad de las
+recomendaciones</h3>
+<p>El módulo <code>ExplainabilityEngine</code>
+(<code>src/recommendation/explainability.py</code>) genera, para cada
+recomendación, una lista de cadenas de texto en inglés que explican los
+factores que han contribuido positivamente a su selección. La lógica
+sigue un conjunto de umbrales sobre las cuatro puntuaciones:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Condición</th>
+<th>Explicación generada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>preference_score &gt;= 80</code></td>
+<td>“Strong match for your {style} travel preferences.”</td>
+</tr>
+<tr>
+<td><code>preference_score &gt;= 60</code></td>
+<td>“Good match for your {style} travel preferences.”</td>
+</tr>
+<tr>
+<td><code>sustainability_score &gt;= 85</code></td>
+<td>“Excellent sustainability performance.”</td>
+</tr>
+<tr>
+<td><code>sustainability_score &gt;= 70</code></td>
+<td>“Good sustainability performance.”</td>
+</tr>
+<tr>
+<td><code>congestion_score &lt; 40</code></td>
+<td>“Lower expected congestion than comparable destinations.”</td>
+</tr>
+<tr>
+<td><code>congestion_score &gt; 80</code></td>
+<td>“Higher expected congestion during the selected period.”</td>
+</tr>
+<tr>
+<td><code>popularity_score &gt;= 80</code></td>
+<td>“Popular among travelers with similar interests.”</td>
+</tr>
+<tr>
+<td><code>popularity_score &gt;= 60</code></td>
+<td>“Well-rated by previous travelers.”</td>
+</tr>
+</tbody>
+</table>
+<p>Este diseño de explicabilidad cumple con los principios de IA
+Explicable (XAI): las explicaciones son: - <strong>Locales</strong>:
+aplican a una recomendación específica para un usuario y mes concretos.
+- <strong>Fieles</strong>: cada cadena está directamente vinculada a un
+valor numérico real del scoring. - <strong>Comprensibles</strong>:
+formuladas en lenguaje natural, sin términos técnicos.</p>
+<hr />
+<h2 id="sistema-rag-conversacional">5. Sistema RAG conversacional</h2>
+<h3 id="embeddings-y-almacenamiento-vectorial">5.1 Embeddings y
+almacenamiento vectorial</h3>
+<p>El sistema RAG de Horizon convierte la base de conocimiento del
+dominio turístico en una colección de vectores de alta dimensionalidad
+almacenados en un índice FAISS. El proceso de indexación consta de tres
+pasos:</p>
+<p><strong>Paso 1: Construcción del corpus.</strong> Se generan
+fragmentos de texto (<em>chunks</em>) que describen cada destino en
+términos de sus atributos: sostenibilidad, congestión mensual, tipo de
+destino, rango de precios y puntuaciones por categoría. Se incluyen
+también fragmentos sobre la metodología de scoring y el contexto del
+problema del sobreturismo.</p>
+<p><strong>Paso 2: Codificación.</strong> Cada fragmento se codifica
+usando el modelo <code>text-embedding-3-small</code> de la API de
+OpenAI, que produce un vector de 1.536 dimensiones. Este modelo fue
+seleccionado frente a <code>text-embedding-ada-002</code> (embeddings de
+1.536 dimensiones, menor rendimiento en benchmarks de recuperación) y
+<code>text-embedding-3-large</code> (3.072 dimensiones, mayor coste por
+token) por ofrecer el mejor equilibrio entre rendimiento de recuperación
+y coste operacional.</p>
+<p><strong>Paso 3: Indexación.</strong> Los vectores se almacenan en un
+índice FAISS de tipo <code>IndexFlatL2</code>, que implementa búsqueda
+exacta por distancia euclidiana en el espacio de embeddings. Para el
+tamaño del corpus de Horizon (decenas de fragmentos), la búsqueda exacta
+es computacionalmente viable sin necesidad de los índices aproximados
+(IVF, HNSW) recomendados para corpus de millones de vectores.</p>
+<p><strong>Dependencias RAG (extraídas de
+<code>requirements.txt</code>):</strong></p>
+<pre><code>faiss-cpu
+openai
+tiktoken</code></pre>
+<h3 id="fase-de-recuperación">5.2 Fase de recuperación</h3>
+<p>Ante una consulta del usuario en lenguaje natural, el sistema
+ejecuta:</p>
+<ol type="1">
+<li><p><strong>Codificación de la consulta:</strong> La pregunta del
+usuario se codifica con el mismo modelo
+<code>text-embedding-3-small</code> para obtener un vector de consulta
+en el mismo espacio semántico que los fragmentos indexados.</p></li>
+<li><p><strong>Búsqueda de vecinos más próximos:</strong> FAISS computa
+la distancia euclidiana entre el vector de consulta y todos los vectores
+del índice, devolviendo los <code>k</code> fragmentos más similares
+(normalmente <code>k=3</code> o <code>k=5</code>).</p></li>
+<li><p><strong>Construcción del contexto:</strong> Los fragmentos
+recuperados se concatenan como contexto adicional para el LLM,
+precedidos de una instrucción de sistema que indica al modelo que debe
+basar su respuesta en la información proporcionada.</p></li>
+</ol>
+<p>La precisión de la recuperación depende de la calidad y diversidad de
+los fragmentos indexados. El diseño del corpus en Horizon cubre las
+dimensiones más frecuentes en las consultas de los viajeros:
+características del destino, sostenibilidad, mejor época para visitar y
+alternativas a destinos saturados.</p>
+<h3 id="fase-de-generación">5.3 Fase de generación</h3>
+<p>El modelo <code>gpt-4o-mini</code> recibe un <em>prompt</em>
+estructurado en tres partes:</p>
+<ol type="1">
+<li><p><strong>System prompt:</strong> Establece el rol del asistente
+como experto en turismo sostenible en España que trabaja para TUI, con
+instrucciones para basar sus respuestas en el contexto recuperado y ser
+transparente sobre las limitaciones del sistema.</p></li>
+<li><p><strong>Contexto recuperado:</strong> Los fragmentos más
+relevantes de la base de conocimiento, marcados con delimitadores para
+que el modelo los identifique inequívocamente.</p></li>
+<li><p><strong>Pregunta del usuario:</strong> La consulta en lenguaje
+natural tal como la introdujo el viajero.</p></li>
+</ol>
+<p>El modelo genera una respuesta en el mismo idioma que la pregunta del
+usuario (soporte multilingüe nativo de GPT-4o-mini), lo que es relevante
+dado que la base de clientes de TUI incluye turistas alemanes,
+británicos, neerlandeses y franceses.</p>
+<h3 id="integración-con-la-api">5.4 Integración con la API</h3>
+<p>El sistema RAG se expone a través del endpoint
+<code>POST /chat</code> de la FastAPI:</p>
+<pre><code>POST /chat
+Content-Type: application/json
+
+{
+  &quot;message&quot;: &quot;¿Cuál es el mejor destino de naturaleza para enero?&quot;,
+  &quot;conversation_history&quot;: [...]  // mensajes previos para contexto conversacional
+}</code></pre>
+<p>La respuesta incluye la contestación generada y, opcionalmente, los
+fragmentos fuente recuperados (modo debug), permitiendo al usuario
+comprender la base factual de cada respuesta.</p>
+<p>La integración conversacional mantiene el historial de mensajes de la
+sesión, pasándolo al LLM en cada turno para mantener coherencia en
+conversaciones largas sin necesidad de almacenamiento persistente en
+base de datos.</p>
+<hr />
+<h2 id="arquitectura-técnica">6. Arquitectura técnica</h2>
+<h3 id="backend">6.1 Backend</h3>
+<p>El backend de Horizon sigue una <strong>arquitectura de cinco
+capas</strong> con separación clara de responsabilidades:</p>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│  Capa 5: Presentación                                   │
+│  React 19 SPA — Home / Insights / Analytics / About    │
+└───────────────────────────┬─────────────────────────────┘
+                            │ HTTP (Axios)
+┌───────────────────────────▼─────────────────────────────┐
+│  Capa 4: API                                            │
+│  FastAPI — POST /recommendations, GET /health,          │
+│            GET /users, GET /users/{id}, POST /chat      │
+└───────────────────────────┬─────────────────────────────┘
+                            │ Python imports
+┌───────────────────────────▼─────────────────────────────┐
+│  Capa 3: Inteligencia                                   │
+│  scoring.py · popularity.py · sustainability.py         │
+│  congestion.py · confidence.py · explainability.py      │
+│  RAG: FAISS + text-embedding-3-small + gpt-4o-mini      │
+└───────────────────────────┬─────────────────────────────┘
+                            │
+┌───────────────────────────▼─────────────────────────────┐
+│  Capa 2: Procesamiento                                  │
+│  data_loader.py — pandas DataFrames                     │
+│  config/settings.py — resolución de rutas (pathlib)     │
+└───────────────────────────┬─────────────────────────────┘
+                            │
+┌───────────────────────────▼─────────────────────────────┐
+│  Capa 1: Datos                                          │
+│  5 CSV (data/raw/) + enriched/ (INE EOH, FRONTUR)       │
+└─────────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Tecnologías del backend:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Librería</th>
+<th>Versión</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td>3.11</td>
+<td>Lenguaje principal</td>
+</tr>
+<tr>
+<td>FastAPI</td>
+<td>última</td>
+<td>Framework REST API</td>
+</tr>
+<tr>
+<td>Uvicorn</td>
+<td>última</td>
+<td>Servidor ASGI</td>
+</tr>
+<tr>
+<td>Pydantic</td>
+<td>v2</td>
+<td>Validación de modelos de request/response</td>
+</tr>
+<tr>
+<td>pandas</td>
+<td>última</td>
+<td>Manipulación de DataFrames</td>
+</tr>
+<tr>
+<td>numpy</td>
+<td>última</td>
+<td>Operaciones numéricas auxiliares</td>
+</tr>
+<tr>
+<td>scikit-learn</td>
+<td>última</td>
+<td>Utilidades de normalización y métricas</td>
+</tr>
+<tr>
+<td>faiss-cpu</td>
+<td>última</td>
+<td>Almacén vectorial para RAG</td>
+</tr>
+<tr>
+<td>openai</td>
+<td>última</td>
+<td>SDK para embeddings y generación</td>
+</tr>
+<tr>
+<td>tiktoken</td>
+<td>última</td>
+<td>Tokenización para control de costes</td>
+</tr>
+<tr>
+<td>streamlit</td>
+<td>última</td>
+<td>Dashboard opcional (proceso separado)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Estructura de directorios del backend:</strong></p>
+<pre><code>src/
+├── api/
+│   ├── app.py          # FastAPI: rutas, CORS, inicialización del motor
+│   └── models.py       # Pydantic: RecommendationRequest
+├── config/
+│   └── settings.py     # Rutas absolutas a los 5 CSV (pathlib)
+├── data/
+│   └── data_loader.py  # DataLoader: carga centralizada de CSV
+├── recommendation/
+│   ├── recommendation_engine.py  # Orquestador principal
+│   ├── scoring.py                # Fórmula de scoring + reglas de negocio
+│   ├── popularity.py             # Motor de popularidad (70% vol + 30% rating)
+│   ├── sustainability.py         # Motor de sostenibilidad + clasificación
+│   ├── congestion.py             # Motor de congestión + ajuste mensual
+│   ├── confidence.py             # Puntuación de confianza
+│   └── explainability.py         # Generador de explicaciones
+└── dashboard/
+    └── app.py          # Dashboard Streamlit (lectura, proceso opcional)</code></pre>
+<p>La inicialización del motor en FastAPI es <strong>eager</strong>: al
+arrancar el servidor, se instancia <code>RecommendationEngine()</code> y
+se cargan todos los DataFrames en memoria. Esto elimina la latencia de
+carga en el primer request y garantiza tiempos de respuesta
+consistentes.</p>
+<h3 id="frontend">6.2 Frontend</h3>
+<p>El frontend es una <strong>Single Page Application (SPA)</strong>
+construida con React 19, TypeScript y Material UI v9. La navegación se
+implementa mediante <strong>enrutamiento por estado</strong> (sin React
+Router): <code>App.tsx</code> mantiene el estado
+<code>currentPage: Page</code> y renderiza condicionalmente el
+componente de página correspondiente, lo que simplifica la arquitectura
+y evita complejidades del router en una aplicación de tamaño
+reducido.</p>
+<p><strong>Páginas de la aplicación:</strong></p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Página</th>
+<th>Componente</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Home</td>
+<td><code>pages/Home.tsx</code></td>
+<td>Formulario de búsqueda + resultados de recomendación + KPI
+dashboard</td>
+</tr>
+<tr>
+<td>Insights</td>
+<td><code>pages/Insights.tsx</code></td>
+<td>Mapa de España + Optimizador de temporada baja + heatmap mensual +
+redistribución</td>
+</tr>
+<tr>
+<td>Analytics</td>
+<td><code>pages/Analytics.tsx</code></td>
+<td>Dashboard de gobernanza: destinos penalizados, estado de
+redistribución</td>
+</tr>
+<tr>
+<td>About</td>
+<td><code>pages/About.tsx</code></td>
+<td>Contexto del proyecto, fórmula de scoring, arquitectura, equipo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Árbol de componentes relevantes:</strong></p>
+<pre><code>frontend/src/
+├── App.tsx                        # Root: page state, month, recommendations
+├── pages/
+│   ├── Home.tsx                   # Search + results + KPI
+│   ├── Insights.tsx               # Map + heatmap + redistribution
+│   ├── Analytics.tsx              # Governance dashboard
+│   └── About.tsx                  # Project info
+├── components/
+│   ├── home/
+│   │   ├── HeroSection.tsx        # Landing hero con CTA
+│   │   ├── SearchBarHero.tsx      # Formulario user_id + month + top_n
+│   │   ├── FeatureSection.tsx     # Cards de características del sistema
+│   │   └── DestinationShowcase.tsx # Destinos destacados pre-búsqueda
+│   ├── recommendations/
+│   │   ├── RecommendationCard.tsx # Tarjeta de resultado con scores y badges
+│   │   ├── RecommendationGrid.tsx # Grid de tarjetas
+│   │   ├── SustainabilityBadge.tsx # Badge: Excellent/Good/Moderate/Poor
+│   │   ├── ConfidenceBadge.tsx    # Badge: nivel de confianza
+│   │   ├── CongestionBadge.tsx    # Badge: Low/Moderate/High
+│   │   └── ExplanationPanel.tsx   # Panel plegable con explanations[]
+│   ├── map/
+│   │   └── DestinationMap.tsx     # Leaflet map con tiles adaptativos
+│   ├── dashboard/
+│   │   └── KpiDashboard.tsx       # Métricas resumen post-búsqueda
+│   └── layout/
+│       ├── Header.tsx             # Navegación + ThemeToggle
+│       ├── Footer.tsx             # Footer con links y créditos
+│       └── MegaMenu.tsx           # Menú desplegable de navegación
+├── api/
+│   └── recommendationApi.ts       # Axios → POST http://localhost:8000/recommendations
+├── theme/
+│   ├── ThemeProvider.tsx          # Context: dark/light + localStorage
+│   ├── darkTheme.ts               # background.default: #0B1220
+│   └── lightTheme.ts              # Standard MUI light palette
+├── context/
+│   └── LanguageContext.tsx        # Soporte i18n (es/en)
+└── types/
+    └── recommendation.ts          # TypeScript interfaces de la API response</code></pre>
+<p><strong>Gestión del estado compartido:</strong> El estado de
+<code>activeMonth</code> y <code>recommendations</code> reside en
+<code>App.tsx</code> y fluye hacia abajo como props. La página Insights
+consume ambos para resaltar en el mapa y el heatmap los destinos que el
+usuario consultó en su búsqueda, creando coherencia visual entre páginas
+sin necesidad de un gestor de estado global como Redux o Zustand.</p>
+<p><strong>Modo oscuro/claro:</strong> El sistema de temas utiliza MUI
+v9 con dos paletas definidas en <code>darkTheme.ts</code> (fondo:
+<code>#0B1220</code>, papel: <code>#111827</code>) y
+<code>lightTheme.ts</code>. El tema activo se persiste en
+<code>localStorage</code> y se restaura en cada carga de página. Todos
+los valores de color se expresan con tokens semánticos de MUI
+(<code>text.primary</code>, <code>divider</code>,
+<code>background.paper</code>) en lugar de valores hexadecimales
+directos, garantizando consistencia entre modos.</p>
+<h3 id="api-rest">6.3 API REST</h3>
+<p>La API de Horizon expone cinco endpoints documentados automáticamente
+en OpenAPI (<code>/docs</code>):</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Método</th>
+<th>Ruta</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/</code></td>
+<td>Root health check, devuelve nombre y estado de la aplicación</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/health</code></td>
+<td>Health check para orquestadores (Docker, K8s)</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/recommendations</code></td>
+<td>Genera lista de recomendaciones personalizadas</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/users</code></td>
+<td>Devuelve lista de todos los user_id disponibles</td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/users/{user_id}</code></td>
+<td>Devuelve perfil completo de un usuario</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Modelo de request — POST /recommendations:</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;user_id&quot;</span><span class="fu">:</span> <span class="st">&quot;U001&quot;</span><span class="fu">,</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;month&quot;</span><span class="fu">:</span> <span class="dv">7</span><span class="fu">,</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;top_n&quot;</span><span class="fu">:</span> <span class="dv">5</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Modelo de response — POST /recommendations:</strong></p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;recommendations&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;destination_id&quot;</span><span class="fu">:</span> <span class="st">&quot;D019&quot;</span><span class="fu">,</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;destination_name&quot;</span><span class="fu">:</span> <span class="st">&quot;Picos de Europa&quot;</span><span class="fu">,</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;final_score&quot;</span><span class="fu">:</span> <span class="fl">84.32</span><span class="fu">,</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;preference_score&quot;</span><span class="fu">:</span> <span class="fl">100.0</span><span class="fu">,</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;popularity_score&quot;</span><span class="fu">:</span> <span class="fl">52.1</span><span class="fu">,</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;sustainability_score&quot;</span><span class="fu">:</span> <span class="fl">72.1</span><span class="fu">,</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;congestion_score&quot;</span><span class="fu">:</span> <span class="fl">8.0</span><span class="fu">,</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;confidence_score&quot;</span><span class="fu">:</span> <span class="fl">81.68</span><span class="fu">,</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;explanations&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Strong match for your Nature travel preferences.&quot;</span><span class="ot">,</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Lower expected congestion than comparable destinations.&quot;</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;recommendation_rank&quot;</span><span class="fu">:</span> <span class="dv">1</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>La configuración CORS del servidor permite peticiones desde
+<code>http://localhost:5173</code> (servidor de desarrollo Vite) y
+<code>http://localhost</code> / <code>http://localhost:80</code>
+(frontend servido por Nginx en Docker), cubriendo tanto el entorno de
+desarrollo como el de producción.</p>
+<hr />
+<h2 id="despliegue-y-productivización">7. Despliegue y
+productivización</h2>
+<h3 id="contenerización-con-docker">7.1 Contenerización con Docker</h3>
+<p>Horizon está completamente contenerizado con Docker, permitiendo su
+despliegue reproducible en cualquier entorno compatible con OCI (Linux,
+macOS, Windows con Docker Desktop, AWS ECS, GCP Cloud Run, Azure
+Container Instances).</p>
+<p><strong><code>Dockerfile.backend</code>:</strong></p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode dockerfile"><code class="sourceCode dockerfile"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> python:3.11-slim</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WORKDIR</span> /app</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">apt-get</span> update <span class="kw">&amp;&amp;</span> <span class="ex">apt-get</span> install <span class="at">-y</span> <span class="at">--no-install-recommends</span> gcc <span class="dt">\</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&amp;&amp;</span> <span class="fu">rm</span> <span class="at">-rf</span> /var/lib/apt/lists/<span class="pp">*</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> requirements.txt .</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">pip</span> install <span class="at">--no-cache-dir</span> <span class="at">-r</span> requirements.txt</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> src/ ./src/</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> data/ ./data/</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="kw">EXPOSE</span> 8000</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="kw">CMD</span> [<span class="st">&quot;uvicorn&quot;</span>, <span class="st">&quot;src.api.app:app&quot;</span>, <span class="st">&quot;--host&quot;</span>, <span class="st">&quot;0.0.0.0&quot;</span>, <span class="st">&quot;--port&quot;</span>, <span class="st">&quot;8000&quot;</span>]</span></code></pre></div>
+<p>El uso de <code>python:3.11-slim</code> (imagen base Debian
+minimalista) reduce el tamaño de la imagen final frente a la imagen
+estándar. La instalación de <code>gcc</code> es necesaria para compilar
+FAISS y algunas dependencias numéricas de numpy. El
+<code>--no-cache-dir</code> en pip evita que la caché de paquetes
+engrose la imagen.</p>
+<p><strong><code>Dockerfile.frontend</code> (multi-stage
+build):</strong></p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode dockerfile"><code class="sourceCode dockerfile"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Etapa 1: Build</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> node:20-alpine <span class="kw">AS</span> build</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WORKDIR</span> /app</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> frontend/package*.json ./</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">npm</span> ci</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> frontend/ .</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">npm</span> run build</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Etapa 2: Serve</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> nginx:alpine</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> <span class="op">--from=build</span> /app/dist /usr/share/nginx/html</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="kw">COPY</span> nginx.conf /etc/nginx/conf.d/default.conf</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="kw">EXPOSE</span> 80</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="kw">CMD</span> [<span class="st">&quot;nginx&quot;</span>, <span class="st">&quot;-g&quot;</span>, <span class="st">&quot;daemon off;&quot;</span>]</span></code></pre></div>
+<p>El <strong>multi-stage build</strong> es una práctica recomendada
+para proyectos Node.js: la imagen final solo contiene los artefactos
+estáticos (<code>/dist</code>) servidos por Nginx, sin las dependencias
+de desarrollo de Node (carpeta <code>node_modules</code>), lo que reduce
+el tamaño de imagen de ~900 MB a menos de 30 MB.</p>
+<p><strong><code>docker-compose.yml</code>:</strong></p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;3.9&#39;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">backend</span><span class="kw">:</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">context</span><span class="kw">:</span><span class="at"> .</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">dockerfile</span><span class="kw">:</span><span class="at"> Dockerfile.backend</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;8000:8000&quot;</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> AEMET_API_KEY=${AEMET_API_KEY:-}</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> OPENAI_API_KEY=${OPENAI_API_KEY:-}</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./data:/app/data:ro</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">healthcheck</span><span class="kw">:</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">test</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">&quot;CMD&quot;</span><span class="kw">,</span><span class="at"> </span><span class="st">&quot;curl&quot;</span><span class="kw">,</span><span class="at"> </span><span class="st">&quot;-f&quot;</span><span class="kw">,</span><span class="at"> </span><span class="st">&quot;http://localhost:8000/health&quot;</span><span class="kw">]</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">interval</span><span class="kw">:</span><span class="at"> 10s</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> 5s</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">retries</span><span class="kw">:</span><span class="at"> </span><span class="dv">3</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">frontend</span><span class="kw">:</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">context</span><span class="kw">:</span><span class="at"> .</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">dockerfile</span><span class="kw">:</span><span class="at"> Dockerfile.frontend</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;80:80&quot;</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">depends_on</span><span class="kw">:</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">backend</span><span class="kw">:</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">condition</span><span class="kw">:</span><span class="at"> service_healthy</span></span></code></pre></div>
+<p>El <code>depends_on</code> con
+<code>condition: service_healthy</code> garantiza que el frontend no
+arranque hasta que el backend haya superado su <em>health check</em>,
+evitando errores de conexión durante el inicio del stack. El volumen
+<code>./data:/app/data:ro</code> monta los CSV del host en modo solo
+lectura dentro del contenedor del backend.</p>
+<h3 id="variables-de-entorno-y-seguridad">7.2 Variables de entorno y
+seguridad</h3>
+<p>La gestión de secretos sigue el principio de
+<strong>zero-secrets-in-code</strong>: ninguna clave de API aparece en
+el código fuente ni en el control de versiones. Las credenciales se
+inyectan exclusivamente como variables de entorno:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Uso</th>
+<th>Obligatoria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OPENAI_API_KEY</code></td>
+<td>API de OpenAI para embeddings (RAG) y generación (GPT-4o-mini)</td>
+<td>Para el sistema RAG</td>
+</tr>
+<tr>
+<td><code>AEMET_API_KEY</code></td>
+<td>API de AEMET para datos meteorológicos futuros</td>
+<td>Opcional (funcionalidad futura)</td>
+</tr>
+</tbody>
+</table>
+<p>Para el desarrollo local, el proyecto soporta un archivo
+<code>.env</code> en la raíz del proyecto (excluido del repositorio
+mediante <code>.gitignore</code>). En entornos Docker, las variables se
+pasan con el flag <code>--env-file .env</code> o directamente con
+<code>-e VARIABLE=valor</code>.</p>
+<p><strong>Precauciones adicionales de seguridad implementadas:</strong>
+- CORS restringido a los orígenes conocidos del frontend (no se usa
+<code>allow_origins=["*"]</code>). - Los datos de usuarios son
+sintéticos y no contienen información personal identificable (PII). -
+Los CSV se montan en modo solo lectura en Docker (<code>ro</code>),
+eliminando el riesgo de modificación accidental desde el contenedor.</p>
+<h3 id="escalabilidad-y-próximos-pasos-cloud">7.3 Escalabilidad y
+próximos pasos cloud</h3>
+<p>La arquitectura actual está diseñada para un entorno de demostración
+con 100 usuarios y 20 destinos. Para una hipotética productivización a
+escala real, se identifican las siguientes líneas de evolución:</p>
+<p><strong>Base de datos:</strong> Migrar los CSV a PostgreSQL o
+DynamoDB para soportar catálogos de miles de destinos y millones de
+usuarios, con indexación y consultas eficientes.</p>
+<p><strong>Caché de recomendaciones:</strong> Introducir Redis como
+caché de resultados para pares <code>(user_id, month)</code> frecuentes,
+reduciendo la carga de cómputo del motor en picos de tráfico.</p>
+<p><strong>Escalado horizontal:</strong> Uvicorn + FastAPI son
+asíncronos por naturaleza (ASGI). En Kubernetes, el backend puede
+escalarse horizontalmente añadiendo réplicas del pod; un balanceador de
+carga (NGINX o Traefik) distribuiría el tráfico.</p>
+<p><strong>CI/CD:</strong> Integrar GitHub Actions con un pipeline de
+build/test/push que construya y publique las imágenes Docker en ECR
+(AWS) o Artifact Registry (GCP) y despliegue automáticamente en el
+entorno de staging tras cada merge a <code>main</code>.</p>
+<p><strong>Observabilidad:</strong> Integrar OpenTelemetry para
+trazabilidad distribuida, Prometheus para métricas de rendimiento y
+Grafana para dashboards de monitorización en producción.</p>
+<hr />
+<h2 id="resultados-y-validación">8. Resultados y validación</h2>
+<h3 id="validación-del-motor-de-scoring">8.1 Validación del motor de
+scoring</h3>
+<p>El proyecto incluye una <strong>suite de tests unitarios</strong> con
+cobertura de todos los módulos de inteligencia. Los tests se organizan
+en 10 ficheros Python bajo el directorio <code>tests/</code>:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Fichero</th>
+<th>Módulo testado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_scoring.py</code></td>
+<td><code>ScoringEngine</code> — preference score, congestion
+adjustment, final score</td>
+</tr>
+<tr>
+<td><code>test_popularity.py</code></td>
+<td><code>PopularityEngine</code> — cálculo de popularidad por volumen y
+rating</td>
+</tr>
+<tr>
+<td><code>test_sustainability.py</code></td>
+<td><code>SustainabilityEngine</code> — clasificación
+Excellent/Good/Moderate/Poor</td>
+</tr>
+<tr>
+<td><code>test_congestion.py</code></td>
+<td><code>CongestionEngine</code> — recuperación de congestión
+mensual</td>
+</tr>
+<tr>
+<td><code>test_recommendation_engine.py</code></td>
+<td><code>RecommendationEngine</code> — integración completa</td>
+</tr>
+<tr>
+<td><code>test_explainability.py</code></td>
+<td><code>ExplainabilityEngine</code> — generación de explicaciones</td>
+</tr>
+<tr>
+<td><code>test_confidence.py</code></td>
+<td><code>ConfidenceEngine</code> — cálculo de confianza</td>
+</tr>
+<tr>
+<td><code>test_loader.py</code></td>
+<td><code>DataLoader</code> — carga de CSV y resolución de rutas</td>
+</tr>
+<tr>
+<td><code>inspect_data.py</code></td>
+<td>Inspección interactiva de los datos cargados</td>
+</tr>
+<tr>
+<td><code>inspect_destinations.py</code></td>
+<td>Inspección del DataFrame de destinos</td>
+</tr>
+</tbody>
+</table>
+<p>Los tests utilizan <strong>datos reales</strong> de los CSV (sin
+mocking), garantizando que el comportamiento validado corresponda al
+comportamiento del sistema en producción. Esta decisión de diseño
+implica que los tests funcionan como pruebas de integración más que como
+pruebas unitarias estrictas, lo que proporciona mayor cobertura
+funcional a costa de mayor tiempo de ejecución.</p>
+<p><strong>Ejecución de la suite:</strong></p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pytest tests/ <span class="at">-v</span></span></code></pre></div>
+<p>La ejecución debe realizarse siempre desde la raíz del proyecto para
+que <code>src/config/settings.py</code> resuelva correctamente las rutas
+absolutas a los CSV.</p>
+<p><strong>Ejemplo de validación manual del scoring:</strong></p>
+<p>Para el usuario U001 (Alemania, 18-24, Nature, Medium budget) en el
+mes de enero: - <strong>Picos de Europa (D019):</strong> preference=100,
+popularity≈52, sustainability=72.1, congestion=8 - Final: 0.45×100 +
+0.25×72.1 + 0.15×52 + 0.15×(100−8) = 45 + 18.025 + 7.8 + 13.8 = 84.625 -
+Bonus congestion &lt; 40: ×1.05 → <strong>88.86</strong> - <em>Ranking
+esperado: #1 para perfil Nature en enero</em></p>
+<ul>
+<li><strong>Mallorca (D001):</strong> preference=80 (beach para Nature =
+nature_score=8×10=80), popularity≈85, sustainability=52.7, congestion=12
+<ul>
+<li>Final: 0.45×80 + 0.25×52.7 + 0.15×85 + 0.15×(100−12) = 36 + 13.175 +
+12.75 + 13.2 = 75.125</li>
+<li>Bonus congestion &lt; 40: ×1.05 → <strong>78.88</strong></li>
+<li><em>Ranking esperado: inferior a Picos de Europa</em></li>
+</ul></li>
+</ul>
+<p>Este ejemplo ilustra cómo el sistema desvía la demanda turística
+desde el destino más popular (Mallorca) hacia el destino con mejor
+ajuste al perfil y menor congestión (Picos de Europa), incluso en un mes
+en que ambos tienen baja congestión.</p>
+<h3 id="casos-de-uso-demostrados">8.2 Casos de uso demostrados</h3>
+<h4 id="caso-1-viajero-de-naturaleza-en-agosto-temporada-alta">Caso 1:
+Viajero de naturaleza en agosto (temporada alta)</h4>
+<p><strong>Perfil:</strong> U001 — Alemania, 18-24, Nature, Medium
+budget <strong>Mes:</strong> Agosto</p>
+<p>En agosto, los destinos de playa (Mallorca, Ibiza, Costa del Sol)
+alcanzan congestión máxima (95–100/100), activando la penalización de
+−10%. Picos de Europa y Sierra Nevada, con congestión baja (estimado:
+18–25 en agosto por su naturaleza de destino alternativo), reciben el
+bonus de +5%. El sistema recomendará prioritariamente estos destinos de
+naturaleza, que además tienen puntuaciones de <code>nature_score</code>
+de 10/10.</p>
+<p><strong>Efecto redistribuidor:</strong> El sistema dirige activamente
+a viajeros de naturaleza alemanes hacia el norte de España (Asturias,
+Andalucía interior) en lugar de reforzar la saturación estival de las
+Islas Baleares.</p>
+<h4 id="caso-2-viajero-cultural-en-temporada-baja">Caso 2: Viajero
+cultural en temporada baja</h4>
+<p><strong>Perfil:</strong> U007 — Alemania, 18-24, High budget, Culture
+<strong>Mes:</strong> Enero</p>
+<p>En enero, todos los destinos presentan congestión baja (&lt; 40), por
+lo que el bono de +5% se aplica universalmente. El diferenciador
+principal es la preferencia: destinos con <code>culture_score</code>
+alto (Barcelona=10, Madrid=10, Sevilla=10, Granada=10) dominan el
+ranking. Sin embargo, la sostenibilidad discrimina entre ellos: Bilbao
+(80.1), Madrid (75.9) y Sevilla (76.6) superan a Barcelona (72.8) en
+sostenibilidad, lo que puede alterar el orden en los primeros
+puestos.</p>
+<h4 id="caso-3-familia-en-semana-santa-abril">Caso 3: Familia en Semana
+Santa (abril)</h4>
+<p><strong>Perfil:</strong> U003 — Alemania, 55-64, Low budget, Family
+<strong>Mes:</strong> Abril</p>
+<p>En abril, los destinos de playa comienzan a experimentar congestión
+moderada-alta (47–80). Benidorm en abril registra congestión de 80,
+justo en el umbral de la penalización. Menorca, con congestión de 30 en
+abril y <code>family_friendly_score</code> de 10/10, emerge como
+alternativa ideal: el sistema la recomendará combinando el bono familiar
++ el bono de baja congestión + su alta sostenibilidad (88.0, único
+destino con bono de +5% por sostenibilidad &gt; 85).</p>
+<h3 id="análisis-de-impacto-en-redistribución-turística">8.3 Análisis de
+impacto en redistribución turística</h3>
+<p>El análisis de los datos de congestión mensual revela patrones claros
+de redistribución potencial:</p>
+<p><strong>Destinos con penalización (congestión &gt; 80) por
+mes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mes</th>
+<th>Destinos penalizados</th>
+<th>% del catálogo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enero</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Febrero</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Marzo</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Abril</td>
+<td>8</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Mayo</td>
+<td>8</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Junio</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Julio</td>
+<td>12</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>Agosto</td>
+<td>12</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>Septiembre</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Octubre</td>
+<td>8</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Noviembre</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Diciembre</td>
+<td>0</td>
+<td>0%</td>
+</tr>
+</tbody>
+</table>
+<p><em>Fuente: datos embebidos en <code>Analytics.tsx</code>, derivados
+de <code>congestion_scores.csv</code>.</em></p>
+<p>El sistema actúa con mayor intensidad redistributiva en los meses de
+julio y agosto, cuando el 60% del catálogo está penalizado. Esto es
+consistente con el patrón real de hipersaturación estival documentado
+por el INE.</p>
+<p><strong>Impacto en scoring para un destino típico penalizado
+(Mallorca, julio):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Valor</th>
+<th>Contribución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Preference (Nature)</td>
+<td>80</td>
+<td>36.00</td>
+</tr>
+<tr>
+<td>Sustainability</td>
+<td>52.7</td>
+<td>13.18</td>
+</tr>
+<tr>
+<td>Popularity</td>
+<td>85 (hipotético)</td>
+<td>12.75</td>
+</tr>
+<tr>
+<td>Congestion adj. (100−100)</td>
+<td>0</td>
+<td>0.00</td>
+</tr>
+<tr>
+<td>Base Score</td>
+<td>—</td>
+<td>61.93</td>
+</tr>
+<tr>
+<td>Penalización congestión (×0.90)</td>
+<td>—</td>
+<td><strong>55.74</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Impacto en scoring para una alternativa (Picos de Europa,
+julio):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Valor</th>
+<th>Contribución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Preference (Nature)</td>
+<td>100</td>
+<td>45.00</td>
+</tr>
+<tr>
+<td>Sustainability</td>
+<td>72.1</td>
+<td>18.03</td>
+</tr>
+<tr>
+<td>Popularity</td>
+<td>52 (hipotético)</td>
+<td>7.80</td>
+</tr>
+<tr>
+<td>Congestion adj. (100−18)</td>
+<td>82</td>
+<td>12.30</td>
+</tr>
+<tr>
+<td>Base Score</td>
+<td>—</td>
+<td>83.13</td>
+</tr>
+<tr>
+<td>Bonus congestión baja (×1.05)</td>
+<td>—</td>
+<td><strong>87.28</strong></td>
+</tr>
+</tbody>
+</table>
+<p>La diferencia de <strong>31,54 puntos</strong> entre el destino
+saturado penalizado y la alternativa sostenible promovida demuestra la
+efectividad del mecanismo redistributivo de Horizon. Un viajero de
+naturaleza que en agosto obtiene estas recomendaciones tiene un
+incentivo claro y argumentado para elegir Picos de Europa sobre
+Mallorca, con un ahorro medio de <strong>55 € por día</strong> según las
+tablas de precios del CSV de destinos.</p>
+<hr />
+<h2 id="conclusiones">9. Conclusiones</h2>
+<h3 id="conclusiones-principales">9.1 Conclusiones principales</h3>
+<p>Este Trabajo Fin de Máster ha demostrado la viabilidad técnica y
+conceptual de un sistema de recomendación turística guiado por criterios
+de sostenibilidad y redistribución de la demanda. Las conclusiones
+principales son:</p>
+<p><strong>1. La fórmula de scoring multivariable es efectiva como
+mecanismo redistributivo.</strong> La combinación de un 25% de peso en
+sostenibilidad y un 15% de penalización por congestión —con
+modificadores multiplicativos en los extremos— produce diferencias de
+puntuación significativas (hasta 31 puntos en julio) entre destinos
+saturados y alternativas sostenibles, creando incentivos claros para la
+redistribución.</p>
+<p><strong>2. La explicabilidad es esencial para la adopción.</strong>
+El módulo <code>ExplainabilityEngine</code> garantiza que cada
+recomendación vaya acompañada de razones comprensibles en lenguaje
+natural. En sistemas que afectan a decisiones de gasto significativas
+(un viaje de vacaciones), la transparencia del razonamiento es un factor
+diferenciador clave frente a las cajas negras.</p>
+<p><strong>3. La arquitectura modular facilita la evolución.</strong> La
+separación en submódulos independientes (<code>popularity</code>,
+<code>sustainability</code>, <code>congestion</code>,
+<code>confidence</code>, <code>explainability</code>) permite sustituir
+o mejorar cualquier componente sin afectar al resto del sistema. Esto es
+especialmente relevante para la incorporación futura de modelos de
+machine learning más sofisticados.</p>
+<p><strong>4. La integración de datos abiertos institucionales aporta
+legitimidad científica.</strong> El uso de datos del INE-EOH y FRONTUR
+—fuentes estadísticas oficiales del Estado— fundamenta las métricas de
+congestión en evidencia empírica real, superando la crítica habitual a
+los sistemas basados exclusivamente en datos propietarios.</p>
+<p><strong>5. El sistema RAG abre la puerta a la democratización del
+acceso.</strong> Al permitir que cualquier usuario interactúe con el
+sistema en lenguaje natural —independientemente de su formación
+técnica—, el asistente conversacional amplía el alcance del sistema más
+allá de interfaces tradicionales de formulario.</p>
+<p><strong>6. Docker garantiza la reproducibilidad científica.</strong>
+La contenerización completa del stack (backend + frontend) asegura que
+los resultados presentados sean reproducibles por cualquier evaluador
+con acceso al repositorio y Docker instalado, alineándose con los
+principios de ciencia abierta y reproducibilidad.</p>
+<h3 id="limitaciones">9.2 Limitaciones</h3>
+<p>El sistema presenta las siguientes limitaciones que deben ser
+consideradas al interpretar sus resultados:</p>
+<p><strong>Datos sintéticos:</strong> Los perfiles de usuarios y el
+historial de reservas son sintéticos, lo que implica que las
+puntuaciones de popularidad no reflejan preferencias reales de viajeros.
+La validación con datos reales de TUI podría modificar
+significativamente los rankings.</p>
+<p><strong>Estática temporal:</strong> Los datos de sostenibilidad no se
+actualizan en tiempo real. La puntuación de sostenibilidad de un destino
+refleja una instantánea que puede quedar desactualizada ante cambios en
+la política medioambiental local o en la infraestructura de
+transporte.</p>
+<p><strong>Cobertura geográfica limitada:</strong> El catálogo de 20
+destinos cubre los principales focos turísticos, pero omite cientos de
+localidades con potencial turístico no explotado. Una cobertura
+exhaustiva requeriría un esfuerzo de curación de datos considerablemente
+mayor.</p>
+<p><strong>Fórmula de pesos fija:</strong> Los pesos (0.45, 0.25, 0.15,
+0.15) son fijos y no se adaptan al perfil de sostenibilidad declarado
+del usuario. Un usuario con
+<code>sustainability_preference = High</code> podría beneficiarse de una
+ponderación dinámica que incremente el peso de sostenibilidad hasta, por
+ejemplo, 0.35.</p>
+<p><strong>RAG sin persistencia:</strong> El sistema RAG no mantiene
+persistencia del historial conversacional entre sesiones. Cada nueva
+visita del usuario comienza con un contexto vacío.</p>
+<p><strong>Ausencia de evaluación A/B:</strong> No se ha realizado una
+evaluación con usuarios reales que compare las decisiones de viaje antes
+y después de usar Horizon, lo que habría permitido cuantificar el
+impacto redistributivo real del sistema.</p>
+<h3 id="líneas-futuras">9.3 Líneas futuras</h3>
+<p>Las líneas de investigación y desarrollo más prometedoras para la
+evolución del sistema son:</p>
+<p><strong>1. Ponderación dinámica según perfil de
+sostenibilidad.</strong> Implementar una variación de la fórmula que
+ajuste los pesos en función del nivel de
+<code>sustainability_preference</code> declarado por el usuario, creando
+una experiencia más personalizada.</p>
+<p><strong>2. Integración de datos climáticos (AEMET).</strong> La API
+de AEMET (Agencia Estatal de Meteorología) proporciona predicciones
+meteorológicas que podrían enriquecer las recomendaciones con
+información sobre condiciones climáticas esperadas en el mes de viaje
+seleccionado. La clave <code>AEMET_API_KEY</code> ya está preparada en
+la arquitectura Docker.</p>
+<p><strong>3. Motor de filtrado colaborativo híbrido.</strong>
+Complementar el filtrado por contenido actual con un componente de
+filtrado colaborativo basado en las reservas históricas, utilizando
+técnicas de factorización matricial (ALS, SVD) o redes neuronales (NCF)
+para capturar preferencias implícitas.</p>
+<p><strong>4. Actualización dinámica de datos.</strong> Desarrollar
+pipelines de ingesta periódica que actualicen los datos de ocupación
+hotelera desde la EOH del INE y los flujos internacionales desde
+FRONTUR, manteniendo las métricas de congestión sincronizadas con la
+realidad estadística.</p>
+<p><strong>5. Evaluación con usuarios reales (A/B testing).</strong>
+Diseñar un experimento controlado con viajeros de TUI en el que un grupo
+use Horizon y otro el sistema de recomendación estándar, midiendo el
+porcentaje de reservas realizadas en destinos menos congestionados como
+métrica de impacto redistributivo.</p>
+<p><strong>6. Expansión a Portugal y Marruecos.</strong> TUI Care
+Foundation opera en toda la región EMEA. La arquitectura modular de
+Horizon facilitaría la extensión del catálogo a destinos portugueses y
+marroquíes, donde la problemática de concentración turística presenta
+dinámicas similares (Algarve, Marrakech).</p>
+<p><strong>7. Certificación de carbono por destino.</strong> Integrar
+datos de emisiones de CO₂ por modo de transporte y tipo de alojamiento
+para calcular una huella de carbono estimada por viaje, añadiendo una
+dimensión de transparencia ambiental cuantificada.</p>
+<hr />
+<h2 id="bibliografía">10. Bibliografía</h2>
+<p>Burke, R. (2002). Hybrid recommender systems: Survey and experiments.
+<em>User Modeling and User-Adapted Interaction</em>, 12(4), 331–370.
+https://doi.org/10.1023/A:1021240730564</p>
+<p>Gretzel, U., Fesenmaier, D. R., &amp; O’Leary, J. T. (2006). The
+transformation of consumer behaviour. In D. Buhalis &amp; C. Costa
+(Eds.), <em>Tourism Business Frontiers</em> (pp. 9–18). Elsevier.</p>
+<p>Instituto Nacional de Estadística (INE). (2024). <em>Encuesta de
+Ocupación Hotelera (EOH): Metodología y resultados</em>.
+https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&amp;cid=1254736177015</p>
+<p>Instituto Nacional de Estadística (INE) — FRONTUR. (2024).
+<em>Movimientos Turísticos en Fronteras: Cifras 2024</em>.
+https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&amp;cid=1254736176996</p>
+<p>Johnson, J., Douze, M., &amp; Jégou, H. (2019). Billion-scale
+similarity search with GPUs. <em>IEEE Transactions on Big Data</em>,
+7(3), 535–547. https://doi.org/10.1109/TBDATA.2019.2921572</p>
+<p>Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal,
+N., Küttler, H., Lewis, M., Yih, W. T., Rocktäschel, T., Riedel, S.,
+&amp; Kiela, D. (2020). Retrieval-augmented generation for
+knowledge-intensive NLP tasks. <em>Advances in Neural Information
+Processing Systems</em>, 33, 9459–9474.</p>
+<p>Lops, P., de Gemmis, M., &amp; Semeraro, G. (2011). Content-based
+recommender systems: State of the art and trends. In F. Ricci, L.
+Rokach, B. Shapira, &amp; P. B. Kantor (Eds.), <em>Recommender Systems
+Handbook</em> (pp. 73–105). Springer.
+https://doi.org/10.1007/978-0-387-85820-3_3</p>
+<p>Organización Mundial del Turismo (OMT). (2023). <em>Recommendations
+on Sustainable Tourism Indicators</em>. UNWTO Publications.
+https://www.unwto.org/sustainable-development</p>
+<p>Secretaría de Estado de Turismo. (2024). <em>Plan de Sostenibilidad
+Turística en Destinos 2021–2025: Informe de seguimiento</em>. Ministerio
+de Industria y Turismo de España.</p>
+<p>TUI Care Foundation. (2024). <em>Future Shapers Spain: Reto de
+turismo sostenible</em>. Documento interno del programa.</p>
+<p>Unión Europea. (2016). <em>Reglamento General de Protección de Datos
+(RGPD)</em> — Reglamento (UE) 2016/679 del Parlamento Europeo y del
+Consejo. Diario Oficial de la Unión Europea.</p>
+<hr />
+<h2 id="anexos">11. Anexos</h2>
+<h3 id="anexo-a-tabla-de-endpoints-de-la-api-rest">Anexo A: Tabla de
+endpoints de la API REST</h3>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Método</th>
+<th>Endpoint</th>
+<th>Descripción</th>
+<th>Request Body</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/</code></td>
+<td>Root endpoint</td>
+<td>—</td>
+<td><code>{"application": str, "status": str}</code></td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/health</code></td>
+<td>Health check</td>
+<td>—</td>
+<td><code>{"status": "ok"}</code></td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/recommendations</code></td>
+<td>Genera recomendaciones</td>
+<td><code>RecommendationRequest</code></td>
+<td><code>{"recommendations": List[Recommendation]}</code></td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/users</code></td>
+<td>Lista todos los user_id</td>
+<td>—</td>
+<td><code>{"user_ids": List[str]}</code></td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/users/{user_id}</code></td>
+<td>Perfil de un usuario</td>
+<td>—</td>
+<td>Campos del perfil de usuario</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/chat</code></td>
+<td>Consulta conversacional RAG</td>
+<td><code>{"message": str, ...}</code></td>
+<td><code>{"response": str}</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Modelo <code>RecommendationRequest</code>
+(Pydantic):</strong></p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> RecommendationRequest(BaseModel):</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    user_id: <span class="bu">str</span>      <span class="co"># Ej: &quot;U001&quot;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    month: <span class="bu">int</span>        <span class="co"># 1-12</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    top_n: <span class="bu">int</span> <span class="op">=</span> <span class="dv">5</span>    <span class="co"># Número de resultados (default: 5)</span></span></code></pre></div>
+<p><strong>Modelo de recomendación individual en la
+response:</strong></p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;destination_id&quot;</span><span class="fu">:</span> <span class="st">&quot;D019&quot;</span><span class="fu">,</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;destination_name&quot;</span><span class="fu">:</span> <span class="st">&quot;Picos de Europa&quot;</span><span class="fu">,</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;final_score&quot;</span><span class="fu">:</span> <span class="fl">88.86</span><span class="fu">,</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;preference_score&quot;</span><span class="fu">:</span> <span class="fl">100.0</span><span class="fu">,</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;popularity_score&quot;</span><span class="fu">:</span> <span class="fl">52.10</span><span class="fu">,</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sustainability_score&quot;</span><span class="fu">:</span> <span class="fl">72.10</span><span class="fu">,</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;congestion_score&quot;</span><span class="fu">:</span> <span class="fl">8.0</span><span class="fu">,</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;confidence_score&quot;</span><span class="fu">:</span> <span class="fl">81.68</span><span class="fu">,</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;explanations&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Strong match for your Nature travel preferences.&quot;</span><span class="ot">,</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Lower expected congestion than comparable destinations.&quot;</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;recommendation_rank&quot;</span><span class="fu">:</span> <span class="dv">1</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Códigos de estado HTTP:</strong></p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Código</th>
+<th>Situación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>200 OK</code></td>
+<td>Petición procesada correctamente</td>
+</tr>
+<tr>
+<td><code>404 Not Found</code></td>
+<td>Usuario no encontrado (<code>GET /users/{user_id}</code>)</td>
+</tr>
+<tr>
+<td><code>422 Unprocessable Entity</code></td>
+<td>Request body inválido (validación Pydantic)</td>
+</tr>
+<tr>
+<td><code>500 Internal Server Error</code></td>
+<td>Error inesperado del motor</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anexo-b-esquemas-de-los-csv">Anexo B: Esquemas de los CSV</h3>
+<h4 id="b.1-destinations.csv-esquema-completo">B.1
+<code>destinations.csv</code> — Esquema completo</h4>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo Python</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>destination_id</code></td>
+<td>str</td>
+<td>“D001”</td>
+</tr>
+<tr>
+<td><code>destination_name</code></td>
+<td>str</td>
+<td>“Mallorca”</td>
+</tr>
+<tr>
+<td><code>region</code></td>
+<td>str</td>
+<td>“Balearic Islands”</td>
+</tr>
+<tr>
+<td><code>destination_type</code></td>
+<td>str</td>
+<td>“Beach”</td>
+</tr>
+<tr>
+<td><code>beach_score</code></td>
+<td>int (1–10)</td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>culture_score</code></td>
+<td>int (1–10)</td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>nature_score</code></td>
+<td>int (1–10)</td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>nightlife_score</code></td>
+<td>int (1–10)</td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>family_friendly_score</code></td>
+<td>int (1–10)</td>
+<td>9</td>
+</tr>
+<tr>
+<td><code>avg_price_per_day</code></td>
+<td>float</td>
+<td>145.0</td>
+</tr>
+</tbody>
+</table>
+<h4 id="b.2-users.csv-esquema-completo">B.2 <code>users.csv</code> —
+Esquema completo</h4>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo Python</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>user_id</code></td>
+<td>str</td>
+<td>“U001”</td>
+</tr>
+<tr>
+<td><code>country</code></td>
+<td>str</td>
+<td>“Germany”</td>
+</tr>
+<tr>
+<td><code>age_group</code></td>
+<td>str</td>
+<td>“18-24”</td>
+</tr>
+<tr>
+<td><code>budget_level</code></td>
+<td>str</td>
+<td>“Low”</td>
+</tr>
+<tr>
+<td><code>travel_style</code></td>
+<td>str</td>
+<td>“Nature”</td>
+</tr>
+<tr>
+<td><code>sustainability_preference</code></td>
+<td>str</td>
+<td>“Medium”</td>
+</tr>
+</tbody>
+</table>
+<h4 id="b.3-bookings_history.csv-esquema-completo">B.3
+<code>bookings_history.csv</code> — Esquema completo</h4>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo Python</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>booking_id</code></td>
+<td>str</td>
+<td>“B0001”</td>
+</tr>
+<tr>
+<td><code>user_id</code></td>
+<td>str</td>
+<td>“U082”</td>
+</tr>
+<tr>
+<td><code>destination_id</code></td>
+<td>str</td>
+<td>“D001”</td>
+</tr>
+<tr>
+<td><code>booking_date</code></td>
+<td>str (date)</td>
+<td>“5/21/2025”</td>
+</tr>
+<tr>
+<td><code>travel_month</code></td>
+<td>int (1–12)</td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>stay_days</code></td>
+<td>int</td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>total_price</code></td>
+<td>float</td>
+<td>819.42</td>
+</tr>
+<tr>
+<td><code>user_rating</code></td>
+<td>int (1–5)</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<h4 id="b.4-sustainability_scores.csv-esquema-completo">B.4
+<code>sustainability_scores.csv</code> — Esquema completo</h4>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo Python</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>destination_id</code></td>
+<td>str</td>
+<td>“D001”</td>
+</tr>
+<tr>
+<td><code>carbon_score</code></td>
+<td>float</td>
+<td>52.0</td>
+</tr>
+<tr>
+<td><code>local_business_score</code></td>
+<td>float</td>
+<td>60.0</td>
+</tr>
+<tr>
+<td><code>public_transport_score</code></td>
+<td>float</td>
+<td>45.0</td>
+</tr>
+<tr>
+<td><code>sustainability_score</code></td>
+<td>float</td>
+<td>52.7</td>
+</tr>
+</tbody>
+</table>
+<h4 id="b.5-congestion_scores.csv-esquema-completo">B.5
+<code>congestion_scores.csv</code> — Esquema completo</h4>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo Python</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>destination_id</code></td>
+<td>str</td>
+<td>“D001”</td>
+</tr>
+<tr>
+<td><code>month</code></td>
+<td>int (1–12)</td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>congestion_score</code></td>
+<td>float (0–100)</td>
+<td>100.0</td>
+</tr>
+<tr>
+<td><code>congestion_level</code></td>
+<td>str</td>
+<td>“Very High”</td>
+</tr>
+</tbody>
+</table>
+<h4 id="b.6-clasificaciones-del-sistema">B.6 Clasificaciones del
+sistema</h4>
+<p><strong>Sostenibilidad:</strong> | Umbral | Clasificación |
+Modificador | |—|—|—| | ≥ 85 | Excellent | ×1.05 (+5%) | | ≥ 70 | Good |
+×1.00 | | ≥ 50 | Moderate | ×1.00 | | &lt; 50 | Poor | ×0.90 (−10%)
+|</p>
+<p><strong>Congestión:</strong> | Umbral | Clasificación | Modificador |
+|—|—|—| | &lt; 40 | Low | ×1.05 (+5%) | | 40–70 | Moderate | ×1.00 | |
+70–80 | High | ×1.00 | | &gt; 80 | Very High | ×0.90 (−10%) |</p>
+<p><strong>Confianza:</strong> | Rango | Interpretación | |—|—| | 80–100
+| Alta confianza — destino muy alineado con el perfil | | 60–79 |
+Confianza media — buen ajuste general | | 40–59 | Confianza moderada —
+ajuste parcial | | &lt; 40 | Confianza baja — exploración fuera del
+perfil habitual |</p>
+<hr />
+<p><em>Documento generado el 29 de junio de 2026.</em> <em>Máster
+Universitario en Data Science y Big Data — Universidad Complutense de
+Madrid.</em> <em>TUI Care Foundation — Future Shapers Spain — Reto 2:
+Sistema Inteligente de Recomendación de Destinos Turísticos
+Sostenibles.</em></p>
+</body>
+</html>

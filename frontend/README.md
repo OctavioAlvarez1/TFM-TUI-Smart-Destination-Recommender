@@ -1,73 +1,99 @@
-# React + TypeScript + Vite
+# Horizon — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React 19 + TypeScript + Vite + Material UI v9 single-page application for the **TUI Smart Destination Recommender**.
 
-Currently, two official plugins are available:
+Horizon helps travelers discover sustainable, less-congested destinations in Spain by surfacing AI-ranked recommendations based on user preferences, sustainability scores, and real tourism congestion data from INE.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Pages
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Page | Description |
+|---|---|
+| **Home** | Search form, ranked recommendation results, KPI dashboard |
+| **Insights** | Congestion map (Leaflet), Low Season Optimizer, monthly heatmap, redistribution scenarios |
+| **Analytics** | Governance dashboard — penalised destinations, status breakdown, full destination table |
+| **About** | Project context, scoring formula, system architecture, project scope |
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Key Components
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **ChatWidget** (`components/chat/ChatWidget.tsx`) — RAG-powered floating chat assistant. Floating Fab button opens a Drawer with a full conversation UI backed by `POST /chat` on the FastAPI backend (FAISS + GPT-4o-mini). Present on all pages.
+- **DestinationMap** (`components/map/DestinationMap.tsx`) — Leaflet map with CartoCDN tiles. Switches between `light_all` and `dark_all` tile layers to match the active theme.
+- **RecommendationCard** (`components/recommendations/`) — displays destination name, scores, sustainability badge, congestion badge, confidence badge, and AI-generated explanation.
+- **KpiDashboard** (`components/dashboard/KpiDashboard.tsx`) — summary metrics panel rendered after a successful search.
+- **SearchBarHero** (`components/home/`) — travel style selector, month picker, user ID input.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Quick Start
+
+```bash
+# From the frontend/ directory
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Dev server starts at **http://localhost:5173**.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The app expects the FastAPI backend running at `http://localhost:8000`. Start the backend first:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# From the project root
+python -m uvicorn src.api.app:app --reload --port 8000
 ```
+
+Or use Docker to start both services together (see Docker section below).
+
+---
+
+## Available Scripts
+
+| Script | Description |
+|---|---|
+| `npm run dev` | Start Vite dev server with HMR at localhost:5173 |
+| `npm run build` | TypeScript type-check + production Vite build |
+| `npm run lint` | ESLint across all `.ts` / `.tsx` files |
+| `npm run preview` | Serve the production build locally for inspection |
+
+---
+
+## Environment
+
+| Dependency | Version |
+|---|---|
+| React | 19 |
+| TypeScript | 5.x |
+| Vite | 6.x |
+| Material UI | v9 |
+| Leaflet / react-leaflet | 4.x |
+| Axios | 1.x |
+
+The frontend communicates exclusively with the FastAPI backend at `http://localhost:8000`. CORS is configured on the backend to allow `localhost:5173`.
+
+No frontend environment variables are required for local development.
+
+---
+
+## Docker
+
+The frontend is containerized via `Dockerfile.frontend` (Node build stage + Nginx serving stage). Nginx configuration is in `nginx.conf` at the project root.
+
+To run the full stack (backend + frontend) with Docker:
+
+```bash
+# From the project root
+docker compose up --build
+```
+
+Frontend is served at **http://localhost:80**.
+
+---
+
+## Architecture Notes
+
+- **Page routing**: no React Router — page state is managed in `App.tsx` via a `page` string prop passed down to `MainLayout`.
+- **State sharing**: `activeMonth` and `recommendations` live in `App.tsx` and flow down as props. The Insights page uses both to highlight searched destinations on the map and heatmap.
+- **Theme**: dark/light mode via `ThemeProvider.tsx` with `localStorage` persistence. All colors use MUI theme tokens (`text.primary`, `divider`, etc.) — no hardcoded hex values in `sx` props.
+- **MUI v9**: `InputProps` is deprecated — use `slotProps={{ input: {}, htmlInput: {} }}` instead.

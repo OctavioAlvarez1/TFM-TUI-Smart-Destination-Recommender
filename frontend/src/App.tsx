@@ -2,6 +2,7 @@
 // Manages global state: current page, active month, and recommendations list.
 // Handles navigation between Home, Insights, Analytics and About pages.
 // Wraps everything in ThemeProvider for dark/light mode support.
+// ChatWidget is rendered at the root level so it appears on every page.
 import { useState } from "react";
 
 import Header from "./components/layout/Header";
@@ -9,6 +10,7 @@ import Home from "./pages/Home";
 import Insights from "./pages/Insights";
 import Analytics from "./pages/Analytics";
 import About from "./pages/About";
+import ChatWidget from "./components/chat/ChatWidget";
 
 import type { Recommendation } from "./types/recommendation";
 
@@ -31,6 +33,7 @@ function App() {
       {currentPage === "insights"  && <Insights initialMonth={month} recommendations={recommendations} />}
       {currentPage === "analytics" && <Analytics />}
       {currentPage === "about"     && <About />}
+      <ChatWidget />
     </>
   );
 }

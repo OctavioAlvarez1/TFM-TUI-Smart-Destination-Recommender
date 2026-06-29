@@ -116,3 +116,29 @@ AEMET Climate Normals          →  Monthly temperature / precipitation (optiona
 (optional, requires API key)       ↓ warm-season pressure modifier
                                sustainability_scores.csv (local_business_score)
 ```
+
+---
+
+## 4. RAG Vector Index
+
+**Used by:** `src/api/rag.py` — the `POST /chat` endpoint.
+
+Three CSV files from `data/raw/` are used at runtime to build an in-memory FAISS vector store that powers the RAG chatbot:
+
+| File | Role |
+|---|---|
+| `destinations.csv` | Core destination attributes: type, scores, region, price |
+| `sustainability_scores.csv` | Carbon, local business, public transport, and overall sustainability scores |
+| `congestion_scores.csv` | Monthly congestion values and congestion level labels |
+
+**How it works:**
+
+On the first `POST /chat` request, `rag.py` reads these three files and merges them by `destination_id`. Each of the 20 destinations becomes a rich-text document containing all its attributes as a formatted string. These documents are embedded via OpenAI `text-embedding-3-small` and indexed in a `faiss.IndexFlatIP` (inner-product / cosine similarity) vector store held in memory.
+
+Subsequent chat queries embed the user's question with the same model, retrieve the top-k most relevant destination documents via similarity search, and pass them as context to GPT-4o-mini to generate a grounded, factual answer.
+
+**Requirements:**
+
+- `OPENAI_API_KEY` environment variable must be set before starting the server.
+- If the key is missing, the endpoint returns a graceful fallback message without crashing.
+- The index is built once per server process. Restarting the server triggers a rebuild on the next `/chat` request.
