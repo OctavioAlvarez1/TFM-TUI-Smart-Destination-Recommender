@@ -7,29 +7,27 @@ Horizon is a full-stack AI system built as a 5-layer pipeline. The backend is a 
 ```
 ┌──────────────────────────────────────────────────────────┐
 │                   React SPA (localhost:5173)              │
-│  Home · Insights · Analytics · About                      │
+│  Home · Insights · Analytics · About · ChatWidget (FAB)   │
 └───────────────────────┬──────────────────────────────────┘
                         │ HTTP (Axios)
                         ▼
 ┌──────────────────────────────────────────────────────────┐
 │              FastAPI Server (localhost:8000)               │
-│  POST /recommendations  ·  GET /health  ·  GET /users/:id │
-└───────────────────────┬──────────────────────────────────┘
-                        │
-                        ▼
-┌──────────────────────────────────────────────────────────┐
-│              Recommendation Engine (Python)                │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐      │
-│  │  Preference  │ │Sustainability│ │  Popularity  │      │
-│  │  Scoring     │ │  Engine      │ │  Engine      │      │
-│  └──────────────┘ └──────────────┘ └──────────────┘      │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐      │
-│  │  Congestion  │ │  Confidence  │ │Explainability│      │
-│  │  Engine      │ │  Calculator  │ │  Generator   │      │
-│  └──────────────┘ └──────────────┘ └──────────────┘      │
-└───────────────────────┬──────────────────────────────────┘
-                        │
-                        ▼
+│  POST /recommendations · GET /health · GET /users/:id     │
+│  POST /chat                                               │
+└───────────┬───────────────────────────┬──────────────────┘
+            │                           │
+            ▼                           ▼
+┌───────────────────────┐  ┌───────────────────────────────┐
+│  Recommendation Engine│  │      RAG Chatbot Layer         │
+│  (Python — src/       │  │  src/api/rag.py (TourismRAG)  │
+│   recommendation/)    │  │  FAISS IndexFlatIP             │
+│  Preference · Sustain.│  │  text-embedding-3-small        │
+│  Popularity · Congest.│  │  gpt-4o-mini                  │
+│  Confidence · Explain.│  └───────────────┬───────────────┘
+└───────────┬───────────┘                  │
+            └──────────────┬───────────────┘
+                           ▼
 ┌──────────────────────────────────────────────────────────┐
 │                   Data Layer (CSV Files)                   │
 │  destinations.csv · users.csv · bookings_history.csv      │
@@ -48,7 +46,7 @@ The architecture follows the TUI Care Foundation's 5-layer framework:
 | **L1** | Unified Ingestion (Foundation) | Consolidate data sources | `data/raw/` CSVs + INE/FRONTUR open data via `fetch_open_data.py` |
 | **L2** | Prediction Engine (Intelligence) | Demand modelling and scoring | `src/recommendation/` — all engine modules |
 | **L3** | Intervention Triggers (Action) | Activate redistribution when thresholds exceeded | Congestion penalty (>80 → −10%) in `scoring.py` |
-| **L4** | Personalization (Interface) | Invisible interface matching traveler to destination | Preference scoring + explainability layer |
+| **L4** | Personalization (Interface) | Invisible interface matching traveler to destination | Preference scoring + explainability layer; RAG chatbot adds a natural-language NLP interface (`src/api/rag.py`) |
 | **L5** | Governance (Control Panel) | Monitoring and KPI tracking | Analytics page + Streamlit dashboard |
 
 ---
@@ -59,7 +57,22 @@ The architecture follows the TUI Care Foundation's 5-layer framework:
 
 - FastAPI application
 - CORS configured for `localhost:5173`
-- Three endpoints: `POST /recommendations`, `GET /health`, `GET /users/{user_id}`
+- Four endpoints: `POST /recommendations`, `GET /health`, `GET /users/{user_id}`, `POST /chat`
+
+### `src/api/rag.py` — RAG Chatbot
+
+Implements the `TourismRAG` class, which provides a conversational AI interface over the destination data.
+
+**Architecture:**
+- **Vector index**: FAISS `IndexFlatIP` (cosine similarity via normalized L2 vectors)
+- **Embeddings**: OpenAI `text-embedding-3-small` — one rich-text document per destination, built from `destinations.csv`, `sustainability_scores.csv`, and `congestion_scores.csv`
+- **Generation**: `gpt-4o-mini` — top-k retrieved documents are injected as context
+- **Lazy initialization**: the FAISS index is built only on the first `POST /chat` call; subsequent calls reuse the in-memory index
+- **Graceful degradation**: if `OPENAI_API_KEY` is not set, the endpoint returns a friendly message without raising an exception
+
+**Required dependency**: `OPENAI_API_KEY` environment variable must be set before starting the server.
+
+**New Python dependencies** (`requirements.txt`): `faiss-cpu`, `openai`, `tiktoken`
 
 ### `src/api/models.py` — Pydantic Models
 
@@ -228,10 +241,42 @@ Analytics.tsx
 
 ---
 
+## Docker Deployment
+
+The full stack can be run with a single command using Docker Compose.
+
+### Files
+
+| File | Purpose |
+|---|---|
+| `Dockerfile.backend` | Python 3.11-slim image; runs `uvicorn` on port 8000 |
+| `Dockerfile.frontend` | Node 20 build stage → Nginx Alpine image; serves on port 80 |
+| `docker-compose.yml` | Orchestrates both services with healthcheck; passes `AEMET_API_KEY` and `OPENAI_API_KEY` as env vars |
+| `nginx.conf` | Nginx config for SPA routing — all 404s fall back to `index.html` |
+
+### Usage
+
+```bash
+# Build and start both services
+AEMET_API_KEY=your_key OPENAI_API_KEY=your_key docker compose up --build
+
+# Frontend → http://localhost (port 80)
+# Backend → http://localhost:8000
+```
+
+### Environment Variables
+
+| Variable | Required | Used By |
+|---|---|---|
+| `OPENAI_API_KEY` | Required for Chat Assistant | `src/api/rag.py` — RAG chatbot |
+| `AEMET_API_KEY` | Optional | `data/scripts/fetch_open_data.py` — climate data |
+
+---
+
 ## Deployment Notes
 
 - The system is designed for local development and academic demonstration
 - No database — all data is CSV-based
-- FastAPI + React can be deployed to any Python/Node hosting
-- CORS is restricted to `localhost:5173` — update `app.py` for production domains
-- AEMET API key must never be hardcoded — use environment variable `AEMET_API_KEY`
+- FastAPI + React can be deployed locally (manual) or via Docker Compose
+- CORS is restricted to `localhost:5173` in development — update `app.py` for production domains
+- API keys (`AEMET_API_KEY`, `OPENAI_API_KEY`) must never be hardcoded — always use environment variables

@@ -76,7 +76,7 @@ The result is a recommendation platform that benefits travelers, tourism operato
 
 ## 4. Solution Overview
 
-The platform consists of five major components — all built and operational as of June 2026.
+The platform consists of six major components — all built and operational as of June 2026.
 
 ```
 Traveler Profiles (users.csv — 100 synthetic profiles)
@@ -94,10 +94,13 @@ Congestion Management (congestion.py — monthly INE data integrated)
 Explainable AI Layer (explainability.py — plain-language explanations)
   │
   ▼
+RAG Chatbot (src/api/rag.py — FAISS + text-embedding-3-small + gpt-4o-mini)
+  │
+  ▼
 Executive Dashboard (React Analytics page + optional Streamlit dashboard)
 ```
 
-Each component contributes to creating transparent and sustainable destination recommendations. All five components are implemented and functional in the MVP.
+Each component contributes to creating transparent and sustainable destination recommendations. All six components are implemented and functional in the MVP.
 
 
 ## 5. Data Foundation
@@ -401,10 +404,10 @@ The solution is expected to generate measurable benefits.
 | Phase | Status | Description |
 |-------|--------|-------------|
 | Phase 1 — Business Design, Architecture, Data | ✅ COMPLETED | Business design, system architecture, data model, recommendation design |
-| Phase 2 — MVP Implementation | ✅ COMPLETED | Full FastAPI backend + React 19 frontend built and functional; recommendation engine, explainability module, governance dashboard |
+| Phase 2 — MVP Implementation | ✅ COMPLETED | Full FastAPI backend + React 19 frontend built and functional; recommendation engine, explainability module, governance dashboard; Docker deployment (Dockerfile.backend, Dockerfile.frontend, docker-compose.yml, nginx.conf) |
 | Phase 3 — Real Data Integration | ⚠️ PARTIALLY COMPLETED | INE EOH + FRONTUR integrated via fetch_open_data.py; AEMET available via AEMET_API_KEY env var |
 | Phase 4 — ML Enhancement | ⏳ Not started | XGBoost Ranker, LightGBM Ranker, Learning-to-Rank models — future roadmap |
-| Phase 5 — Gen AI Travel Assistant | ⏳ Not started | Personalized travel narratives, conversational recommendations, sustainable travel coaching — future roadmap |
+| Phase 5 — Gen AI Travel Assistant | ✅ COMPLETED (RAG MVP) | RAG chatbot built: `src/api/rag.py` (TourismRAG) using FAISS + text-embedding-3-small + gpt-4o-mini; POST /chat endpoint; ChatWidget frontend component on all pages. Full conversational coaching and narrative generation remain future roadmap. |
 
 **Phase 4 detail — ML Enhancement:**
 

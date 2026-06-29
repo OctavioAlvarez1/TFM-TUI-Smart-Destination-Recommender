@@ -105,6 +105,16 @@ Components:
 - `LayerCard` × 5 — One card per layer of the 5-layer architecture (Data, Engine, Scoring, Explainability, Dashboard)
 - Scope section — Project boundaries and roadmap summary
 
+### ChatWidget — `components/chat/ChatWidget.tsx`
+
+A floating MUI `Fab` button fixed to the bottom-right corner of the screen. Present on all pages (rendered in `MainLayout`, outside the page slot). Clicking the button opens a 380px-wide MUI `Drawer` with a full conversation UI.
+
+Behaviour:
+- Sends messages to `POST /chat` with the full conversation `history`
+- Displays a "Buscando destinos…" spinner while waiting for a response
+- **Enter** submits the message; **Shift+Enter** inserts a newline
+- Degrades gracefully if the backend lacks an `OPENAI_API_KEY` — shows the fallback reply from the server without crashing
+
 
 ## 6. Component Hierarchy
 
@@ -144,6 +154,11 @@ App.tsx
     │       ├── Formula bars
     │       ├── LayerCard × 5
     │       └── Scope section
+    ├── ChatWidget (floating Fab — rendered on all pages)
+    │   └── Drawer (380px, conversation UI)
+    │       ├── Message history list
+    │       ├── "Buscando destinos…" spinner (during API call)
+    │       └── TextField (Enter to send · Shift+Enter for newline)
     └── Footer
 ```
 
@@ -214,6 +229,7 @@ Endpoints used:
 |--------|----------|---------|
 | POST | `/recommendations` | Submit user ID, month, and top-N to get ranked destinations |
 | GET | `/users/{id}` | Fetch user profile for display |
+| POST | `/chat` | Send a message and conversation history; receive an AI-generated reply from the RAG chatbot |
 
 The API client handles request/response typing using the interfaces defined in `recommendation.ts`.
 

@@ -230,6 +230,10 @@ The platform exposes decoupled services through APIs.
 
 `GET /health` — service health check.
 
+## Chat / RAG API
+
+`POST /chat` — conversational AI endpoint. Accepts `{"message": str, "history": [...]}` and returns `{"reply": str}`. Implemented in `src/api/rag.py` using FAISS (`IndexFlatIP`) for semantic retrieval over destination data and `gpt-4o-mini` for response generation. Requires `OPENAI_API_KEY` environment variable; degrades gracefully if missing.
+
 This architecture facilitates integration with TUI web applications, mobile apps, and internal systems.
 
 ---
@@ -284,6 +288,8 @@ The architecture has been designed to evolve progressively.
 - React frontend with four pages: Destinations, Insights, Analytics, About.
 - FastAPI backend with CSV-based data.
 - Streamlit impact dashboard.
+- RAG chatbot (`src/api/rag.py`) with floating ChatWidget on all pages.
+- Docker deployment via `docker-compose.yml` (backend on :8000, frontend on :80).
 
 ## Phase 2 — Production
 

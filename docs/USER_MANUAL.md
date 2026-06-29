@@ -8,11 +8,14 @@
 
 ### Start the System
 
+**Option A — Manual (two terminals):**
+
 You need two terminal windows running simultaneously.
 
 **Terminal 1 — Backend API:**
 ```bash
 # From the project root
+export OPENAI_API_KEY=your_key_here   # Required for the Chat Assistant
 python -m uvicorn src.api.app:app --reload --port 8000
 ```
 You should see: `Uvicorn running on http://127.0.0.1:8000`
@@ -25,6 +28,17 @@ npm run dev
 You should see: `Local: http://localhost:5173`
 
 Open `http://localhost:5173` in your browser.
+
+**Option B — Docker (single command):**
+
+```bash
+# From the project root — builds and starts backend (:8000) and frontend (:80)
+OPENAI_API_KEY=your_key_here docker compose up --build
+```
+
+Open `http://localhost` in your browser. The backend API is available at `http://localhost:8000`.
+
+> Note: `OPENAI_API_KEY` is required to use the Chat Assistant feature. If it is not set, all other features work normally and the chat returns a friendly message explaining the key is missing.
 
 ---
 
@@ -168,7 +182,39 @@ The system includes 100 synthetic, GDPR-compliant traveler profiles (`U001`–`U
 
 ---
 
-## 5. Understanding Scores
+## 5. Chat Assistant (AI Guide)
+
+A floating chat button appears in the bottom-right corner of every page. Click it to open a conversation panel where you can ask questions about destinations, congestion, sustainability, and travel recommendations in natural language.
+
+### How to open it
+
+Look for the circular chat icon fixed to the bottom-right corner of the screen. Click it to open a 380px side drawer with the conversation interface.
+
+### Example questions to ask
+
+- "Which destinations have the lowest congestion in August?"
+- "Tell me about the sustainability profile of Picos de Europa."
+- "What are the best alternatives to Barcelona in summer?"
+- "Which beach destinations are best for eco-conscious travelers?"
+- "Explain the scoring formula used by Horizon."
+
+### Sending messages
+
+- Press **Enter** to send a message.
+- Press **Shift+Enter** to add a newline without sending.
+- A "Buscando destinos..." spinner appears while the assistant is thinking.
+
+### Requirements
+
+The Chat Assistant requires the `OPENAI_API_KEY` environment variable to be set on the server before it starts. If the key is missing, the assistant returns a friendly message explaining the feature is unavailable — no error is shown and the rest of the app continues to work normally.
+
+### What the assistant knows
+
+The assistant has access to all 20 monitored destinations including their sustainability scores, congestion profiles (monthly), destination types, and attributes. It does not have access to individual user profiles or booking history.
+
+---
+
+## 6. Understanding Scores
 
 ### Final Score Formula
 
@@ -219,7 +265,7 @@ Indicates how strongly Horizon recommends this destination for this specific tra
 
 ---
 
-## 6. The 20 Monitored Destinations
+## 7. The 20 Monitored Destinations
 
 | ID | Destination | Region | Type |
 |---|---|---|---|
@@ -248,7 +294,7 @@ Destinations D019 and D020 are Horizon's primary **redistribution targets** — 
 
 ---
 
-## 7. Alternative Dashboard (Streamlit)
+## 8. Alternative Dashboard (Streamlit)
 
 A separate Streamlit dashboard provides an alternative view:
 
@@ -260,7 +306,7 @@ Opens at `http://localhost:8501`. This is a read-only view — it does not affec
 
 ---
 
-## 8. Refreshing Open Data
+## 9. Refreshing Open Data
 
 The congestion scores are derived from real INE hotel occupancy data. To refresh them:
 
@@ -277,7 +323,7 @@ Note: AEMET climate normals require a free-tier API key from https://opendata.ae
 
 ---
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
 | Problem | Solution |
 |---|---|
@@ -286,10 +332,12 @@ Note: AEMET climate normals require a free-tier API key from https://opendata.ae
 | Recommendations take > 2s | Normal — the engine scores all 20 destinations for the user profile |
 | Map tiles not loading | Check internet connection (tiles load from CartoCDN) |
 | No destinations returned | Try a different user ID or month — some combinations may return fewer results |
+| Chat assistant says API key is missing | Set `OPENAI_API_KEY` environment variable before starting the backend server |
+| Chat takes several seconds to respond | Normal on the first call — the FAISS index is built lazily on the first request |
 
 ---
 
-## 10. Running Tests
+## 11. Running Tests
 
 ```bash
 # All tests
