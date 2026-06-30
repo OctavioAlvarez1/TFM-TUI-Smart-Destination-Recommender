@@ -404,7 +404,7 @@ The solution is expected to generate measurable benefits.
 | Phase | Status | Description |
 |-------|--------|-------------|
 | Phase 1 — Business Design, Architecture, Data | ✅ COMPLETED | Business design, system architecture, data model, recommendation design |
-| Phase 2 — MVP Implementation | ✅ COMPLETED | Full FastAPI backend + React 19 frontend built and functional; recommendation engine, explainability module, governance dashboard; Docker deployment (Dockerfile.backend, Dockerfile.frontend, docker-compose.yml, nginx.conf) |
+| Phase 2 — MVP Implementation | ✅ COMPLETED | Full FastAPI backend + React 19 frontend built and functional; recommendation engine, explainability module, governance dashboard; Docker deployment (docker/Dockerfile.backend, docker/Dockerfile.frontend, docker-compose.yml, docker/nginx.conf) |
 | Phase 3 — Real Data Integration | ⚠️ PARTIALLY COMPLETED | INE EOH + FRONTUR integrated via fetch_open_data.py; AEMET available via AEMET_API_KEY env var |
 | Phase 4 — ML Enhancement | ⏳ Not started | XGBoost Ranker, LightGBM Ranker, Learning-to-Rank models — future roadmap |
 | Phase 5 — Gen AI Travel Assistant | ✅ COMPLETED (RAG MVP) | RAG chatbot built: `src/api/rag.py` (TourismRAG) using FAISS + text-embedding-3-small + gpt-4o-mini; POST /chat endpoint; ChatWidget frontend component on all pages. Full conversational coaching and narrative generation remain future roadmap. |

@@ -160,7 +160,7 @@ cd TUI-Sage && streamlit run app.py --server.port 8504
 
 Visual patterns, component recipes, and Streamlit equivalents are documented in:
 
-**`TUI-Smart-Destination-Recommender/DESIGN_SYSTEM.md`**
+**`TUI-Smart-Destination-Recommender/docs/design/DESIGN_SYSTEM.md`**
 
 Covers: MUI v9 dark mode rules, glassmorphism cards, SVG area charts, interactive bar charts, heat tile grid, Framer Motion re-animation, Leaflet tile layers, congestion color helpers, and Streamlit/Plotly equivalents for Atlas/Sentinel/Pathfinder.
 
@@ -170,6 +170,7 @@ Covers: MUI v9 dark mode rules, glassmorphism cards, SVG area charts, interactiv
 
 | Variable | Project | Purpose |
 |---|---|---|
+| `OPENAI_API_KEY` | Horizon | RAG chatbot (FAISS + text-embedding-3-small + gpt-4o-mini) — required for `POST /chat` |
 | `ANTHROPIC_API_KEY` | TUI-Sage | Claude API for RAG responses |
 | `AEMET_API_KEY` | Horizon, Atlas | AEMET climate data (optional) |
 

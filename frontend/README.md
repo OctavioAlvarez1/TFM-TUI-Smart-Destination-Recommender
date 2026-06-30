@@ -78,7 +78,7 @@ No frontend environment variables are required for local development.
 
 ## Docker
 
-The frontend is containerized via `Dockerfile.frontend` (Node build stage + Nginx serving stage). Nginx configuration is in `nginx.conf` at the project root.
+The frontend is containerized via `docker/Dockerfile.frontend` (Node build stage + Nginx serving stage). Nginx configuration is in `docker/nginx.conf`.
 
 To run the full stack (backend + frontend) with Docker:
 

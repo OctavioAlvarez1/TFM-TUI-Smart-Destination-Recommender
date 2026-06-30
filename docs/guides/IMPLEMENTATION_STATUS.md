@@ -4,10 +4,10 @@
 
 The following features have been added since the initial implementation phase:
 
-- **Docker Containerization**: `Dockerfile.backend`, `Dockerfile.frontend` (Node + Nginx), `nginx.conf`, `docker-compose.yml`, `.dockerignore`. Run the full stack with `docker compose up --build`. Backend on port 8000, frontend on port 80.
+- **Docker Containerization**: `docker/Dockerfile.backend`, `docker/Dockerfile.frontend` (Node + Nginx), `docker/nginx.conf`, `docker-compose.yml` (root), `.dockerignore`. Run the full stack with `docker compose up --build`. Backend on port 8000, frontend on port 80.
 - **RAG Chatbot**: `src/api/rag.py` — FAISS + OpenAI `text-embedding-3-small` + GPT-4o-mini. Endpoint `POST /chat`. Requires `OPENAI_API_KEY` env var; graceful fallback message if missing.
 - **ChatWidget**: `frontend/src/components/chat/ChatWidget.tsx` — floating Fab button with a Drawer conversation UI, present on all pages.
-- **TFM Report**: `docs/TFM_HORIZON.md` + `docs/TFM_HORIZON.pdf` — full academic report for the TFM submission.
+- **TFM Report**: `docs/report/TFM_HORIZON.md` + `docs/report/TFM_HORIZON.pdf` — full academic report for the TFM submission.
 
 ---
 
@@ -58,15 +58,16 @@ Main project folders:
 
 ```text
 data/
+docker/
+  Dockerfile.backend
+  Dockerfile.frontend
+  nginx.conf
 docs/
 frontend/
 notebooks/
 src/
 tests/
 docker-compose.yml
-Dockerfile.backend
-Dockerfile.frontend
-nginx.conf
 ```
 
 ---
@@ -589,9 +590,9 @@ Status: **Completed**
 Files:
 
 ```text
-Dockerfile.backend
-Dockerfile.frontend
-nginx.conf
+docker/Dockerfile.backend
+docker/Dockerfile.frontend
+docker/nginx.conf
 docker-compose.yml
 .dockerignore
 ```
@@ -647,7 +648,7 @@ Completed:
 * React SPA Frontend
 * Docker containerization
 * RAG Chatbot (`POST /chat`)
-* TFM Report (`docs/TFM_HORIZON.md` + `docs/TFM_HORIZON.pdf`)
+* TFM Report (`docs/report/TFM_HORIZON.md` + `docs/report/TFM_HORIZON.pdf`)
 
 ---
 

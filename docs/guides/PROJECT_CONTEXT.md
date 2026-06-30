@@ -214,13 +214,14 @@ Dashboard de ejemplo que muestran en el documento:
 |--------|---------|--------|
 | FastAPI server | `src/api/app.py` | ✅ Completo |
 | Pydantic models | `src/api/models.py` | ✅ Completo |
+| RAG chatbot | `src/api/rag.py` | ✅ Completo |
 | Recommendation engine (orchestrator) | `src/recommendation/recommendation_engine.py` | ✅ Completo |
 | Preference scoring | `src/recommendation/scoring.py` | ✅ Completo |
 | Sustainability engine | `src/recommendation/sustainability.py` | ✅ Completo |
 | Popularity engine | `src/recommendation/popularity.py` | ✅ Completo |
 | Congestion engine | `src/recommendation/congestion.py` | ✅ Completo |
 | Confidence calculator | `src/recommendation/confidence.py` | ✅ Completo |
-| Explainability generator | `src/explainability/explainability.py` | ✅ Completo |
+| Explainability generator | `src/recommendation/explainability.py` | ✅ Completo |
 | Data loader | `src/data/data_loader.py` | ✅ Completo |
 | Open data fetch script | `data/scripts/fetch_open_data.py` | ✅ INE + FRONTUR + AEMET |
 | Streamlit alternative UI | `src/dashboard/app.py` | ✅ Completo |
@@ -234,6 +235,7 @@ Dashboard de ejemplo que muestran en el documento:
 | **Insights** | Mapa de España (Leaflet), Low Season Optimizer, heatmap mensual, escenarios redistribución | ✅ Completo |
 | **Analytics** | Dashboard de gobernanza — destinos penalizados por mes, distribución julio, tabla filtreable | ✅ Completo |
 | **About** | Contexto del proyecto, fórmula de scoring animada, arquitectura de 5 capas, scope | ✅ Completo |
+| **ChatWidget** | Floating Fab (bottom-right) + Drawer — interfaz RAG conversacional, presente en todas las páginas | ✅ Completo |
 | Dark / Light mode | Toggle en header, persiste en localStorage, aplicado a todos los componentes | ✅ Completo |
 | Mapa interactivo | Leaflet + CartoCDN (tiles cambian con dark/light mode) | ✅ Completo |
 | Recommendation cards | Score breakdown, badges de sustainability/confidence/congestion, best months chips | ✅ Completo |
@@ -246,29 +248,29 @@ Dashboard de ejemplo que muestran en el documento:
 |---------|-----------|
 | `README.md` | Quick start, estructura del proyecto, API reference, SDG 8.9 alignment |
 | `CLAUDE.md` | Guía para Claude Code — comandos, arquitectura, patrones MUI v9 dark mode |
-| `docs/PROJECT_CONTEXT.md` | Este archivo — contexto del reto y estado completo del sistema |
-| `docs/ARCHITECTURE.md` | Arquitectura completa con diagramas ASCII, 5 capas, data flow end-to-end |
-| `docs/API_REFERENCE.md` | Spec completo de los 3 endpoints REST con ejemplos cURL/JS/Python |
-| `docs/USER_MANUAL.md` | Manual de usuario completo — 10 secciones, guía de scores, troubleshooting |
+| `docs/guides/PROJECT_CONTEXT.md` | Este archivo — contexto del reto y estado completo del sistema |
+| `docs/guides/ARCHITECTURE.md` | Arquitectura completa con diagramas ASCII, 5 capas, data flow end-to-end |
+| `docs/guides/API_REFERENCE.md` | Spec completo de los 4 endpoints REST con ejemplos cURL/JS/Python |
+| `docs/guides/USER_MANUAL.md` | Manual de usuario completo — 10 secciones, guía de scores, troubleshooting |
 
 **Documentos del proyecto TFM (01–14):**
 
 | Archivo | Contenido |
 |---------|-----------|
-| `docs/01_Business_Problem_and_Vision.md` | Definición del problema, objetivos, stakeholders, KPIs, casos de uso, alcance del MVP |
-| `docs/02_Solution_Architecture_and_Technical_Design.md` | Arquitectura de solución, 5 capas, plataforma de datos, APIs, escalabilidad |
-| `docs/03_AI_Recommendation_Design.md` | Diseño de IA — por qué no solo collaborative filtering, affinity score, sustainability score, popularity score, ranking final |
-| `docs/04_Business_Case_KPIs_ESG.md` | Business case, KPIs estratégicos, indicadores ESG, metodología de medición de impacto |
-| `docs/05_Cloud_Architecture_and_Tech_Stack.md` | Arquitectura GCP para producción (BigQuery, Vertex AI, Cloud Run) — roadmap post-MVP |
-| `docs/06_MVP_Technical_Design.md` | Diseño técnico del MVP implementado — stack real, componentes, fórmula, entregables |
-| `docs/07_Data_Model_and_Dataset_Design.md` | Modelo de datos, estructura de los 5 CSVs, lógica de scoring |
-| `docs/08_Dataset_Construction_and_Data_Sources.md` | Estrategia de datos sintéticos, fuentes open data (INE, FRONTUR), GDPR |
-| `docs/09_Data_Dictionary.md` | Diccionario de datos — campo por campo de los 5 CSVs |
-| `docs/10_Data_Validation_and_QA.md` | Reporte de validación — completitud, integridad referencial, rangos, distribución |
-| `docs/11_Recommendation_Engine_Design.md` | Diseño completo del motor de recomendaciones — pseudocódigo, flujo, hoja de ruta ML |
-| `docs/12_Frontend_Architecture.md` | Arquitectura del frontend React 19 — páginas, componentes, tema dark/light, mapa, state |
-| `docs/13_Executive_Dashboard_Design.md` | Diseño del dashboard ejecutivo — módulos, KPIs, visualizaciones, tecnología |
-| `docs/14_Final_Solution_Blueprint.md` | Blueprint completo de la solución — resumen ejecutivo, status de fases, roadmap |
+| `docs/design/01_Business_Problem_and_Vision.md` | Definición del problema, objetivos, stakeholders, KPIs, casos de uso, alcance del MVP |
+| `docs/design/02_Solution_Architecture_and_Technical_Design.md` | Arquitectura de solución, 5 capas, plataforma de datos, APIs, escalabilidad |
+| `docs/design/03_AI_Recommendation_Design.md` | Diseño de IA — por qué no solo collaborative filtering, affinity score, sustainability score, popularity score, ranking final |
+| `docs/design/04_Business_Case_KPIs_ESG.md` | Business case, KPIs estratégicos, indicadores ESG, metodología de medición de impacto |
+| `docs/design/05_Cloud_Architecture_and_Tech_Stack.md` | Arquitectura GCP para producción (BigQuery, Vertex AI, Cloud Run) — roadmap post-MVP |
+| `docs/design/06_MVP_Technical_Design.md` | Diseño técnico del MVP implementado — stack real, componentes, fórmula, entregables |
+| `docs/design/07_Data_Model_and_Dataset_Design.md` | Modelo de datos, estructura de los 5 CSVs, lógica de scoring |
+| `docs/design/08_Dataset_Construction_and_Data_Sources.md` | Estrategia de datos sintéticos, fuentes open data (INE, FRONTUR), GDPR |
+| `docs/design/09_Data_Dictionary.md` | Diccionario de datos — campo por campo de los 5 CSVs |
+| `docs/design/10_Data_Validation_and_QA.md` | Reporte de validación — completitud, integridad referencial, rangos, distribución |
+| `docs/design/11_Recommendation_Engine_Design.md` | Diseño completo del motor de recomendaciones — pseudocódigo, flujo, hoja de ruta ML |
+| `docs/design/12_Frontend_Architecture.md` | Arquitectura del frontend React 19 — páginas, componentes, tema dark/light, mapa, state |
+| `docs/design/13_Executive_Dashboard_Design.md` | Diseño del dashboard ejecutivo — módulos, KPIs, visualizaciones, tecnología |
+| `docs/design/14_Final_Solution_Blueprint.md` | Blueprint completo de la solución — resumen ejecutivo, status de fases, roadmap |
 
 ---
 
@@ -279,7 +281,7 @@ Dashboard de ejemplo que muestran en el documento:
 | **L1** | Unified Ingestion | `data/raw/` CSVs + `fetch_open_data.py` → INE EOH (tabla 49371) + FRONTUR (tabla 23988) |
 | **L2** | Prediction Engine | `src/recommendation/` — 5 módulos de scoring + confidence + explainability |
 | **L3** | Intervention Triggers | Congestion penalty (>80 → −10%) y boost (<40 → +5%) en `scoring.py` |
-| **L4** | Personalization | Preference scoring + explicaciones en lenguaje natural por recomendación |
+| **L4** | Personalization | Preference scoring + explicaciones en lenguaje natural por recomendación + RAG chatbot (`src/api/rag.py`) como interfaz NLP conversacional |
 | **L5** | Governance | Página Analytics — destinos penalizados por mes, tabla de estado, KPIs del sistema |
 
 ---

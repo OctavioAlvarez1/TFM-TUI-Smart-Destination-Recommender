@@ -742,7 +742,7 @@ La configuración CORS del servidor permite peticiones desde `http://localhost:5
 
 Horizon está completamente contenerizado con Docker, permitiendo su despliegue reproducible en cualquier entorno compatible con OCI (Linux, macOS, Windows con Docker Desktop, AWS ECS, GCP Cloud Run, Azure Container Instances).
 
-**`Dockerfile.backend`:**
+**`docker/Dockerfile.backend`:**
 
 ```dockerfile
 FROM python:3.11-slim
@@ -765,7 +765,7 @@ CMD ["uvicorn", "src.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
 
 El uso de `python:3.11-slim` (imagen base Debian minimalista) reduce el tamaño de la imagen final frente a la imagen estándar. La instalación de `gcc` es necesaria para compilar FAISS y algunas dependencias numéricas de numpy. El `--no-cache-dir` en pip evita que la caché de paquetes engrose la imagen.
 
-**`Dockerfile.frontend` (multi-stage build):**
+**`docker/Dockerfile.frontend` (multi-stage build):**
 
 ```dockerfile
 # Etapa 1: Build
@@ -779,7 +779,7 @@ RUN npm run build
 # Etapa 2: Serve
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
@@ -795,7 +795,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: docker/Dockerfile.backend
     ports:
       - "8000:8000"
     environment:
@@ -812,7 +812,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.frontend
+      dockerfile: docker/Dockerfile.frontend
     ports:
       - "80:80"
     depends_on:

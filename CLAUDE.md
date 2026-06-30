@@ -164,7 +164,10 @@ Must **only** be set as environment variable `AEMET_API_KEY`. Never hardcode in 
 
 ## Documentation
 
-- `docs/USER_MANUAL.md` — end-user guide (how to use the app, score interpretation, troubleshooting)
-- `docs/ARCHITECTURE.md` — system architecture, 5-layer design, data flow
-- `docs/API_REFERENCE.md` — full REST API spec with examples
+- `docs/guides/USER_MANUAL.md` — end-user guide (how to use the app, score interpretation, troubleshooting)
+- `docs/guides/ARCHITECTURE.md` — system architecture, 5-layer design, data flow
+- `docs/guides/API_REFERENCE.md` — full REST API spec with examples
+- `docs/design/` — 14 TFM design docs (01–14) + DESIGN_SYSTEM.md
+- `docs/report/` — TFM_HORIZON.md + TFM_HORIZON.pdf (academic report)
+- `docs/README.md` — documentation navigation index
 - `data/README_SOURCES.md` — open data sources and refresh instructions

@@ -40,49 +40,57 @@ Business rules on top:
 
 ```
 ├── src/                        # Python backend
-│   ├── api/                    # FastAPI app (POST /recommendations, GET /health)
+│   ├── api/                    # FastAPI (POST /recommendations, GET /health, GET /users/:id, POST /chat)
 │   ├── recommendation/         # Scoring engines (preference, sustainability, popularity, congestion)
-│   ├── explainability/         # Human-readable explanation generator
 │   ├── dashboard/              # Streamlit alternative UI
 │   ├── data/                   # Data loader (CSV → DataFrame)
 │   └── config/                 # Path settings
-├── frontend/                   # React SPA
+├── frontend/                   # React 19 SPA
 │   └── src/
 │       ├── pages/              # Home, Insights, Analytics, About
-│       ├── components/         # RecommendationCard, SearchBarHero, Map, Charts…
-│       ├── api/                # Axios client → FastAPI
-│       └── theme/              # MUI dark/light theme
+│       ├── components/         # RecommendationCard, SearchBarHero, Map, ChatWidget…
+│       ├── api/                # Axios clients → FastAPI
+│       └── theme/              # MUI v9 dark/light theme
+├── docker/                     # Dockerfile.backend, Dockerfile.frontend, nginx.conf
 ├── data/
 │   ├── raw/                    # 5 CSV files (destinations, users, bookings, sustainability, congestion)
 │   ├── enriched/               # INE EOH + FRONTUR open data
 │   └── scripts/                # fetch_open_data.py — refresh from INE/AEMET APIs
 ├── tests/                      # Pytest suite (one file per module)
 ├── notebooks/                  # Data generation notebooks
-└── docs/                       # 18 documentation files (architecture, API, user manual, TFM design docs 01–14)
+└── docs/
+    ├── guides/                 # ARCHITECTURE, API_REFERENCE, USER_MANUAL, PROJECT_CONTEXT
+    ├── design/                 # 14 TFM design docs (01–14) + DESIGN_SYSTEM
+    └── report/                 # TFM_HORIZON.md + TFM_HORIZON.pdf
 ```
+
+See [docs/README.md](docs/README.md) for a full documentation index.
 
 ---
 
 ## Quick Start
 
-### Prerequisites
-
-- Python 3.11+
-- Node.js 20+
-
-### 1 — Backend
+### Option A — Docker (recommended)
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Set your OpenAI key for the RAG chatbot (optional — app works without it)
+export OPENAI_API_KEY=sk-...
 
-# Start FastAPI server (localhost:8000)
-python -m uvicorn src.api.app:app --reload --port 8000
+docker compose up --build
 ```
 
-### 2 — Frontend
+Backend: `http://localhost:8000` · Frontend: `http://localhost:80`
+
+### Option B — Local Dev
+
+#### Prerequisites: Python 3.11+ · Node.js 20+
 
 ```bash
+# 1 — Backend
+pip install -r requirements.txt
+python -m uvicorn src.api.app:app --reload --port 8000
+
+# 2 — Frontend (new terminal)
 cd frontend
 npm install
 npm run dev          # localhost:5173
@@ -90,7 +98,7 @@ npm run dev          # localhost:5173
 
 Open `http://localhost:5173` in your browser.
 
-### 3 — Optional: Streamlit Dashboard
+### Optional: Streamlit Dashboard
 
 ```bash
 streamlit run src/dashboard/app.py
@@ -124,28 +132,34 @@ streamlit run src/dashboard/app.py
 
 ```json
 // Request
-{
-  "user_id": "U001",
-  "month": 7,
-  "top_n": 5
-}
+{ "user_id": "U001", "month": 7, "top_n": 5 }
 
 // Response (array)
-[
-  {
-    "destination_id": "D019",
-    "destination_name": "Picos de Europa",
-    "final_score": 82.4,
-    "preference_score": 78.0,
-    "sustainability_score": 91.0,
-    "popularity_score": 65.0,
-    "congestion_score": 85.0,
-    "confidence_score": 76.5,
-    "recommendation_rank": 1,
-    "explanations": ["Matches your Nature travel style", "Excellent sustainability rating"]
-  }
-]
+[{
+  "destination_id": "D019",
+  "destination_name": "Picos de Europa",
+  "final_score": 82.4,
+  "preference_score": 78.0,
+  "sustainability_score": 91.0,
+  "popularity_score": 65.0,
+  "congestion_score": 85.0,
+  "confidence_score": 76.5,
+  "recommendation_rank": 1,
+  "explanations": ["Matches your Nature travel style", "Excellent sustainability rating"]
+}]
 ```
+
+### `POST /chat` — RAG Chatbot
+
+```json
+// Request
+{ "message": "¿Qué destinos sostenibles recomiendas en verano?", "history": [] }
+
+// Response
+{ "reply": "Para el verano te recomiendo..." }
+```
+
+Requires `OPENAI_API_KEY` env variable. Returns a graceful fallback if not set.
 
 ### `GET /health`
 
@@ -154,6 +168,8 @@ Returns `{ "status": "ok" }`.
 ### `GET /users/{user_id}`
 
 Returns the traveler profile for a given user ID.
+
+Full API docs: [docs/guides/API_REFERENCE.md](docs/guides/API_REFERENCE.md)
 
 ---
 
@@ -197,13 +213,14 @@ Tests use real CSV data — no mocking. Always run from the project root.
 
 ## Documentation
 
-| File | Description |
+| Path | Description |
 |---|---|
-| `docs/ARCHITECTURE.md` | System architecture, 5-layer design, data flow |
-| `docs/API_REFERENCE.md` | Full REST API spec with curl/JS/Python examples |
-| `docs/USER_MANUAL.md` | End-user guide — scores, pages, troubleshooting |
-| `docs/PROJECT_CONTEXT.md` | TUI challenge context, implementation status |
-| `docs/01–14_*.md` | Full TFM design package — business case, AI design, data model, cloud architecture, engine design, frontend architecture, executive dashboard, solution blueprint |
+| [docs/guides/ARCHITECTURE.md](docs/guides/ARCHITECTURE.md) | System architecture, 5-layer design, data flow |
+| [docs/guides/API_REFERENCE.md](docs/guides/API_REFERENCE.md) | Full REST API spec with curl/JS/Python examples |
+| [docs/guides/USER_MANUAL.md](docs/guides/USER_MANUAL.md) | End-user guide — scores, pages, troubleshooting |
+| [docs/report/TFM_HORIZON.pdf](docs/report/TFM_HORIZON.pdf) | Academic report (PDF) |
+| [docs/design/](docs/design/) | 14 TFM design docs — business case, AI design, data model, cloud arch, engine design, frontend, dashboard, blueprint |
+| [docs/README.md](docs/README.md) | Full documentation index |
 
 ---
 

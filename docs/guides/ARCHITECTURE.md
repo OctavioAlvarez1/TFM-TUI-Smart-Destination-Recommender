@@ -249,10 +249,10 @@ The full stack can be run with a single command using Docker Compose.
 
 | File | Purpose |
 |---|---|
-| `Dockerfile.backend` | Python 3.11-slim image; runs `uvicorn` on port 8000 |
-| `Dockerfile.frontend` | Node 20 build stage → Nginx Alpine image; serves on port 80 |
-| `docker-compose.yml` | Orchestrates both services with healthcheck; passes `AEMET_API_KEY` and `OPENAI_API_KEY` as env vars |
-| `nginx.conf` | Nginx config for SPA routing — all 404s fall back to `index.html` |
+| `docker/Dockerfile.backend` | Python 3.11-slim image; runs `uvicorn` on port 8000 |
+| `docker/Dockerfile.frontend` | Node 20 build stage → Nginx Alpine image; serves on port 80 |
+| `docker-compose.yml` | Orchestrates both services with healthcheck; passes `AEMET_API_KEY` and `OPENAI_API_KEY` as env vars; references `docker/Dockerfile.*` |
+| `docker/nginx.conf` | Nginx config for SPA routing — all 404s fall back to `index.html` |
 
 ### Usage
 
@@ -278,5 +278,5 @@ AEMET_API_KEY=your_key OPENAI_API_KEY=your_key docker compose up --build
 - The system is designed for local development and academic demonstration
 - No database — all data is CSV-based
 - FastAPI + React can be deployed locally (manual) or via Docker Compose
-- CORS is restricted to `localhost:5173` in development — update `app.py` for production domains
+- CORS allows `localhost:5173` (Vite dev server), `http://localhost`, and `http://localhost:80` (Docker/Nginx) — update `app.py` for production domains
 - API keys (`AEMET_API_KEY`, `OPENAI_API_KEY`) must never be hardcoded — always use environment variables
